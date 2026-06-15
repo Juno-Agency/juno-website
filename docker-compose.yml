@@ -1,0 +1,75 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: juno-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-juno}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-juno}
+      POSTGRES_DB: ${POSTGRES_DB:-juno}
+    volumes:
+      - juno-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-juno} -d ${POSTGRES_DB:-juno}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+
+  backend:
+    build: ./backend
+    container_name: juno-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-juno}:${POSTGRES_PASSWORD:-juno}@db:5432/${POSTGRES_DB:-juno}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-string}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-12h}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      RUN_SEED: ${RUN_SEED:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@juno.studio}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me}
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - '${BACKEND_PORT:-3000}:3000'
+
+  frontend:
+    build: ./frontend
+    container_name: juno-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '${FRONTEND_PORT:-8080}:8080'
+
+  backoffice:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.backoffice
+    container_name: juno-backoffice
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '${BACKOFFICE_PORT:-8090}:8080'
+
+  adminer:
+    image: adminer:4
+    container_name: juno-adminer
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - '${ADMINER_PORT:-8081}:8080'
+
+volumes:
+  juno-db-data:

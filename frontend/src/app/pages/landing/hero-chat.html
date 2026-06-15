@@ -1,0 +1,95 @@
+<header class="hero" id="top">
+  <div class="hero-left">
+    <span class="eyebrow r d1" [class.in]="heroIn()">Agence web · design + développement</span>
+    <h1 class="hl" [class.in]="heroIn()">
+      <span class="line"><span>Votre site,</span></span>
+      <span class="line"><span><em class="acc">dessiné</em> en</span></span>
+      <span class="line"><span>quelques minutes.</span></span>
+    </h1>
+    <p class="lede r d3" [class.in]="heroIn()">
+      Vous le décrivez. On vous le dessine. Vous validez — on développe et on met
+      en ligne. Sans prise de tête.
+    </p>
+    <div class="cta-row r d4" [class.in]="heroIn()">
+      <a
+        #magBtn
+        routerLink="/projet"
+        class="btn btn-primary btn-lg"
+        [style.transform]="magnet()"
+        (pointermove)="onMagnet($event, magBtn)"
+        (pointerleave)="resetMagnet()"
+      >
+        <span class="lab">Décrivez votre projet</span> <span class="arr">→</span>
+      </a>
+      <a class="btn btn-ghost btn-lg" href="#methode"><span class="lab">Comment ça marche</span></a>
+    </div>
+    <div class="ticks r d5" [class.in]="heroIn()">
+      <span class="tk">Maquette en quelques minutes</span>
+      <span class="tk">Vous validez avant qu’on code</span>
+    </div>
+  </div>
+
+  <div
+    #atelier
+    class="atelier"
+    (pointermove)="onParallax($event, atelier)"
+    (pointerleave)="resetParallax()"
+  >
+    <div class="glow" aria-hidden="true"></div>
+    <div class="chatw" [style.transform]="parallax()">
+      <div class="cw-head">
+        <div class="cw-av">J</div>
+        <div class="cw-who">
+          <b>JUNO</b><span>Votre studio web · en ligne</span>
+        </div>
+      </div>
+      <div class="cw-thread" aria-live="polite" aria-label="Démonstration JUNO">
+        @for (it of items(); track it.id) {
+          @switch (it.kind) {
+            @case ('typing') {
+              <div class="cw-typing"><i></i><i></i><i></i></div>
+            }
+            @case ('juno') {
+              <div class="cw-msg juno" [innerHTML]="it.html"></div>
+            }
+            @case ('user') {
+              <div class="cw-msg user">{{ it.text }}</div>
+            }
+            @case ('replies') {
+              <div class="cw-replies" [class.nudge]="it.nudge">
+                @for (k of sectorKeys; track k) {
+                  <button type="button" (click)="onReply(k)">{{ sectorLabel(k) }}</button>
+                }
+              </div>
+            }
+            @case ('gen') {
+              <div class="cw-gen">
+                <div class="cwg-top">
+                  <i></i><i></i><i></i>
+                  <span class="u">{{ it.url }}</span>
+                  <span class="tag" [class.ready]="it.ready">{{
+                    it.ready ? '✓ prête' : 'génération…'
+                  }}</span>
+                </div>
+                <div class="cwg-body" [class.skel]="!it.ready">
+                  <div class="cwg-hero">{{ it.ready ? it.hero : '' }}</div>
+                  <div class="cwg-line" style="width: 60%"></div>
+                  <div class="cwg-line" style="width: 82%"></div>
+                  <div class="cwg-row"><span></span><span></span><span></span></div>
+                  @if (!it.ready) {
+                    <div class="shimmer"></div>
+                  }
+                </div>
+              </div>
+            }
+            @case ('cta') {
+              <div class="cw-cta">
+                <a routerLink="/projet">Valider et lancer →</a>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  </div>
+</header>

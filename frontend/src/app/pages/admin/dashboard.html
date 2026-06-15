@@ -1,0 +1,263 @@
+<main class="wrap">
+  <div class="pagehead">
+    <h1>Demandes</h1>
+    <button class="ghost" (click)="load()" [disabled]="loading()">↻ Rafraîchir</button>
+  </div>
+
+  <!-- stat tiles double as filters -->
+  <div class="stats">
+    <button class="tile" [class.on]="filter() === 'ALL'" (click)="setFilter('ALL')">
+      <span class="n">{{ counts()['ALL'] }}</span>
+      <span class="l">Toutes</span>
+    </button>
+    @for (s of statuses; track s) {
+      <button
+        class="tile"
+        [class.on]="filter() === s"
+        [style.--c]="statusMeta[s].color"
+        (click)="setFilter(s)"
+      >
+        <span class="n">{{ counts()[s] }}</span>
+        <span class="l"><i class="d"></i>{{ statusMeta[s].label }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="toolbar">
+    <div class="searchbox">
+      <span class="ic">⌕</span>
+      <input
+        type="search"
+        placeholder="Rechercher un nom, email, secteur…"
+        (input)="onSearch($event)"
+      />
+    </div>
+    <span class="result">{{ visibleLeads().length }} demande(s)</span>
+  </div>
+
+  @if (error() && !modalId()) {
+    <p class="banner">{{ error() }}</p>
+  }
+
+  <div class="card">
+    <div class="thead">
+      <span>Demande</span>
+      <span>Type</span>
+      <span>Secteur</span>
+      <span>Budget</span>
+      <span>Reçue</span>
+      <span>Statut</span>
+      <span class="ta">Actions</span>
+    </div>
+
+    @if (loading()) {
+      <div class="state">Chargement des demandes…</div>
+    } @else if (!visibleLeads().length) {
+      <div class="state">Aucune demande pour ce filtre.</div>
+    } @else {
+      @for (l of visibleLeads(); track l.id) {
+        <div class="trow" (click)="open(l)">
+          <span class="cell who">
+            <span class="av">{{ initials(l.nom) }}</span>
+            <span class="txt">
+              <span class="nm">{{ l.nom }}</span>
+              <span class="em">{{ l.email }}</span>
+            </span>
+          </span>
+          <span class="cell" data-h="Type">{{ l.type }}</span>
+          <span class="cell" data-h="Secteur">{{ l.secteur }}</span>
+          <span class="cell" data-h="Budget">{{ l.budget || '—' }}</span>
+          <span class="cell when" data-h="Reçue">{{ fmtDate(l.createdAt) }}</span>
+          <span class="cell">
+            <span class="badge" [style.--c]="statusMeta[l.status].color">
+              {{ statusMeta[l.status].label }}
+            </span>
+          </span>
+          <span class="cell actions" (click)="$event.stopPropagation()">
+            <button class="iconbtn" (click)="open(l, 'edit')" aria-label="Modifier" title="Modifier">✎</button>
+            <button class="iconbtn danger" (click)="openDelete(l)" aria-label="Supprimer" title="Supprimer">🗑</button>
+          </span>
+        </div>
+      }
+    }
+  </div>
+</main>
+
+<!-- ===================== MODAL ===================== -->
+@if (selected(); as l) {
+  <div class="overlay" (click)="close()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="x" (click)="close()" aria-label="Fermer">×</button>
+
+      <div class="mhead">
+        <span class="av big">{{ initials(l.nom) }}</span>
+        <div>
+          <h2>{{ l.nom }}</h2>
+          <a class="email" [href]="'mailto:' + l.email">{{ l.email }}</a>
+          @if (l.tel) {
+            <span class="sep">·</span><a class="email" [href]="'tel:' + l.tel">{{ l.tel }}</a>
+          }
+          <p class="received">Reçue le {{ fmtDate(l.createdAt) }}</p>
+        </div>
+        <span class="badge" [style.--c]="statusMeta[l.status].color">{{ statusMeta[l.status].label }}</span>
+      </div>
+
+      @if (error()) {
+        <p class="banner">{{ error() }}</p>
+      }
+
+      <!-- ---------- VIEW MODE ---------- -->
+      @if (mode() === 'view') {
+        <div class="mbody">
+          <div class="block">
+            <span class="blabel">Changer le statut</span>
+            <div class="chiprow">
+              @for (s of statuses; track s) {
+                <button
+                  class="sbtn"
+                  [class.on]="l.status === s"
+                  [style.--c]="statusMeta[s].color"
+                  [disabled]="busyStatus()"
+                  (click)="changeStatus(s)"
+                >
+                  {{ statusMeta[s].label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="field"><span class="blabel">Type</span><span class="val">{{ l.type }}</span></div>
+            <div class="field"><span class="blabel">Secteur</span><span class="val">{{ l.secteur }}</span></div>
+            <div class="field"><span class="blabel">Site existant</span><span class="val">{{ existingLabel[l.existant] || l.existant }}</span></div>
+            <div class="field"><span class="blabel">Budget</span><span class="val">{{ l.budget || '—' }}</span></div>
+            <div class="field"><span class="blabel">Échéance</span><span class="val">{{ l.echeance || '—' }}</span></div>
+          </div>
+
+          @if (l.pages.length) {
+            <div class="block"><span class="blabel">Pages</span>
+              <div class="chiprow">@for (p of l.pages; track p) { <span class="tagchip">{{ p }}</span> }</div>
+            </div>
+          }
+          @if (l.styles.length) {
+            <div class="block"><span class="blabel">Ambiance</span>
+              <div class="chiprow">@for (st of l.styles; track st) { <span class="tagchip">{{ st }}</span> }</div>
+            </div>
+          }
+          @if (l.colors.length) {
+            <div class="block"><span class="blabel">Couleurs</span>
+              <div class="swrow">@for (c of l.colors; track c) { <span class="sw" [style.background]="c" [title]="c"></span> }</div>
+            </div>
+          }
+          @if (l.refs) {
+            <div class="block"><span class="blabel">Références</span><p class="text">{{ l.refs }}</p></div>
+          }
+          @if (l.message) {
+            <div class="block"><span class="blabel">Message</span><p class="text">{{ l.message }}</p></div>
+          }
+        </div>
+
+        <div class="mfoot">
+          @if (confirmDelete()) {
+            <span class="confirm-msg">Supprimer définitivement cette demande ?</span>
+            <button class="btn ghost" (click)="cancelDelete()">Annuler</button>
+            <button class="btn danger" (click)="doDelete()" [disabled]="deleting()">
+              {{ deleting() ? 'Suppression…' : 'Oui, supprimer' }}
+            </button>
+          } @else {
+            <button class="btn danger-ghost" (click)="askDelete()">Supprimer</button>
+            <div class="spacer"></div>
+            <button class="btn ghost" (click)="close()">Fermer</button>
+            <button class="btn primary" (click)="startEdit()">Modifier</button>
+          }
+        </div>
+      }
+
+      <!-- ---------- EDIT MODE ---------- -->
+      @if (mode() === 'edit' && draft(); as d) {
+        <div class="mbody">
+          <div class="grid2">
+            <label class="field"><span class="blabel">Nom</span>
+              <input class="in" [value]="d.nom" (input)="setText('nom', $event)" />
+            </label>
+            <label class="field"><span class="blabel">Email</span>
+              <input class="in" type="email" [value]="d.email" (input)="setText('email', $event)" />
+            </label>
+            <label class="field"><span class="blabel">Téléphone</span>
+              <input class="in" [value]="d.tel || ''" (input)="setNullable('tel', $event)" />
+            </label>
+            <label class="field"><span class="blabel">Statut</span>
+              <select class="in" [value]="d.status" (change)="setField('status', $any($event.target).value)">
+                @for (s of statuses; track s) { <option [value]="s">{{ statusMeta[s].label }}</option> }
+              </select>
+            </label>
+            <label class="field"><span class="blabel">Secteur</span>
+              <select class="in" [value]="d.secteur" (change)="setField('secteur', $any($event.target).value)">
+                @for (s of sectors; track s) { <option [value]="s">{{ s }}</option> }
+              </select>
+            </label>
+            <label class="field"><span class="blabel">Type</span>
+              <select class="in" [value]="d.type" (change)="setField('type', $any($event.target).value)">
+                @for (t of siteTypes; track t) { <option [value]="t">{{ t }}</option> }
+              </select>
+            </label>
+            <label class="field"><span class="blabel">Site existant</span>
+              <select class="in" [value]="d.existant" (change)="setField('existant', $any($event.target).value)">
+                <option value="aucun">Pas de site</option>
+                <option value="refaire">À refaire</option>
+              </select>
+            </label>
+            <label class="field"><span class="blabel">Budget</span>
+              <select class="in" [value]="d.budget || ''" (change)="setNullable('budget', $event)">
+                <option value="">—</option>
+                @for (b of budgets; track b) { <option [value]="b">{{ b }}</option> }
+              </select>
+            </label>
+            <label class="field"><span class="blabel">Échéance</span>
+              <select class="in" [value]="d.echeance || ''" (change)="setNullable('echeance', $event)">
+                <option value="">—</option>
+                @for (e of echeances; track e) { <option [value]="e">{{ e }}</option> }
+              </select>
+            </label>
+          </div>
+
+          <div class="block"><span class="blabel">Pages</span>
+            <div class="chiprow">
+              @for (p of pageOptions; track p) {
+                <button type="button" class="toggle" [class.on]="inArray('pages', p)" (click)="toggleArray('pages', p)">{{ p }}</button>
+              }
+            </div>
+          </div>
+          <div class="block"><span class="blabel">Ambiance</span>
+            <div class="chiprow">
+              @for (st of styleOptions; track st) {
+                <button type="button" class="toggle" [class.on]="inArray('styles', st)" (click)="toggleArray('styles', st)">{{ st }}</button>
+              }
+            </div>
+          </div>
+          <div class="block"><span class="blabel">Couleurs</span>
+            <div class="swrow">
+              @for (c of swatches; track c) {
+                <button type="button" class="sw btn-sw" [class.on]="inArray('colors', c)" [style.background]="c" (click)="toggleColor(c)" [attr.aria-label]="c"></button>
+              }
+            </div>
+          </div>
+          <label class="block"><span class="blabel">Références</span>
+            <textarea class="in area" [value]="d.refs" (input)="setText('refs', $event)"></textarea>
+          </label>
+          <label class="block"><span class="blabel">Message</span>
+            <textarea class="in area" [value]="d.message || ''" (input)="setNullable('message', $event)"></textarea>
+          </label>
+        </div>
+
+        <div class="mfoot">
+          <div class="spacer"></div>
+          <button class="btn ghost" (click)="cancelEdit()">Annuler</button>
+          <button class="btn primary" (click)="save()" [disabled]="saving()">
+            {{ saving() ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}

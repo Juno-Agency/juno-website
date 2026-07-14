@@ -2,7 +2,8 @@ databases:
   - name: juno-db
     databaseName: juno
     user: juno
-    # ponytail: free expire au bout de 30 jours (base supprimée, données perdues).
+    # ponytail: free expire 30j après création — la base devient inaccessible,
+    # puis 14j de grâce pour upgrader avant suppression définitive des données.
     # Passer en basic-256mb avant la mise en production réelle.
     plan: free
 
@@ -12,7 +13,7 @@ services:
     runtime: docker
     dockerContext: ./backend
     dockerfilePath: ./backend/Dockerfile
-    # ponytail: free s'endort après 15 min d'inactivité (~50 s au réveil).
+    # ponytail: free s'endort après 15 min sans trafic entrant (~1 min au réveil).
     plan: free
     healthCheckPath: /api/health
     envVars:

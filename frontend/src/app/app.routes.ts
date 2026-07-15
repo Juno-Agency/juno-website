@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/admin.guard';
+import { backofficeHostGuard } from './core/backoffice-host.guard';
 
 export const routes: Routes = [
   {
     path: '',
     title: 'JUNO — Votre site, dessiné en quelques minutes',
+    canActivate: [backofficeHostGuard],
     loadComponent: () =>
       import('./pages/landing/landing').then((m) => m.LandingComponent),
   },

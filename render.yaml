@@ -51,6 +51,5 @@ services:
     buildCommand: npm ci && npm run build
     staticPublishPath: dist/frontend/browser
     routes:
-      - { type: redirect, source: /, destination: /admin }
       - { type: rewrite, source: /api/*, destination: https://juno-api-hhb0.onrender.com/api/* }
       - { type: rewrite, source: /*, destination: /index.html }

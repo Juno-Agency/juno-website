@@ -40,7 +40,7 @@ interface Step {
 export class MethodeComponent {
   protected readonly steps: Step[] = [
     { n: '01', title: 'Vous décrivez', text: 'En quelques phrases, votre activité et ce que vous voulez. Pas de jargon.' },
-    { n: '02', title: 'On vous dessine une maquette', text: 'Un premier rendu sur-mesure, prêt à regarder.', fast: '⚡ En quelques minutes' },
+    { n: '02', title: 'Juno vous dessine', text: 'Un premier rendu sur-mesure, prêt à regarder.', fast: 'En quelques minutes' },
     { n: '03', title: 'Vous validez', text: 'Vous ajustez, vous commentez. Rien n’est codé tant que ça ne vous plaît pas.' },
     { n: '04', title: 'On met en ligne', text: 'On développe, on héberge, on déploie. Clé en main.' },
   ];

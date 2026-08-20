@@ -261,7 +261,7 @@ export class IntakeComponent {
 
   private burst(): void {
     if (this.rm) return;
-    const cols = ['#8cc63f', '#bbe27a', '#679436', '#e7f1f6'];
+    const cols = ['#fcfcfb', '#e8e6e1', '#b9b5ad', '#4a4a47'];
     const pieces: Confetti[] = Array.from({ length: 70 }, (_, n) => ({
       id: ++this.uid,
       left: `${Math.random() * 100}%`,

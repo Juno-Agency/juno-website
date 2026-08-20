@@ -20,32 +20,39 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
         z-index: 2;
         border-top: 1px solid var(--line2);
         border-bottom: 1px solid var(--line2);
-        padding: 26px 0;
+        padding: 24px 0;
         overflow: hidden;
-        -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-        mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
       }
       .mq-track {
         display: flex;
         gap: 0;
         width: max-content;
-        animation: mq-scroll 30s linear infinite;
+        animation: mq-scroll 36s linear infinite;
       }
       .mq-track:hover { animation-play-state: paused; }
       .mq-track span {
         font-family: var(--serif);
-        font-size: clamp(22px, 2.6vw, 34px);
-        font-weight: 500;
-        color: #cabfae;
-        padding: 0 28px;
+        font-size: clamp(26px, 3vw, 46px);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.02em;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(252, 252, 251, 0.55);
+        text-stroke: 1px rgba(252, 252, 251, 0.55);
+        padding: 0 26px;
         display: inline-flex;
         align-items: center;
-        gap: 28px;
+        gap: 26px;
       }
       .mq-track span::after {
-        content: "✦";
-        color: var(--accent);
-        font-size: 0.5em;
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: var(--muted);
+        transform: rotate(45deg);
+        border-radius: 1px;
       }
       @keyframes mq-scroll {
         to { transform: translateX(-50%); }

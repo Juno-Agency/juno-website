@@ -11,7 +11,7 @@ import { RevealDirective } from '../../shared/reveal.directive';
     <section class="cta" id="cta">
       <span class="kicker r" appReveal>Prêt à commencer&nbsp;?</span>
       <h2 class="big r d1" appReveal>
-        <svg class="juno-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <svg class="juno-mark juno-anim" viewBox="0 0 64 64" aria-hidden="true">
           <ellipse cx="32" cy="58" rx="15" ry="3" fill="rgba(0,0,0,0.30)" />
           <path d="M32 4C46 3 59 12 60 27C61 39 57 49 46 56C37 61 26 61 17 55C7 48 3 37 5 26C7 13 19 5 32 4Z" fill="#fcfcfb" />
           <circle cx="24.5" cy="30" r="3.1" fill="#141414" />

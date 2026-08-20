@@ -1,156 +1,353 @@
 <app-grain-vignette />
-<div class="glow" [style.transform]="glowTransform()" aria-hidden="true"></div>
+
+@if (resumeAvailable()) {
+  <div class="resume-overlay">
+    <div class="resume-card">
+      <svg class="juno-mark juno-anim" viewBox="0 0 64 64" aria-hidden="true">
+        <ellipse cx="32" cy="58" rx="15" ry="3" fill="rgba(0,0,0,0.30)" />
+        <path d="M32 4C46 3 59 12 60 27C61 39 57 49 46 56C37 61 26 61 17 55C7 48 3 37 5 26C7 13 19 5 32 4Z" fill="#fcfcfb" />
+        <circle cx="24.5" cy="30" r="3.1" fill="#141414" />
+        <circle cx="39.5" cy="30" r="3.1" fill="#141414" />
+        <circle cx="25.4" cy="30.6" r="1.15" fill="#fcfcfb" />
+        <circle cx="40.4" cy="30.6" r="1.15" fill="#fcfcfb" />
+        <path d="M24 41 Q32 48 40 41" stroke="#141414" stroke-width="2.6" fill="none" stroke-linecap="round" />
+      </svg>
+      <h3>On reprend là où vous en étiez&nbsp;?</h3>
+      <p>Votre demande a été sauvegardée sur cet appareil.</p>
+      <div class="resume-actions">
+        <button class="go" (click)="resume()"><span>Reprendre</span> <span class="arr">→</span></button>
+        <button class="ghostlink" (click)="startFresh()">Recommencer à zéro</button>
+      </div>
+    </div>
+  </div>
+}
 
 <div class="pbar"><div class="fl" [style.width.%]="progress()"></div></div>
 
-<div class="top">
-  <a routerLink="/" class="logo">JUN<span class="dot">O</span></a>
-  <div class="meta">
-    <button
-      class="back"
-      [class.off]="step() === 0 || done()"
-      (click)="go(-1)"
-      aria-label="Question précédente"
-    >
-      ↑ précédent
-    </button>
-    <span><span class="pct">{{ progress() }}%</span> complété</span>
-  </div>
-</div>
+<div class="shell">
+  <!-- ============ LEFT RAIL ============ -->
+  <aside class="rail">
+    <a routerLink="/" class="rail-brand" aria-label="JUNO — accueil">
+      <svg class="juno-mark juno-anim" viewBox="0 0 64 64" aria-hidden="true">
+        <ellipse cx="32" cy="58" rx="15" ry="3" fill="rgba(0,0,0,0.30)" />
+        <path d="M32 4C46 3 59 12 60 27C61 39 57 49 46 56C37 61 26 61 17 55C7 48 3 37 5 26C7 13 19 5 32 4Z" fill="#fcfcfb" />
+        <circle cx="24.5" cy="30" r="3.1" fill="#141414" />
+        <circle cx="39.5" cy="30" r="3.1" fill="#141414" />
+        <circle cx="25.4" cy="30.6" r="1.15" fill="#fcfcfb" />
+        <circle cx="40.4" cy="30.6" r="1.15" fill="#fcfcfb" />
+        <path d="M24 41 Q32 48 40 41" stroke="#141414" stroke-width="2.6" fill="none" stroke-linecap="round" />
+      </svg>
+      <span class="word">JUNO</span>
+    </a>
 
-<div class="stage" [@.disabled]="rm">
-  <div class="bgnum" [class.hidden]="done()" aria-hidden="true">{{ stepLabel() }}</div>
+    <div class="rail-steps">
+      @for (s of sections; track s.id) {
+        <div class="rstep" [attr.data-state]="sectionState(s.id)">
+          <span class="rdot">
+            @if (sectionState(s.id) === 'done') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.6"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            } @else {
+              {{ s.id }}
+            }
+          </span>
+          <span class="rlabel">{{ s.label }}</span>
+        </div>
+      }
+    </div>
 
-  @if (!done()) {
-    @for (q of [current()]; track step()) {
-      <div class="panel" @panelAnim>
-        <div class="qnum">{{ stepLabel() }} <span class="ar">/ {{ totalLabel }}</span></div>
-        <h1 class="qtitle" [innerHTML]="q.q"></h1>
-        @if (q.sub) {
-          <p class="qsub">{{ q.sub }}</p>
-        }
+    <p class="rail-hint">{{ section().hint }}</p>
 
-        <div class="qbody">
-          @if (q.kind === 'text') {
-            <input
-              class="bigin"
-              appAutofocus
-              autocomplete="off"
-              [value]="data().nom"
-              [placeholder]="q.ph || ''"
-              (input)="setText('nom', $event)"
-            />
-          } @else if (q.kind === 'email') {
-            <input
-              class="bigin"
-              type="email"
-              appAutofocus
-              autocomplete="off"
-              [value]="data().email"
-              placeholder="votre@email.fr"
-              (input)="setText('email', $event)"
-            />
-            <input
-              class="subin"
-              autocomplete="off"
-              [value]="data().tel"
-              placeholder="Téléphone (optionnel)"
-              (input)="setText('tel', $event)"
-            />
-          } @else if (q.kind === 'single' || q.kind === 'cards') {
-            <div class="opts">
-              @for (o of q.opts ?? []; track o.value; let n = $index) {
-                <button
-                  type="button"
-                  class="opt"
-                  [class.on]="isPicked(q.key!, o.value)"
-                  (click)="selectSingle(o.value)"
-                >
-                  <span class="k">{{ letters[n] }}</span>
-                  <span>{{ o.label }}</span>
-                  @if (o.desc) {
-                    <span class="od">{{ o.desc }}</span>
+    <div class="rail-reassure">
+      <span class="rr">≈ 2 min</span>
+      <span class="rr">Sans engagement</span>
+      <span class="rr">Réponse sous 24&nbsp;h</span>
+      <span class="rr">Vous validez avant qu’on code</span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="topbar">
+      <button
+        class="back"
+        [class.off]="(step() === 0 && !isRecap()) || done()"
+        (click)="go(-1)"
+        aria-label="Étape précédente"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 19V5M6 11l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        précédent
+      </button>
+      <span class="topmeta">
+        <span class="pct">{{ progress() }}%</span>
+        <button class="peek" (click)="togglePreview()" [class.on]="previewOpen()">Aperçu</button>
+      </span>
+    </div>
+
+    <div class="stage" [@.disabled]="rm">
+      @if (done()) {
+        <div class="panel" [@panel]="{ value: 'done', params: panelParams() }">
+          <div class="confirm">
+            <div class="check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.4"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="qnum confirm-num">Demande envoyée</div>
+            <h1 class="qtitle">Merci, <em>{{ firstName() }}</em>&nbsp;!</h1>
+            <p class="qsub">
+              On étudie votre projet et on revient sous 24 h ouvrées — et bientôt, avec
+              une première maquette rien que pour vous.
+            </p>
+            <div class="next-steps">
+              <div class="ns"><span class="nsn">1</span> On lit votre brief en détail</div>
+              <div class="ns"><span class="nsn">2</span> On vous dessine une première maquette</div>
+              <div class="ns"><span class="nsn">3</span> Vous validez — et on développe</div>
+            </div>
+            <div class="foot confirm-foot">
+              <a class="go" routerLink="/"><span>Retour au site</span> <span class="arr">→</span></a>
+            </div>
+          </div>
+        </div>
+      } @else if (isRecap()) {
+        <div class="panel" [@panel]="{ value: 'recap', params: panelParams() }">
+          <div class="recap">
+            <div class="qnum stagger">Presque fini <span class="ar">/ récapitulatif</span></div>
+            <h1 class="qtitle stagger">On vérifie <em>ensemble</em>&nbsp;?</h1>
+            <p class="qsub stagger">Cliquez une ligne pour la modifier. Tout est encore ajustable.</p>
+
+            <div class="recap-groups stagger">
+              @for (g of recap(); track g.id) {
+                <div class="rg">
+                  <div class="rg-h">{{ g.label }}</div>
+                  @for (r of g.rows; track r.step) {
+                    <button type="button" class="rrow" (click)="editFrom(r.step)">
+                      <span class="rl">{{ r.label }}</span>
+                      <span class="rv">{{ r.value }}</span>
+                      <span class="redit">Modifier</span>
+                    </button>
                   }
+                </div>
+              }
+            </div>
+
+            <div class="foot stagger">
+              <button class="go" (click)="submit()">
+                <span>Envoyer ma demande</span> <span class="arr">→</span>
+              </button>
+              <span class="hint">ou <kbd>Entrée ↵</kbd></span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        @for (q of [current()]; track step()) {
+          <div class="panel" [@panel]="{ value: step(), params: panelParams() }">
+            <div class="bgnum" aria-hidden="true">{{ stepLabel() }}</div>
+            <div class="qnum stagger">
+              {{ stepLabel() }} <span class="ar">/ {{ totalLabel }}</span>
+              <span class="qsec">· {{ section().label }}</span>
+            </div>
+            <h1 class="qtitle stagger" [innerHTML]="q.q"></h1>
+            @if (q.sub) {
+              <p class="qsub stagger">{{ q.sub }}</p>
+            }
+
+            <div class="qbody">
+              @if (q.kind === 'text') {
+                <input
+                  class="bigin"
+                  appAutofocus
+                  autocomplete="off"
+                  [value]="data().nom"
+                  [placeholder]="q.ph || ''"
+                  (input)="setText('nom', $event)"
+                />
+              } @else if (q.kind === 'email') {
+                <input
+                  class="bigin"
+                  type="email"
+                  appAutofocus
+                  autocomplete="off"
+                  [value]="data().email"
+                  placeholder="votre@email.fr"
+                  (input)="setText('email', $event)"
+                />
+                <input
+                  class="subin"
+                  autocomplete="off"
+                  [value]="data().tel"
+                  placeholder="Téléphone (optionnel)"
+                  (input)="setText('tel', $event)"
+                />
+              } @else if (q.kind === 'single' || q.kind === 'cards') {
+                <div class="opts" [class.grid]="q.kind === 'cards'">
+                  @for (o of q.opts ?? []; track o.value; let n = $index) {
+                    <button
+                      type="button"
+                      class="opt"
+                      [class.on]="isPicked(q.key!, o.value)"
+                      (click)="selectSingle(o.value)"
+                    >
+                      <span class="k">{{ letters[n] }}</span>
+                      <span class="ol">{{ o.label }}</span>
+                      @if (o.desc) {
+                        <span class="od">{{ o.desc }}</span>
+                      }
+                      <span class="opick">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.6"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </span>
+                    </button>
+                  }
+                </div>
+              } @else if (q.kind === 'multi') {
+                <div class="chips">
+                  @for (o of q.opts ?? []; track o.value) {
+                    <button
+                      type="button"
+                      class="chip"
+                      [class.on]="isPicked(q.key!, o.value)"
+                      (click)="toggleMulti(o.value)"
+                    >
+                      {{ o.label }}
+                    </button>
+                  }
+                </div>
+              } @else if (q.kind === 'refs') {
+                <textarea
+                  class="bigarea"
+                  appAutofocus
+                  placeholder="« j’aime bien le site de…, une ambiance comme… »"
+                  [value]="data().refs"
+                  (input)="setText('refs', $event)"
+                ></textarea>
+                <div class="swrow">
+                  @for (c of swatches(); track c) {
+                    <button
+                      type="button"
+                      class="sw"
+                      [class.on]="isColorOn(c)"
+                      [style.background]="c"
+                      (click)="toggleColor(c)"
+                      [attr.aria-label]="'Couleur ' + c"
+                      [attr.aria-pressed]="isColorOn(c)"
+                    ></button>
+                  }
+                </div>
+              } @else if (q.kind === 'final') {
+                <textarea
+                  class="bigarea final"
+                  appAutofocus
+                  placeholder="Racontez-nous…"
+                  [value]="data().message"
+                  (input)="setText('message', $event)"
+                ></textarea>
+              }
+            </div>
+
+            <div class="errwrap"><div class="err">{{ err() }}</div></div>
+
+            @if (q.kind === 'single' || q.kind === 'cards') {
+              <div class="foot stagger">
+                <span class="hint">cliquez une réponse, ou tapez {{ hintLetters() }}…</span>
+                @if (canSkip()) {
+                  <button class="skip" (click)="skip()">passer</button>
+                }
+              </div>
+            } @else {
+              <div class="foot stagger">
+                <button class="go" (click)="go(1)">
+                  <span>{{ isLast() ? 'Vérifier mes réponses' : 'OK' }}</span> <span class="arr">→</span>
                 </button>
-              }
+                <span class="hint">appuyez sur <kbd>Entrée ↵</kbd></span>
+                @if (canSkip()) {
+                  <button class="skip" (click)="skip()">passer</button>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </main>
+
+  <!-- ============ LIVE PREVIEW ============ -->
+  <aside class="preview" [class.open]="previewOpen()">
+    <div class="preview-in">
+      <div class="preview-cap">
+        <span class="pc-dot"></span>
+        {{ done() ? 'Votre maquette se prépare…' : 'Juno dessine en direct' }}
+      </div>
+
+      <div
+        class="site"
+        [class.shop]="preview().isShop"
+        [class.app]="preview().isApp"
+        [class.tinted]="preview().primary"
+        [style.--pv-accent]="preview().primary || null"
+        [style.--pv-on]="preview().onPrimary"
+        [style.--pv-soft]="preview().primarySoft || null"
+      >
+        <div class="site-bar">
+          <i></i><i></i><i></i>
+          <span class="url">{{ preview().url }}</span>
+        </div>
+        <div class="site-body">
+          <div class="site-nav">
+            @if (preview().hasBrand) {
+              <span class="site-logo">{{ preview().brand }}</span>
+            } @else {
+              <span class="sk sk-logo"></span>
+            }
+            <span class="site-links">
+              @for (n of preview().nav; track n) { <span>{{ n }}</span> }
+            </span>
+          </div>
+
+          <div class="site-hero">
+            @if (preview().hasHero) {
+              <h4>{{ preview().hero }}</h4>
+            } @else {
+              <span class="sk sk-h1"></span>
+              <span class="sk sk-h2"></span>
+            }
+            <span class="site-btn">{{ preview().hasType ? preview().typeLabel : 'Découvrir' }}</span>
+          </div>
+
+          @if (preview().isShop) {
+            <div class="site-grid">
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
             </div>
-          } @else if (q.kind === 'multi') {
-            <div class="chips">
-              @for (o of q.opts ?? []; track o.value) {
-                <button
-                  type="button"
-                  class="chip"
-                  [class.on]="isPicked(q.key!, o.value)"
-                  (click)="toggleMulti(o.value)"
-                >
-                  {{ o.label }}
-                </button>
-              }
+          } @else if (preview().isApp) {
+            <div class="site-app">
+              <span class="sa-side"></span>
+              <span class="sa-main"><i></i><i></i><i></i></span>
             </div>
-          } @else if (q.kind === 'refs') {
-            <textarea
-              class="bigarea"
-              appAutofocus
-              placeholder="« j’aime bien le site de…, une ambiance comme… »"
-              [value]="data().refs"
-              (input)="setText('refs', $event)"
-            ></textarea>
-            <div class="swrow">
-              @for (c of swatches; track c) {
-                <button
-                  type="button"
-                  class="sw"
-                  [class.on]="isColorOn(c)"
-                  [style.background]="c"
-                  (click)="toggleColor(c)"
-                  [attr.aria-label]="'Couleur ' + c"
-                  [attr.aria-pressed]="isColorOn(c)"
-                ></button>
-              }
+          } @else {
+            <div class="site-rows">
+              <span class="sk"></span><span class="sk"></span><span class="sk short"></span>
             </div>
-          } @else if (q.kind === 'final') {
-            <textarea
-              class="bigarea final"
-              appAutofocus
-              placeholder="Racontez-nous…"
-              [value]="data().message"
-              (input)="setText('message', $event)"
-            ></textarea>
+          }
+
+          @if (preview().styles.length) {
+            <div class="site-tags">
+              @for (s of preview().styles; track s) { <span>{{ s }}</span> }
+            </div>
           }
         </div>
-
-        <div class="errwrap"><div class="err">{{ err() }}</div></div>
-
-        @if (q.kind === 'single' || q.kind === 'cards') {
-          <div class="foot">
-            <span class="hint">cliquez une réponse, ou tapez {{ hintLetters() }}…</span>
-          </div>
-        } @else {
-          <div class="foot">
-            <button class="go" (click)="go(1)">
-              <span>{{ isLast() ? 'Envoyer' : 'OK' }}</span> <span class="arr">→</span>
-            </button>
-            <span class="hint">appuyez sur <kbd>Entrée ↵</kbd></span>
-          </div>
-        }
       </div>
-    }
-  } @else {
-    <div class="panel" @panelAnim>
-      <div class="confirm">
-        <div class="check">✓</div>
-        <div class="qnum confirm-num">Demande envoyée</div>
-        <h1 class="qtitle">Merci, <em>{{ firstName() }}</em> !</h1>
-        <p class="qsub">
-          On étudie votre projet et on revient sous 24 h ouvrées — et bientôt, avec
-          une première maquette rien que pour vous.
-        </p>
-        <div class="foot confirm-foot">
-          <a class="go" routerLink="/"><span>Retour au site</span> <span class="arr">→</span></a>
+
+      @if (preview().colors.length) {
+        <div class="preview-palette">
+          <span class="pp-label">Vos couleurs</span>
+          <div class="pp-dots">
+            @for (c of preview().colors; track c) {
+              <span class="pp-dot" [style.background]="c"></span>
+            }
+          </div>
         </div>
-      </div>
+      }
+
+      <p class="preview-note">Un aperçu indicatif — la vraie maquette, on la dessine à la main après votre brief.</p>
     </div>
-  }
+  </aside>
 </div>
 
 @if (confetti().length) {

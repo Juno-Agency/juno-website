@@ -203,6 +203,32 @@ em {
 .r.d4 { transition-delay: 0.32s; }
 .r.d5 { transition-delay: 0.4s; }
 
+/* ---- Juno mascot (brand logo) ----
+   Idle: the white body floats gently while the eyes & mouth stay fixed.
+   Hover: the whole mark spins on itself. ------------------------------- */
+@keyframes juno-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-11%) scale(1.08); }
+}
+@keyframes juno-spin {
+  to { transform: rotate(360deg); }
+}
+.juno-anim {
+  transform-origin: 50% 52%;
+  /* let the floating/spinning body spill outside the viewBox instead of
+     being clipped by the SVG's default overflow: hidden */
+  overflow: visible;
+}
+.juno-anim:hover {
+  animation: juno-spin 1.2s linear infinite;
+}
+/* only the white blob body floats — eyes, highlights and mouth stay put */
+.juno-anim path:first-of-type {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: juno-float 3.4s ease-in-out infinite;
+}
+
 /* ---- Global reduced-motion ---- */
 @media (prefers-reduced-motion: reduce) {
   html {

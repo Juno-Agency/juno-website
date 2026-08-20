@@ -21,6 +21,16 @@ export interface Option {
   desc?: string;
 }
 
+/** A chapter grouping several questions (shown in the left rail stepper). */
+export interface SectionDef {
+  /** 1-based chapter number. */
+  id: 1 | 2 | 3;
+  /** Short label, e.g. "Vous". */
+  label: string;
+  /** One-line reassurance shown under the active chapter. */
+  hint: string;
+}
+
 export interface Question {
   kind: QuestionKind;
   /** Primary payload field this question fills (omitted for composite screens). */
@@ -33,4 +43,6 @@ export interface Question {
   opts?: Option[];
   /** When true, the step blocks until answered. */
   required?: boolean;
+  /** Chapter this question belongs to (1–3). */
+  section: 1 | 2 | 3;
 }

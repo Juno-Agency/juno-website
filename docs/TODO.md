@@ -10,6 +10,11 @@
 - [x] Nettoyer `styles.scss` (`juno-float`, `juno-spin`, `path:first-of-type`)
 - [x] Vérifier : tests verts + rendu des 4 instances sur :4200
 
+### Ajout — réaction au clic (2026-08-21)
+
+- [x] `shared/juno-mascot/spring.spec.ts` + `spring.ts` — ressort amorti sous-critique
+- [x] Branchement `pointerdown` : écrasement, rebond, sur-amplitude du blob, flinch
+
 ### Review
 
 - Composant `<juno-mascot>` : corps régénéré par frame (Catmull-Rom fermé, deux
@@ -20,5 +25,7 @@
 - 13 tests Vitest sur les fonctions pures (`blobRadius`, `blobPath`, `eyeOffset`).
 - Régression attrapée en vérification navigateur : perte de l'encapsulation des
   règles de taille → voir `docs/LESSONS.md`.
+- Clic : ressort amorti (raideur 220, amortissement 14, sous-pas à 1/240 s pour ne
+  pas diverger sur les frames longues). Mesuré en direct : 0,78 → 1,04 → repos en ~0,9 s.
 - Préexistant, non traité : `ng build` échoue sur le budget de `intake.scss`
   (20,08 kB pour 20 kB) — déjà le cas sur `main`.

@@ -10,6 +10,7 @@ import {
 import { prefersReducedMotion } from '../../utils/reduced-motion';
 import { blobPath, eyeOffset } from './blob';
 import { MascotFrame, PointerTracker } from './pointer-tracker';
+import { SPRING_REST, Spring, springStep } from './spring';
 
 /** Resting deformation of the body, as a fraction of its radius. */
 const AMP_IDLE = 0.025;
@@ -25,6 +26,11 @@ const FACE_FOLLOW = 0.3;
 const BLINK_MIN = 4;
 const BLINK_SPREAD = 3;
 const BLINK_DUR = 0.14;
+/** How far the click squashes the body: 1 = fully compressed. */
+const POP_SQUASH = 0.22;
+const POP_WIDEN = 0.18;
+/** Extra wobble while the body is still ringing. */
+const POP_AMP = 0.05;
 const EYE_L_X = 24.5;
 const EYE_R_X = 39.5;
 const EYE_Y = 30;
@@ -46,6 +52,7 @@ const EYE_Y = 30;
       aria-hidden="true"
       (pointerenter)="hovered = true"
       (pointerleave)="hovered = false"
+      (pointerdown)="onPress()"
     >
       <ellipse #shadow cx="32" cy="58" rx="15" ry="3" fill="rgba(0,0,0,0.30)" />
       <g #char>
@@ -106,11 +113,20 @@ export class JunoMascot {
   private readonly eyeR = viewChild.required<ElementRef<SVGGElement>>('eyeR');
 
   private hover = 0;
+  private pop: Spring = { value: 0, velocity: 0 };
   private gazeX = 0;
   private gazeY = 0;
   private blinkIn = BLINK_MIN + Math.random() * BLINK_SPREAD;
   private blinkLeft = 0;
   private rect: DOMRect | null = null;
+
+  /** Compress the body and let the spring throw it back. */
+  protected onPress(): void {
+    this.pop = { value: -1, velocity: 0 };
+    // A blink sells the impact — it reads as a flinch.
+    this.blinkLeft = BLINK_DUR;
+    this.blinkIn = BLINK_MIN + Math.random() * BLINK_SPREAD;
+  }
 
   private readonly invalidateRect = () => {
     this.rect = null;
@@ -155,7 +171,19 @@ export class JunoMascot {
 
     this.hover = ease(this.hover, this.hovered ? 1 : 0, 8);
 
-    this.body().nativeElement.setAttribute('d', blobPath(f.t, AMP_IDLE + AMP_HOVER * this.hover));
+    if (this.pop.value !== 0 || this.pop.velocity !== 0) {
+      const next = springStep(this.pop, f.dt);
+      this.pop =
+        Math.abs(next.value) < SPRING_REST && Math.abs(next.velocity) < SPRING_REST
+          ? { value: 0, velocity: 0 }
+          : next;
+    }
+    const pop = this.pop.value;
+
+    this.body().nativeElement.setAttribute(
+      'd',
+      blobPath(f.t, AMP_IDLE + AMP_HOVER * this.hover + POP_AMP * Math.abs(pop)),
+    );
 
     let targetX = 0;
     let targetY = 0;
@@ -190,8 +218,8 @@ export class JunoMascot {
     // Float: the whole character rises, the shadow stays on the ground.
     const lift = -1.5 + 1.5 * Math.cos(f.t * 1.85) + 1.2 * this.hover;
     const up = -lift / 3;
-    const sx = 1 + 0.05 * this.hover;
-    const sy = 1 - 0.06 * this.hover;
+    const sx = 1 + 0.05 * this.hover - POP_WIDEN * pop;
+    const sy = 1 - 0.06 * this.hover + POP_SQUASH * pop;
     this.char().nativeElement.setAttribute(
       'transform',
       `translate(0 ${lift.toFixed(2)}) translate(32 60) scale(${sx.toFixed(3)} ${sy.toFixed(3)}) translate(-32 -60)`,

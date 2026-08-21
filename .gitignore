@@ -19,3 +19,6 @@ npm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+# design scratch (Claude Design canvases, MCP config)
+.ai/

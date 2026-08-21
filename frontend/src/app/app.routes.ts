@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './core/admin.guard';
-import { backofficeHostGuard } from './core/backoffice-host.guard';
+import { adminGuard } from './guards/admin.guard';
+import { backofficeHostGuard } from './guards/backoffice-host.guard';
 
 export const routes: Routes = [
   {
@@ -8,31 +8,45 @@ export const routes: Routes = [
     title: 'JUNO — Votre site, dessiné en quelques minutes',
     canActivate: [backofficeHostGuard],
     loadComponent: () =>
-      import('./pages/landing/landing').then((m) => m.LandingComponent),
+      import('./components/landing/landing').then((m) => m.LandingComponent),
   },
   {
     path: 'projet',
     title: 'JUNO — Décrivez votre projet',
     loadComponent: () =>
-      import('./pages/intake/intake').then((m) => m.IntakeComponent),
+      import('./components/intake/intake').then((m) => m.IntakeComponent),
+  },
+  {
+    path: 'mentions-legales',
+    title: 'JUNO — Mentions légales',
+    data: { doc: 'mentions' },
+    loadComponent: () =>
+      import('./components/legal/legal').then((m) => m.LegalComponent),
+  },
+  {
+    path: 'confidentialite',
+    title: 'JUNO — Politique de confidentialité',
+    data: { doc: 'confidentialite' },
+    loadComponent: () =>
+      import('./components/legal/legal').then((m) => m.LegalComponent),
   },
   {
     path: 'admin/login',
     title: 'JUNO — Back-office',
     loadComponent: () =>
-      import('./pages/admin/login').then((m) => m.AdminLoginComponent),
+      import('./components/login/login').then((m) => m.AdminLoginComponent),
   },
   {
     path: 'admin',
     title: 'JUNO — Back-office',
     canActivate: [adminGuard],
     loadComponent: () =>
-      import('./pages/admin/layout').then((m) => m.AdminLayoutComponent),
+      import('./components/layout/layout').then((m) => m.AdminLayoutComponent),
     children: [
       {
         path: '',
         loadComponent: () =>
-          import('./pages/admin/dashboard').then(
+          import('./components/dashboard/dashboard').then(
             (m) => m.AdminDashboardComponent,
           ),
       },
@@ -40,7 +54,7 @@ export const routes: Routes = [
         path: 'stats',
         title: 'JUNO — Statistiques',
         loadComponent: () =>
-          import('./pages/admin/stats').then((m) => m.AdminStatsComponent),
+          import('./components/stats/stats').then((m) => m.AdminStatsComponent),
       },
     ],
   },

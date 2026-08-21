@@ -1,0 +1,78 @@
+.cta {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: clamp(90px, 15vh, 180px) var(--gutter) 50px;
+  overflow: hidden;
+}
+.cta .kicker {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: inline-block;
+}
+.cta .big {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2.5vw, 34px);
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(90px, 22vw, 300px);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  margin: 18px 0 0;
+}
+.cta .big .juno-mark {
+  width: clamp(64px, 15vw, 190px);
+  height: clamp(64px, 15vw, 190px);
+  flex: none;
+}
+.cta .big .word {
+  color: transparent;
+  -webkit-text-stroke: clamp(1.5px, 0.35vw, 3px) var(--cream);
+  text-stroke: 2px var(--cream);
+}
+.cta .big .dot {
+  color: var(--cream);
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
+}
+.cta .sub {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(20px, 2.4vw, 30px);
+  letter-spacing: -0.01em;
+  max-width: 22ch;
+  margin: 30px auto 32px;
+  line-height: 1.2;
+  color: var(--cream);
+}
+.cta-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px 30px;
+  flex-wrap: wrap;
+  margin-top: clamp(60px, 10vh, 100px);
+  padding-top: 24px;
+  border-top: 1px solid var(--line2);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  max-width: var(--maxw);
+  margin-left: auto;
+  margin-right: auto;
+}
+.cta-foot a:hover {
+  color: var(--cream);
+}
+.foot-legal {
+  display: inline-flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}

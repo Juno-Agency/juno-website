@@ -1,0 +1,15 @@
+<app-grain-vignette />
+<header class="abar">
+  <a routerLink="/" class="logo">JUN<span class="dot">O</span></a>
+  <span class="tag">Back-office</span>
+  <nav class="tabs">
+    <a routerLink="/admin" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">
+      Demandes
+    </a>
+    <a routerLink="/admin/stats" routerLinkActive="on">Statistiques</a>
+  </nav>
+  <div class="spacer"></div>
+  <button class="ghost" (click)="logout()">Déconnexion</button>
+</header>
+
+<router-outlet />

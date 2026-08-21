@@ -1,11 +1,6 @@
-databases:
-  - name: juno-db
-    databaseName: juno
-    user: juno
-    # ponytail: free expire 30j après création — la base devient inaccessible,
-    # puis 14j de grâce pour upgrader avant suppression définitive des données.
-    # Passer en basic-256mb avant la mise en production réelle.
-    plan: free
+# La base vit désormais sur MongoDB Atlas (free tier, ne s'auto-supprime pas).
+# La connection string est fournie via la variable DATABASE_URL du service juno-api
+# (à renseigner dans le dashboard Render → Environment).
 
 services:
   - type: web
@@ -18,7 +13,9 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        fromDatabase: { name: juno-db, property: connectionString }
+        # MongoDB Atlas — à définir dans le dashboard Render (Environment).
+        # Format : mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/juno?retryWrites=true&w=majority
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS

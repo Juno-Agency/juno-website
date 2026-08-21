@@ -22,3 +22,10 @@ npm-debug.log*
 
 # design scratch (Claude Design canvases, MCP config)
 .ai/
+
+# local secrets (never commit)
+atlas-credentials.env
+*.secret.env
+
+# design scratch (Claude Design canvases, MCP config)
+.ai/

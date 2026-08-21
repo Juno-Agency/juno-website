@@ -1,21 +1,30 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: bitnami/mongodb:7.0
     container_name: juno-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-juno}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-juno}
-      POSTGRES_DB: ${POSTGRES_DB:-juno}
+      MONGODB_ROOT_USER: ${MONGO_USER:-root}
+      MONGODB_ROOT_PASSWORD: ${MONGO_PASSWORD:-juno}
+      MONGODB_DATABASE: ${MONGO_DB:-juno}
+      # Prisma requires a replica set (transactions) — run a single-node RS.
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_REPLICA_SET_KEY: ${MONGO_REPLICA_KEY:-junoreplicasetkey0}
+      MONGODB_ADVERTISED_HOSTNAME: db
     volumes:
-      - juno-db-data:/var/lib/postgresql/data
+      - juno-mongo-data:/bitnami/mongodb
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-juno} -d ${POSTGRES_DB:-juno}']
-      interval: 5s
+      test:
+        [
+          'CMD-SHELL',
+          'mongosh --quiet -u ${MONGO_USER:-root} -p ${MONGO_PASSWORD:-juno} --authenticationDatabase admin --eval "db.adminCommand({ ping: 1 })" || exit 1',
+        ]
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 15
     ports:
-      - '${POSTGRES_PORT:-5432}:5432'
+      - '${MONGO_PORT:-27017}:27017'
 
   backend:
     build: ./backend
@@ -27,7 +36,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-juno}:${POSTGRES_PASSWORD:-juno}@db:5432/${POSTGRES_DB:-juno}?schema=public
+      DATABASE_URL: mongodb://${MONGO_USER:-root}:${MONGO_PASSWORD:-juno}@db:27017/${MONGO_DB:-juno}?authSource=admin&directConnection=true
       JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-string}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-12h}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
@@ -62,14 +71,5 @@ services:
     ports:
       - '${BACKOFFICE_PORT:-8090}:8080'
 
-  adminer:
-    image: adminer:4
-    container_name: juno-adminer
-    restart: unless-stopped
-    depends_on:
-      - db
-    ports:
-      - '${ADMINER_PORT:-8081}:8080'
-
 volumes:
-  juno-db-data:
+  juno-mongo-data:

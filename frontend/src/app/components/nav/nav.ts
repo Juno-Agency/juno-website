@@ -5,12 +5,13 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 
 /** Fixed top navigation. Gains a blurred background + border once scrolled. */
 @Component({
   selector: 'app-nav',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, JunoMascot],
   templateUrl: './nav.html',
   styleUrl: './nav.scss',
 })

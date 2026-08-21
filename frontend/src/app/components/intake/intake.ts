@@ -33,6 +33,7 @@ import {
   sectorHero,
 } from '../../models/intake.data';
 import { DataKey } from '../../models/intake.model';
+import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 
 interface Confetti {
   id: number;
@@ -102,7 +103,7 @@ const LS: Storage | null =
 @Component({
   selector: 'app-intake',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, GrainVignetteComponent, AutofocusDirective],
+  imports: [RouterLink, GrainVignetteComponent, AutofocusDirective, JunoMascot],
   templateUrl: './intake.html',
   styleUrl: './intake.scss',
   animations: [

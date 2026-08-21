@@ -1,0 +1,44 @@
+<app-grain-vignette />
+<div class="glow" aria-hidden="true"></div>
+
+<div class="wrap">
+  <form class="card" (ngSubmit)="submit()">
+    <a routerLink="/" class="logo">JUN<span class="dot">O</span></a>
+    <p class="eyebrow">Back-office</p>
+    <h1>Connexion</h1>
+
+    <label>
+      <span>Email</span>
+      <input
+        type="email"
+        name="email"
+        autocomplete="username"
+        [(ngModel)]="email"
+        placeholder="admin@juno.studio"
+        required
+      />
+    </label>
+    <label>
+      <span>Mot de passe</span>
+      <input
+        type="password"
+        name="password"
+        autocomplete="current-password"
+        [(ngModel)]="password"
+        placeholder="••••••••"
+        required
+      />
+    </label>
+
+    @if (error()) {
+      <p class="err">{{ error() }}</p>
+    }
+
+    <button class="go" type="submit" [disabled]="loading()">
+      <span>{{ loading() ? 'Connexion…' : 'Se connecter' }}</span>
+      <span class="arr">→</span>
+    </button>
+
+    <a routerLink="/" class="back">← Retour au site</a>
+  </form>
+</div>

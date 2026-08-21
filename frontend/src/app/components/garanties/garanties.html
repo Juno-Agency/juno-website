@@ -1,0 +1,27 @@
+<div class="promise">
+  <div class="promise-in">
+    <p class="statement" appReveal>
+      @for (w of words; track $index) {
+        <span class="w" [style.transitionDelay]="$index * 0.045 + 's'">
+          @if (w.em) {
+            <em>{{ w.text }}</em>
+          } @else {
+            {{ w.text }}
+          }
+        </span>
+        {{ ' ' }}
+      }
+    </p>
+    <div class="guarantees">
+      @for (g of guarantees; track g.n) {
+        <div class="grow">
+          <span class="gn">{{ g.n }}</span>
+          <div class="gt">
+            <h4>{{ g.title }}</h4>
+            <p>{{ g.text }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

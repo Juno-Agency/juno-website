@@ -1,7 +1,7 @@
-import { Lead } from '@prisma/client';
 import { Router } from 'express';
+import { isValidObjectId } from 'mongoose';
 import { z } from '../openapi/zod';
-import { prisma } from '../db';
+import { Lead } from '../models';
 import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody, validateQuery } from '../middleware/validate';
 import { notFound } from '../middleware/http-error';
@@ -10,26 +10,21 @@ import {
   CreateLeadInput,
   CreateLeadSchema,
   CreatedLeadSchema,
-  LEAD_STATUS,
   LeadSchema,
   ListLeadsQuerySchema,
   StatsSchema,
   UpdateLeadSchema,
 } from './lead.schema';
-import { buildStats } from './leads.stats';
+import { buildStats, StatsInput } from './leads.stats';
 
 export const leadsRouter = Router();
 
 type ListQuery = z.infer<typeof ListLeadsQuerySchema>;
 type UpdateLead = z.infer<typeof UpdateLeadSchema>;
 
-/** Serialize a Prisma Lead into the API shape (dates → ISO strings). */
-function toDto(lead: Lead) {
-  return {
-    ...lead,
-    createdAt: lead.createdAt.toISOString(),
-    updatedAt: lead.updatedAt.toISOString(),
-  };
+/** 404 for ids that aren't valid Mongo ObjectIds (avoids a cast error). */
+function requireObjectId(id: string): void {
+  if (!isValidObjectId(id)) throw notFound('Demande introuvable');
 }
 
 /* ---------------- OpenAPI paths ---------------- */
@@ -87,7 +82,7 @@ registry.registerPath({
   tags: ['Leads'],
   summary: 'Détaille une demande (back-office)',
   security: [{ bearerAuth: [] }],
-  request: { params: z.object({ id: z.string().uuid() }) },
+  request: { params: z.object({ id: z.string() }) },
   responses: {
     200: { description: 'Demande', content: { 'application/json': { schema: LeadSchema } } },
     404: { description: 'Introuvable' },
@@ -101,7 +96,7 @@ registry.registerPath({
   summary: 'Met à jour une demande — statut et/ou n’importe quel champ (back-office)',
   security: [{ bearerAuth: [] }],
   request: {
-    params: z.object({ id: z.string().uuid() }),
+    params: z.object({ id: z.string() }),
     body: { content: { 'application/json': { schema: UpdateLeadSchema } } },
   },
   responses: {
@@ -116,7 +111,7 @@ registry.registerPath({
   tags: ['Leads'],
   summary: 'Supprime une demande (back-office)',
   security: [{ bearerAuth: [] }],
-  request: { params: z.object({ id: z.string().uuid() }) },
+  request: { params: z.object({ id: z.string() }) },
   responses: {
     204: { description: 'Supprimée' },
     404: { description: 'Introuvable' },
@@ -131,7 +126,7 @@ leadsRouter.post(
   validateBody(CreateLeadSchema),
   asyncHandler(async (req, res) => {
     const data = req.body as CreateLeadInput;
-    const lead = await prisma.lead.create({ data });
+    const lead = await Lead.create(data);
     res.status(201).json({ id: lead.id });
   }),
 );
@@ -143,13 +138,11 @@ leadsRouter.get(
   validateQuery(ListLeadsQuerySchema),
   asyncHandler(async (_req, res) => {
     const { status, take, skip } = res.locals['query'] as ListQuery;
-    const leads = await prisma.lead.findMany({
-      where: status ? { status } : undefined,
-      orderBy: { createdAt: 'desc' },
-      take,
-      skip,
-    });
-    res.json(leads.map(toDto));
+    const leads = await Lead.find(status ? { status } : {})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(take);
+    res.json(leads);
   }),
 );
 
@@ -158,16 +151,11 @@ leadsRouter.get(
   '/stats',
   requireAuth,
   asyncHandler(async (_req, res) => {
-    const leads = await prisma.lead.findMany({
-      select: {
-        status: true,
-        type: true,
-        secteur: true,
-        budget: true,
-        createdAt: true,
-      },
-    });
-    res.json(buildStats(leads));
+    const leads = await Lead.find(
+      {},
+      'status type secteur budget createdAt',
+    ).lean();
+    res.json(buildStats(leads as unknown as StatsInput[]));
   }),
 );
 
@@ -175,9 +163,10 @@ leadsRouter.get(
   '/:id',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const lead = await prisma.lead.findUnique({ where: { id: req.params.id } });
+    requireObjectId(req.params.id);
+    const lead = await Lead.findById(req.params.id);
     if (!lead) throw notFound('Demande introuvable');
-    res.json(toDto(lead));
+    res.json(lead);
   }),
 );
 
@@ -186,11 +175,14 @@ leadsRouter.patch(
   requireAuth,
   validateBody(UpdateLeadSchema),
   asyncHandler(async (req, res) => {
+    requireObjectId(req.params.id);
     const data = req.body as UpdateLead;
-    const exists = await prisma.lead.findUnique({ where: { id: req.params.id } });
-    if (!exists) throw notFound('Demande introuvable');
-    const lead = await prisma.lead.update({ where: { id: req.params.id }, data });
-    res.json(toDto(lead));
+    const lead = await Lead.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+      runValidators: true,
+    });
+    if (!lead) throw notFound('Demande introuvable');
+    res.json(lead);
   }),
 );
 
@@ -198,9 +190,9 @@ leadsRouter.delete(
   '/:id',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const exists = await prisma.lead.findUnique({ where: { id: req.params.id } });
-    if (!exists) throw notFound('Demande introuvable');
-    await prisma.lead.delete({ where: { id: req.params.id } });
+    requireObjectId(req.params.id);
+    const deleted = await Lead.findByIdAndDelete(req.params.id);
+    if (!deleted) throw notFound('Demande introuvable');
     res.status(204).end();
   }),
 );

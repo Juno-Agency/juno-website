@@ -1,8 +1,14 @@
-import { PrismaClient } from '@prisma/client';
+import mongoose from 'mongoose';
+import { config } from './config';
 
-/** Shared Prisma client instance. */
-export const prisma = new PrismaClient();
+mongoose.set('strictQuery', true);
+
+/** Opens the shared Mongoose connection to MongoDB. */
+export async function connectDb(): Promise<void> {
+  await mongoose.connect(config.databaseUrl);
+  console.log('[JUNO] MongoDB connected');
+}
 
 export async function disconnectDb(): Promise<void> {
-  await prisma.$disconnect();
+  await mongoose.disconnect();
 }

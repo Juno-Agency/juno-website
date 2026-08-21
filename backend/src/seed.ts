@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { prisma } from './db';
+import { connectDb, disconnectDb } from './db';
+import { AdminUser } from './models';
 
 /** Creates (or keeps) the back-office admin user from env credentials. */
 async function main(): Promise<void> {
@@ -7,17 +8,18 @@ async function main(): Promise<void> {
   const password = process.env.ADMIN_PASSWORD ?? 'change-me';
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const admin = await prisma.adminUser.upsert({
-    where: { email },
-    update: {},
-    create: { email, passwordHash, name: 'JUNO Admin' },
-  });
+  await connectDb();
+  const admin = await AdminUser.findOneAndUpdate(
+    { email },
+    { $setOnInsert: { email, passwordHash, name: 'JUNO Admin' } },
+    { upsert: true, new: true },
+  );
   console.log(`[seed] admin ready: ${admin.email}`);
 }
 
 main()
   .catch((e) => {
     console.error(e);
-    process.exit(1);
+    process.exitCode = 1;
   })
-  .finally(() => prisma.$disconnect());
+  .finally(() => disconnectDb());

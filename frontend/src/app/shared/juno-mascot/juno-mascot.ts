@@ -26,6 +26,8 @@ const FACE_FOLLOW = 0.3;
 const BLINK_MIN = 4;
 const BLINK_SPREAD = 3;
 const BLINK_DUR = 0.14;
+/** How fast the body sinks into the squash while held down. */
+const PRESS_SPEED = 22;
 /** How far the click squashes the body: 1 = fully compressed. */
 const POP_SQUASH = 0.22;
 const POP_WIDEN = 0.18;
@@ -53,6 +55,7 @@ const EYE_Y = 30;
       (pointerenter)="hovered = true"
       (pointerleave)="hovered = false"
       (pointerdown)="onPress()"
+      (pointerup)="onRelease()"
     >
       <ellipse #shadow cx="32" cy="58" rx="15" ry="3" fill="rgba(0,0,0,0.30)" />
       <g #char>
@@ -113,6 +116,7 @@ export class JunoMascot {
   private readonly eyeR = viewChild.required<ElementRef<SVGGElement>>('eyeR');
 
   private hover = 0;
+  private pressed = false;
   private pop: Spring = { value: 0, velocity: 0 };
   private gazeX = 0;
   private gazeY = 0;
@@ -120,13 +124,22 @@ export class JunoMascot {
   private blinkLeft = 0;
   private rect: DOMRect | null = null;
 
-  /** Compress the body and let the spring throw it back. */
+  /** Sink into the squash and stay there for as long as the press lasts. */
   protected onPress(): void {
-    this.pop = { value: -1, velocity: 0 };
+    this.pressed = true;
     // A blink sells the impact — it reads as a flinch.
     this.blinkLeft = BLINK_DUR;
     this.blinkIn = BLINK_MIN + Math.random() * BLINK_SPREAD;
   }
+
+  /**
+   * Let go: the spring takes over from wherever the squash got to and rings
+   * down. Bound to the window as well as the element, so releasing the button
+   * somewhere else doesn't leave the mascot stuck flat.
+   */
+  protected readonly onRelease = () => {
+    this.pressed = false;
+  };
 
   private readonly invalidateRect = () => {
     this.rect = null;
@@ -154,12 +167,16 @@ export class JunoMascot {
 
       addEventListener('scroll', this.invalidateRect, { passive: true });
       addEventListener('resize', this.invalidateRect, { passive: true });
+      addEventListener('pointerup', this.onRelease);
+      addEventListener('pointercancel', this.onRelease);
 
       destroyRef.onDestroy(() => {
         io.disconnect();
         stop();
         removeEventListener('scroll', this.invalidateRect);
         removeEventListener('resize', this.invalidateRect);
+        removeEventListener('pointerup', this.onRelease);
+        removeEventListener('pointercancel', this.onRelease);
       });
     });
   }
@@ -171,7 +188,10 @@ export class JunoMascot {
 
     this.hover = ease(this.hover, this.hovered ? 1 : 0, 8);
 
-    if (this.pop.value !== 0 || this.pop.velocity !== 0) {
+    if (this.pressed) {
+      // Held down: ease into the squash, no spring, and hold it there.
+      this.pop = { value: ease(this.pop.value, -1, PRESS_SPEED), velocity: 0 };
+    } else if (this.pop.value !== 0 || this.pop.velocity !== 0) {
       const next = springStep(this.pop, f.dt);
       this.pop =
         Math.abs(next.value) < SPRING_REST && Math.abs(next.velocity) < SPRING_REST

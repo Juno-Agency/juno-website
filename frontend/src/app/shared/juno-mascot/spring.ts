@@ -12,10 +12,10 @@ export interface Spring {
   readonly velocity: number;
 }
 
-/** Stiffness — how hard it snaps back. */
-const STIFFNESS = 220;
-/** Damping — under-critical, so it rings a couple of times before settling. */
-const DAMPING = 14;
+/** Stiffness — how hard it snaps back. Sets the tempo of the bounce. */
+const STIFFNESS = 150;
+/** Damping — low enough that the body swings several times before settling. */
+const DAMPING = 7.5;
 /** Below this the motion is invisible; tests use it as the settled threshold. */
 export const SPRING_REST = 0.01;
 /** Integration step. Long frames are split so the spring can't diverge. */

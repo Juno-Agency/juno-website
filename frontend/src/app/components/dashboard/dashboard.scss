@@ -517,3 +517,40 @@ select.in { appearance: none; cursor: pointer; }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .grid2 { grid-template-columns: 1fr; }
 }
+
+/* ---- Email deliverability (lead detail + list dot) ---- */
+.maillist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mailrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mailkind {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  min-width: 148px;
+}
+.mailtime {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+/* Small delivery dot shown next to the status badge in the list. */
+.ddot {
+  --c: var(--faint);
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+  background: color-mix(in srgb, var(--c) 85%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 14%, transparent);
+}

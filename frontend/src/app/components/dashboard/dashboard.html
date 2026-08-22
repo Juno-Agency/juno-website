@@ -72,6 +72,14 @@
             <span class="badge" [style.--c]="statusMeta[l.status].color">
               {{ statusMeta[l.status].label }}
             </span>
+            @let cd = clientDelivery(l);
+            @if (cd; as s) {
+              <span
+                class="ddot"
+                [style.--c]="deliveryMeta[s].color"
+                [title]="'Récap client : ' + deliveryMeta[s].label"
+              ></span>
+            }
           </span>
           <span class="cell actions" (click)="$event.stopPropagation()">
             <button class="iconbtn" (click)="open(l, 'edit')" aria-label="Modifier" title="Modifier">✎</button>
@@ -154,6 +162,24 @@
           }
           @if (l.message) {
             <div class="block"><span class="blabel">Message</span><p class="text">{{ l.message }}</p></div>
+          }
+          @if (emailsOf(l).length) {
+            <div class="block"><span class="blabel">Délivrabilité des emails</span>
+              <div class="maillist">
+                @for (m of emailsOf(l); track m.resendId || m.kind) {
+                  @let dm = m.status ? deliveryMeta[m.status] : null;
+                  <div class="mailrow">
+                    <span class="mailkind">{{ emailKindLabel[m.kind || ''] || m.kind }}</span>
+                    @if (dm) {
+                      <span class="badge" [style.--c]="dm.color">{{ dm.label }}</span>
+                    } @else {
+                      <span class="badge" [style.--c]="'#6f6a63'">En attente</span>
+                    }
+                    @if (m.lastEventAt) { <span class="mailtime">{{ fmtDate(m.lastEventAt) }}</span> }
+                  </div>
+                }
+              </div>
+            </div>
           }
         </div>
 

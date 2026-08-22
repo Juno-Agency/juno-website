@@ -1,3 +1,12 @@
+/** A transactional email tied to a lead, with its latest delivery status. */
+export interface LeadEmail {
+  resendId?: string;
+  kind?: 'internal' | 'client';
+  to?: string;
+  status?: DeliveryStatus;
+  lastEventAt?: string | null;
+}
+
 /** Lead as returned by the API (GET /api/leads). */
 export interface AdminLead {
   id: string;
@@ -15,11 +24,22 @@ export interface AdminLead {
   echeance: string | null;
   message: string | null;
   status: LeadStatus;
+  emails?: LeadEmail[];
   createdAt: string;
   updatedAt: string;
 }
 
 export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUOTED' | 'WON' | 'LOST';
+
+export type DeliveryStatus =
+  | 'queued'
+  | 'sent'
+  | 'delivered'
+  | 'delivery_delayed'
+  | 'bounced'
+  | 'complained'
+  | 'opened'
+  | 'clicked';
 
 /** Editable subset of a lead (everything except server-managed fields). */
 export interface EditableLead {
@@ -76,6 +96,24 @@ export const STATUS_META: Record<
   QUOTED: { label: 'Devis envoyé', color: '#c0a15e' },
   WON: { label: 'Gagné', color: '#7d9b6f' },
   LOST: { label: 'Perdu', color: '#a3737b' },
+};
+
+/** Human label + accent colour per email delivery status (matches STATUS_META). */
+export const DELIVERY_META: Record<DeliveryStatus, { label: string; color: string }> = {
+  queued: { label: 'En file', color: '#6f6a63' },
+  sent: { label: 'Envoyé', color: '#b9b5ad' },
+  delivered: { label: 'Reçu', color: '#7d9b6f' },
+  delivery_delayed: { label: 'Différé', color: '#c0a15e' },
+  bounced: { label: 'Rejeté', color: '#a3737b' },
+  complained: { label: 'Signalé spam', color: '#a3737b' },
+  opened: { label: 'Ouvert', color: '#8aa0b0' },
+  clicked: { label: 'Cliqué', color: '#8aa0b0' },
+};
+
+/** Human label per email kind. */
+export const EMAIL_KIND_LABEL: Record<string, string> = {
+  internal: 'Notification équipe',
+  client: 'Récap client',
 };
 
 export const EXISTING_LABEL: Record<string, string> = {

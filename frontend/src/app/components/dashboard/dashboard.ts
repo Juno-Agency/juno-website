@@ -9,9 +9,12 @@ import {
 import { AdminService } from '../../services/admin.service';
 import {
   AdminLead,
+  DELIVERY_META,
+  EMAIL_KIND_LABEL,
   EXISTING_LABEL,
   EditableLead,
   LEAD_STATUSES,
+  LeadEmail,
   LeadStatus,
   STATUS_META,
   toEditable,
@@ -43,6 +46,8 @@ export class AdminDashboardComponent implements OnInit {
   // Reference data for the edit form.
   protected readonly statuses = LEAD_STATUSES;
   protected readonly statusMeta = STATUS_META;
+  protected readonly deliveryMeta = DELIVERY_META;
+  protected readonly emailKindLabel = EMAIL_KIND_LABEL;
   protected readonly existingLabel = EXISTING_LABEL;
   protected readonly sectors = SECTORS;
   protected readonly pageOptions = PAGES;
@@ -89,6 +94,17 @@ export class AdminDashboardComponent implements OnInit {
       );
     });
   });
+
+  /** Emails tied to a lead, client recap first (the one that matters at a glance). */
+  protected emailsOf(lead: AdminLead | null): LeadEmail[] {
+    if (!lead?.emails?.length) return [];
+    return [...lead.emails].sort((a, b) => (a.kind === 'client' ? -1 : 1) - (b.kind === 'client' ? -1 : 1));
+  }
+
+  /** Delivery status of the client recap, for the compact list indicator. */
+  protected clientDelivery(lead: AdminLead): LeadEmail['status'] | undefined {
+    return lead.emails?.find((e) => e.kind === 'client')?.status;
+  }
 
   ngOnInit(): void {
     this.load();

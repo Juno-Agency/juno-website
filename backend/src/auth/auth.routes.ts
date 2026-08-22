@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import bcrypt from 'bcryptjs';
-import { AdminUser } from '../models';
+import { createHash, timingSafeEqual } from 'node:crypto';
 import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody } from '../middleware/validate';
 import { unauthorized } from '../middleware/http-error';
@@ -9,6 +8,14 @@ import { signToken } from './jwt';
 import { config } from '../config';
 
 export const authRouter = Router();
+
+/** Constant-time string comparison (hash to a fixed length first so neither
+    the length nor the content leaks through timing). */
+function safeEqual(a: string, b: string): boolean {
+  const ha = createHash('sha256').update(a).digest();
+  const hb = createHash('sha256').update(b).digest();
+  return timingSafeEqual(ha, hb);
+}
 
 registry.registerPath({
   method: 'post',
@@ -32,11 +39,12 @@ authRouter.post(
   validateBody(LoginSchema),
   asyncHandler(async (req, res) => {
     const { email, password } = req.body as LoginInput;
-    const admin = await AdminUser.findOne({ email });
-    if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {
-      throw unauthorized('Identifiants invalides');
-    }
-    const token = signToken({ sub: admin.id, email: admin.email });
+    // Credentials live in the environment (Render), not in the database.
+    const ok =
+      safeEqual(email.trim().toLowerCase(), config.adminEmail.trim().toLowerCase()) &&
+      safeEqual(password, config.adminPassword);
+    if (!ok) throw unauthorized('Identifiants invalides');
+    const token = signToken({ sub: 'admin', email: config.adminEmail });
     res.json({ token, expiresIn: config.jwtExpiresIn });
   }),
 );

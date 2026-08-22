@@ -35,15 +35,3 @@ const leadSchema = new Schema(
 leadSchema.index({ createdAt: 1 });
 
 export const Lead = model('Lead', leadSchema);
-
-/* ---------------- AdminUser ---------------- */
-const adminUserSchema = new Schema(
-  {
-    email: { type: String, required: true, unique: true },
-    passwordHash: { type: String, required: true },
-    name: { type: String, default: null },
-  },
-  { timestamps: { createdAt: true, updatedAt: false }, versionKey: false, toJSON },
-);
-
-export const AdminUser = model('AdminUser', adminUserSchema);

@@ -22,8 +22,7 @@ services:
         # ponytail: les fronts passent par un rewrite same-origin, CORS ne sert
         # qu'au `ng serve` local. Vider si l'API ne doit répondre qu'aux rewrites.
         value: http://localhost:4200
-      - key: RUN_SEED
-        value: 'true'
+      # Back-office admin credentials — set both in the Render dashboard.
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD

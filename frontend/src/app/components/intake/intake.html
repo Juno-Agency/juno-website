@@ -4,11 +4,11 @@
   <div class="resume-overlay">
     <div class="resume-card">
       <juno-mascot />
-      <h3>On reprend là où vous en étiez&nbsp;?</h3>
-      <p>Votre demande a été sauvegardée sur cet appareil.</p>
+      <h3>{{ tr('On reprend là où vous en étiez ?') }}</h3>
+      <p>{{ tr('Votre demande a été sauvegardée sur cet appareil.') }}</p>
       <div class="resume-actions">
-        <button class="go" (click)="resume()"><span>Reprendre</span> <span class="arr">→</span></button>
-        <button class="ghostlink" (click)="startFresh()">Recommencer à zéro</button>
+        <button class="go" (click)="resume()"><span>{{ tr('Reprendre') }}</span> <span class="arr">→</span></button>
+        <button class="ghostlink" (click)="startFresh()">{{ tr('Recommencer à zéro') }}</button>
       </div>
     </div>
   </div>
@@ -34,19 +34,20 @@
               {{ s.id }}
             }
           </span>
-          <span class="rlabel">{{ s.label }}</span>
+          <span class="rlabel">{{ tr(s.label) }}</span>
         </div>
       }
     </div>
 
-    <p class="rail-hint">{{ section().hint }}</p>
+    <p class="rail-hint">{{ tr(section().hint) }}</p>
 
     <div class="rail-reassure">
-      <span class="rr">≈ 2 min</span>
-      <span class="rr">Sans engagement</span>
-      <span class="rr">Réponse sous 24&nbsp;h</span>
-      <span class="rr">Vous validez avant qu’on code</span>
+      <span class="rr">{{ tr('≈ 2 min') }}</span>
+      <span class="rr">{{ tr('Sans engagement') }}</span>
+      <span class="rr">{{ tr('Réponse sous 24 h') }}</span>
+      <span class="rr">{{ tr('Vous validez avant qu’on code') }}</span>
     </div>
+    <app-lang-switcher />
   </aside>
 
   <!-- ============ MAIN ============ -->
@@ -59,7 +60,7 @@
         aria-label="Étape précédente"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 19V5M6 11l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        précédent
+        {{ tr('précédent') }}
       </button>
       <span class="topmeta">
         <span class="pct">{{ progress() }}%</span>
@@ -68,10 +69,10 @@
           (click)="togglePreview()"
           [class.on]="previewOpen()"
           [class.has-update]="previewUnseen()"
-          [attr.aria-label]="previewUnseen() ? 'Aperçu — mis à jour' : 'Aperçu'"
+          [attr.aria-label]="previewUnseen() ? tr('Aperçu — mis à jour') : tr('Aperçu')"
         >
           <span class="peek-ping" [@peekPing]="pulseTick()" aria-hidden="true"></span>
-          <span class="peek-lab">Aperçu</span>
+          <span class="peek-lab">{{ tr('Aperçu') }}</span>
           <span class="peek-badge" aria-hidden="true"></span>
         </button>
       </span>
@@ -84,38 +85,37 @@
             <div class="check">
               <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.4"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <div class="qnum confirm-num">Demande envoyée</div>
-            <h1 class="qtitle">Merci, <em>{{ firstName() }}</em>&nbsp;!</h1>
+            <div class="qnum confirm-num">{{ tr('Demande envoyée') }}</div>
+            <h1 class="qtitle">{{ tr('Merci') }}, <em>{{ firstName() }}</em>&nbsp;!</h1>
             <p class="qsub">
-              On étudie votre projet et on revient sous 24 h ouvrées — et bientôt, avec
-              une première maquette rien que pour vous.
+              {{ tr('On étudie votre projet et on revient sous 24 h ouvrées — et bientôt, avec une première maquette rien que pour vous.') }}
             </p>
             <div class="next-steps">
-              <div class="ns"><span class="nsn">1</span> On lit votre brief en détail</div>
-              <div class="ns"><span class="nsn">2</span> On vous dessine une première maquette</div>
-              <div class="ns"><span class="nsn">3</span> Vous validez — et on développe</div>
+              <div class="ns"><span class="nsn">1</span> {{ tr('On lit votre brief en détail') }}</div>
+              <div class="ns"><span class="nsn">2</span> {{ tr('On vous dessine une première maquette') }}</div>
+              <div class="ns"><span class="nsn">3</span> {{ tr('Vous validez — et on développe') }}</div>
             </div>
             <div class="foot confirm-foot">
-              <a class="go" routerLink="/"><span>Retour au site</span> <span class="arr">→</span></a>
+              <a class="go" routerLink="/"><span>{{ tr('Retour au site') }}</span> <span class="arr">→</span></a>
             </div>
           </div>
         </div>
       } @else if (isRecap()) {
         <div class="panel" [@panel]="{ value: 'recap', params: panelParams() }">
           <div class="recap">
-            <div class="qnum stagger">Presque fini <span class="ar">/ récapitulatif</span></div>
-            <h1 class="qtitle stagger">On vérifie <em>ensemble</em>&nbsp;?</h1>
-            <p class="qsub stagger">Cliquez une ligne pour la modifier. Tout est encore ajustable.</p>
+            <div class="qnum stagger">{{ tr('Presque fini') }} <span class="ar">{{ tr('/ récapitulatif') }}</span></div>
+            <h1 class="qtitle stagger" [innerHTML]="tr(recapQ)"></h1>
+            <p class="qsub stagger">{{ tr('Cliquez une ligne pour la modifier. Tout est encore ajustable.') }}</p>
 
             <div class="recap-groups stagger">
               @for (g of recap(); track g.id) {
                 <div class="rg">
-                  <div class="rg-h">{{ g.label }}</div>
+                  <div class="rg-h">{{ tr(g.label) }}</div>
                   @for (r of g.rows; track r.step) {
                     <button type="button" class="rrow" (click)="editFrom(r.step)">
                       <span class="rl">{{ r.label }}</span>
                       <span class="rv">{{ r.value }}</span>
-                      <span class="redit">Modifier</span>
+                      <span class="redit">{{ tr('Modifier') }}</span>
                     </button>
                   }
                 </div>
@@ -128,9 +128,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.6"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
               <span class="ctxt">
-                J’accepte que mes informations soient utilisées pour être recontacté au sujet
-                de mon projet.
-                <a routerLink="/confidentialite" target="_blank" rel="noopener">Politique de confidentialité</a>.
+                {{ tr('J’accepte que mes informations soient utilisées pour être recontacté au sujet de mon projet.') }}
+                <a routerLink="/confidentialite" target="_blank" rel="noopener">{{ tr('Politique de confidentialité') }}</a>.
               </span>
             </label>
 
@@ -140,9 +139,9 @@
 
             <div class="foot stagger">
               <button class="go" (click)="submit()">
-                <span>Envoyer ma demande</span> <span class="arr">→</span>
+                <span>{{ tr('Envoyer ma demande') }}</span> <span class="arr">→</span>
               </button>
-              <span class="hint">ou <kbd>Entrée ↵</kbd></span>
+              <span class="hint">{{ tr('ou') }} <kbd>{{ tr('Entrée') }} ↵</kbd></span>
             </div>
           </div>
         </div>
@@ -152,11 +151,11 @@
             <div class="bgnum" aria-hidden="true">{{ stepLabel() }}</div>
             <div class="qnum stagger">
               {{ stepLabel() }} <span class="ar">/ {{ totalLabel }}</span>
-              <span class="qsec">· {{ section().label }}</span>
+              <span class="qsec">· {{ tr(section().label) }}</span>
             </div>
-            <h1 class="qtitle stagger" [innerHTML]="q.q"></h1>
+            <h1 class="qtitle stagger" [innerHTML]="tr(q.q)"></h1>
             @if (q.sub) {
-              <p class="qsub stagger">{{ q.sub }}</p>
+              <p class="qsub stagger">{{ tr(q.sub) }}</p>
             }
 
             <div class="qbody">
@@ -166,7 +165,7 @@
                   appAutofocus
                   autocomplete="off"
                   [value]="data().nom"
-                  [placeholder]="q.ph || ''"
+                  [placeholder]="tr(q.ph || '')"
                   (input)="setText('nom', $event)"
                 />
               } @else if (q.kind === 'email') {
@@ -183,12 +182,12 @@
                   class="subin"
                   autocomplete="off"
                   [value]="data().tel"
-                  placeholder="Téléphone (optionnel)"
+                  [placeholder]="tr('Téléphone (optionnel)')"
                   (input)="setText('tel', $event)"
                 />
                 <p class="privacy-note">
-                  Vos informations servent uniquement à vous recontacter — jamais partagées.
-                  <a routerLink="/confidentialite" target="_blank" rel="noopener">En savoir plus</a>.
+                  {{ tr('Vos informations servent uniquement à vous recontacter — jamais partagées.') }}
+                  <a routerLink="/confidentialite" target="_blank" rel="noopener">{{ tr('En savoir plus') }}</a>.
                 </p>
               } @else if (q.kind === 'single' || q.kind === 'cards') {
                 <div class="opts" [class.grid]="q.kind === 'cards'">
@@ -200,9 +199,9 @@
                       (click)="selectSingle(o.value)"
                     >
                       <span class="k">{{ letters[n] }}</span>
-                      <span class="ol">{{ o.label }}</span>
+                      <span class="ol">{{ tr(o.label) }}</span>
                       @if (o.desc) {
-                        <span class="od">{{ o.desc }}</span>
+                        <span class="od">{{ tr(o.desc) }}</span>
                       }
                       <span class="opick">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.6"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -219,7 +218,7 @@
                       [class.on]="isPicked(q.key!, o.value)"
                       (click)="toggleMulti(o.value)"
                     >
-                      {{ o.label }}
+                      {{ tr(o.label) }}
                     </button>
                   }
                 </div>
@@ -227,7 +226,7 @@
                 <textarea
                   class="bigarea"
                   appAutofocus
-                  placeholder="« j’aime bien le site de…, une ambiance comme… »"
+                  [placeholder]="tr('« j’aime bien le site de…, une ambiance comme… »')"
                   [value]="data().refs"
                   (input)="setText('refs', $event)"
                 ></textarea>
@@ -248,7 +247,7 @@
                 <textarea
                   class="bigarea final"
                   appAutofocus
-                  placeholder="Racontez-nous…"
+                  [placeholder]="tr('Racontez-nous…')"
                   [value]="data().message"
                   (input)="setText('message', $event)"
                 ></textarea>
@@ -259,19 +258,19 @@
 
             @if (q.kind === 'single' || q.kind === 'cards') {
               <div class="foot stagger">
-                <span class="hint">cliquez une réponse, ou tapez {{ hintLetters() }}…</span>
+                <span class="hint">{{ tr('cliquez une réponse, ou tapez') }} {{ hintLetters() }}…</span>
                 @if (canSkip()) {
-                  <button class="skip" (click)="skip()">passer</button>
+                  <button class="skip" (click)="skip()">{{ tr('passer') }}</button>
                 }
               </div>
             } @else {
               <div class="foot stagger">
                 <button class="go" (click)="flyThenGo($any($event.currentTarget))">
-                  <span>{{ isLast() ? 'Vérifier mes réponses' : 'Suivant' }}</span> <span class="arr">→</span>
+                  <span>{{ isLast() ? tr('Vérifier mes réponses') : tr('Suivant') }}</span> <span class="arr">→</span>
                 </button>
-                <span class="hint">appuyez sur <kbd>Entrée ↵</kbd></span>
+                <span class="hint">{{ tr('appuyez sur') }} <kbd>{{ tr('Entrée') }} ↵</kbd></span>
                 @if (canSkip()) {
-                  <button class="skip" (click)="skip()">passer</button>
+                  <button class="skip" (click)="skip()">{{ tr('passer') }}</button>
                 }
               </div>
             }
@@ -295,7 +294,7 @@
       class="preview-close"
       type="button"
       (click)="togglePreview()"
-      aria-label="Fermer l’aperçu"
+      [attr.aria-label]="tr('Fermer l’aperçu')"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
         <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
@@ -304,7 +303,7 @@
     <div class="preview-in">
       <div class="preview-cap">
         <span class="pc-dot"></span>
-        {{ done() ? 'Votre maquette se prépare…' : 'Juno dessine en direct' }}
+        {{ done() ? tr('Votre maquette se prépare…') : tr('Juno dessine en direct') }}
       </div>
 
       <div
@@ -328,18 +327,18 @@
               <span class="sk sk-logo"></span>
             }
             <span class="site-links">
-              @for (n of preview().nav; track n) { <span>{{ n }}</span> }
+              @for (n of preview().nav; track n) { <span>{{ tr(n) }}</span> }
             </span>
           </div>
 
           <div class="site-hero">
             @if (preview().hasHero) {
-              <h4>{{ preview().hero }}</h4>
+              <h4>{{ tr(preview().hero) }}</h4>
             } @else {
               <span class="sk sk-h1"></span>
               <span class="sk sk-h2"></span>
             }
-            <span class="site-btn">{{ preview().hasType ? preview().typeLabel : 'Découvrir' }}</span>
+            <span class="site-btn">{{ preview().hasType ? tr(preview().typeLabel) : tr('Découvrir') }}</span>
           </div>
 
           @if (preview().isShop) {
@@ -360,7 +359,7 @@
 
           @if (preview().styles.length) {
             <div class="site-tags">
-              @for (s of preview().styles; track s) { <span>{{ s }}</span> }
+              @for (s of preview().styles; track s) { <span>{{ tr(s) }}</span> }
             </div>
           }
         </div>
@@ -368,7 +367,7 @@
 
       @if (preview().colors.length) {
         <div class="preview-palette">
-          <span class="pp-label">Vos couleurs</span>
+          <span class="pp-label">{{ tr('Vos couleurs') }}</span>
           <div class="pp-dots">
             @for (c of preview().colors; track c) {
               <span class="pp-dot" [style.background]="c"></span>
@@ -377,7 +376,7 @@
         </div>
       }
 
-      <p class="preview-note">Un aperçu indicatif — la vraie maquette, on la dessine à la main après votre brief.</p>
+      <p class="preview-note">{{ tr('Un aperçu indicatif — la vraie maquette, on la dessine à la main après votre brief.') }}</p>
     </div>
   </aside>
 </div>

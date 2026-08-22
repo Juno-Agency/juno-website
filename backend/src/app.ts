@@ -14,8 +14,11 @@ export function createApp(): Express {
   const app = express();
 
   app.disable('x-powered-by');
-  // Swagger UI ships inline assets; relax CSP so the docs render.
-  app.use(helmet({ contentSecurityPolicy: false }));
+  // Trust Render's reverse proxy so `req.ip` is the real client IP (rate limiting).
+  app.set('trust proxy', 1);
+  // Full security headers (incl. CSP) in production. In development the CSP is
+  // relaxed so the Swagger UI's inline assets render.
+  app.use(helmet(isProd ? {} : { contentSecurityPolicy: false }));
   app.use(cors({ origin: config.corsOrigins, credentials: true }));
   app.use(express.json({ limit: '256kb' }));
   app.use(morgan(isProd ? 'combined' : 'dev'));
@@ -29,10 +32,13 @@ export function createApp(): Express {
   app.use('/api/leads', leadsRouter);
   app.use('/api/auth', authRouter);
 
-  // Swagger docs (spec generated from the Zod schemas).
-  const openApiDoc = buildOpenApiDocument();
-  app.get('/api/docs.json', (_req, res) => res.json(openApiDoc));
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDoc));
+  // API docs (spec generated from the Zod schemas) — DEVELOPMENT ONLY, so the
+  // full API surface (incl. admin routes) is never exposed publicly in prod.
+  if (!isProd) {
+    const openApiDoc = buildOpenApiDocument();
+    app.get('/api/docs.json', (_req, res) => res.json(openApiDoc));
+    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDoc));
+  }
 
   // Fallbacks.
   app.use(notFoundHandler);

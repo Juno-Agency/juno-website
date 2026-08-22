@@ -1,5 +1,5 @@
 import { createApp } from './app';
-import { config } from './config';
+import { config, isProd } from './config';
 import { connectDb, disconnectDb } from './db';
 
 async function main(): Promise<void> {
@@ -8,7 +8,9 @@ async function main(): Promise<void> {
   const app = createApp();
   const server = app.listen(config.port, () => {
     console.log(`[JUNO] API ready on http://localhost:${config.port}`);
-    console.log(`[JUNO] Swagger UI:   http://localhost:${config.port}/api/docs`);
+    if (!isProd) {
+      console.log(`[JUNO] Swagger UI:   http://localhost:${config.port}/api/docs`);
+    }
   });
 
   async function shutdown(signal: string): Promise<void> {

@@ -17,7 +17,7 @@ import {
   UpdateLeadSchema,
 } from './lead.schema';
 import { buildStats, StatsInput } from './leads.stats';
-import { sendLeadEmails, LeadForMail } from '../mail/lead-mails';
+import { sendLeadEmails, resendLeadEmails, LeadForMail } from '../mail/lead-mails';
 import { config } from '../config';
 import { isBotSubmission } from './antispam';
 
@@ -201,6 +201,25 @@ leadsRouter.patch(
     });
     if (!lead) throw notFound('Demande introuvable');
     res.json(lead);
+  }),
+);
+
+// Re-send the lead emails from the back office (client recap by default).
+leadsRouter.post(
+  '/:id/resend',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    requireObjectId(req.params.id);
+    const kindRaw = String(req.query['kind'] ?? 'client');
+    const which = (['internal', 'client', 'both'] as const).includes(kindRaw as never)
+      ? (kindRaw as 'internal' | 'client' | 'both')
+      : 'client';
+    const lead = await Lead.findById(req.params.id);
+    if (!lead) throw notFound('Demande introuvable');
+    const result = await resendLeadEmails(lead.toJSON() as unknown as LeadForMail, which);
+    // Return the fresh lead (with the new email record) so the UI can refresh.
+    const updated = await Lead.findById(req.params.id);
+    res.json({ result, lead: updated });
   }),
 );
 

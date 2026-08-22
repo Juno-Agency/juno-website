@@ -163,8 +163,8 @@
           @if (l.message) {
             <div class="block"><span class="blabel">Message</span><p class="text">{{ l.message }}</p></div>
           }
-          @if (emailsOf(l).length) {
-            <div class="block"><span class="blabel">Délivrabilité des emails</span>
+          <div class="block"><span class="blabel">Emails</span>
+            @if (emailsOf(l).length) {
               <div class="maillist">
                 @for (m of emailsOf(l); track m.resendId || m.kind) {
                   @let dm = m.status ? deliveryMeta[m.status] : null;
@@ -179,8 +179,19 @@
                   </div>
                 }
               </div>
+            } @else {
+              <p class="text muted">Aucun email envoyé pour cette demande.</p>
+            }
+            <div class="chiprow resend-row">
+              <button class="sbtn" [disabled]="resending()" (click)="resend('client')">
+                Renvoyer au client
+              </button>
+              <button class="sbtn" [disabled]="resending()" (click)="resend('internal')">
+                Renvoyer à l’équipe
+              </button>
+              @if (resendMsg()) { <span class="resend-msg">{{ resendMsg() }}</span> }
             </div>
-          }
+          </div>
         </div>
 
         <div class="mfoot">

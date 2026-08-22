@@ -34,4 +34,17 @@ export class AdminService {
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`/api/leads/${id}`);
   }
+
+  /** Re-send the lead emails (client recap by default). Returns the refreshed lead. */
+  resendEmails(
+    id: string,
+    kind: 'internal' | 'client' | 'both' = 'client',
+  ): Observable<{ result: { internal: boolean; client: boolean }; lead: AdminLead }> {
+    const params = new HttpParams().set('kind', kind);
+    return this.http.post<{ result: { internal: boolean; client: boolean }; lead: AdminLead }>(
+      `/api/leads/${id}/resend`,
+      {},
+      { params },
+    );
+  }
 }

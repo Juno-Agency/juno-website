@@ -554,3 +554,18 @@ select.in { appearance: none; cursor: pointer; }
   background: color-mix(in srgb, var(--c) 85%, transparent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 14%, transparent);
 }
+
+/* Resend actions in the lead's Emails block */
+.resend-row {
+  margin-top: 12px;
+  align-items: center;
+  gap: 10px;
+}
+.resend-msg {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.text.muted {
+  color: var(--faint);
+}

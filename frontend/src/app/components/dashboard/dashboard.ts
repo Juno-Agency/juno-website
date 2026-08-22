@@ -70,6 +70,8 @@ export class AdminDashboardComponent implements OnInit {
   protected readonly deleting = signal(false);
   protected readonly confirmDelete = signal(false);
   protected readonly busyStatus = signal(false);
+  protected readonly resending = signal(false);
+  protected readonly resendMsg = signal('');
 
   protected readonly selected = computed(() => {
     const id = this.modalId();
@@ -138,6 +140,7 @@ export class AdminDashboardComponent implements OnInit {
     this.mode.set(mode);
     this.confirmDelete.set(false);
     this.error.set('');
+    this.resendMsg.set('');
     if (mode === 'edit') this.draft.set(toEditable(lead));
   }
   protected close(): void {
@@ -227,6 +230,30 @@ export class AdminDashboardComponent implements OnInit {
       error: () => {
         this.busyStatus.set(false);
         this.error.set('Échec de la mise à jour du statut.');
+      },
+    });
+  }
+
+  protected resend(kind: 'internal' | 'client' | 'both' = 'client'): void {
+    const l = this.selected();
+    if (!l || this.resending()) return;
+    this.resending.set(true);
+    this.resendMsg.set('');
+    this.admin.resendEmails(l.id, kind).subscribe({
+      next: (res) => {
+        this.applyUpdate(res.lead);
+        this.resending.set(false);
+        const ok =
+          kind === 'internal'
+            ? res.result.internal
+            : kind === 'both'
+              ? res.result.internal && res.result.client
+              : res.result.client;
+        this.resendMsg.set(ok ? 'Email renvoyé ✓' : 'Envoi impossible (config email ?).');
+      },
+      error: () => {
+        this.resending.set(false);
+        this.error.set('Échec du renvoi.');
       },
     });
   }

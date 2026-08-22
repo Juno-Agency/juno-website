@@ -46,7 +46,7 @@
           <b>JUNO</b><span>{{ tr('Votre studio web · en ligne') }}</span>
         </div>
       </div>
-      <div class="cw-thread" aria-live="polite" aria-label="Démonstration JUNO">
+      <div class="cw-thread" aria-live="polite" [attr.aria-label]="tr('Démonstration JUNO')">
         @for (it of items(); track it.id) {
           @switch (it.kind) {
             @case ('typing') {

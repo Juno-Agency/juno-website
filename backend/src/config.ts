@@ -42,6 +42,24 @@ export const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  mail: {
+    // Resend API key. Required in production so lead notifications actually send;
+    // when empty (dev without a key) the mailer logs instead of sending.
+    resendApiKey: process.env.RESEND_API_KEY ?? '',
+    // Sender identity. Must use a domain verified in Resend in production;
+    // `onboarding@resend.dev` is Resend's sandbox sender (delivers only to the
+    // account owner) and is fine for local testing.
+    from: process.env.MAIL_FROM ?? 'JUNO <onboarding@resend.dev>',
+    // Optional reply-to on the client recap, so replies reach the team inbox.
+    replyTo: process.env.MAIL_REPLY_TO ?? '',
+    // Internal recipients for the "new lead" notification (you, Juno, Noah…).
+    internalRecipients: (process.env.MAIL_INTERNAL_RECIPIENTS ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
+    // Base URL of the back-office, used to deep-link the lead in the notification.
+    backofficeUrl: process.env.BACKOFFICE_URL ?? '',
+  },
 } as const;
 
 export const isProd = isProdEnv;

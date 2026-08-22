@@ -1,9 +1,13 @@
 import { createApp } from './app';
 import { config, isProd } from './config';
 import { connectDb, disconnectDb } from './db';
+import { warmTemplates } from './mail/render';
 
 async function main(): Promise<void> {
   await connectDb();
+
+  // Compile the MJML email templates once at boot (they're cached thereafter).
+  warmTemplates().catch((err) => console.error('[JUNO] mail template warmup failed', err));
 
   const app = createApp();
   const server = app.listen(config.port, () => {

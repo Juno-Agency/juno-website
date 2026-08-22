@@ -17,6 +17,7 @@ import {
   UpdateLeadSchema,
 } from './lead.schema';
 import { buildStats, StatsInput } from './leads.stats';
+import { sendLeadEmails, LeadForMail } from '../mail/lead-mails';
 
 export const leadsRouter = Router();
 
@@ -130,6 +131,10 @@ leadsRouter.post(
     const data = req.body as CreateLeadInput;
     const lead = await Lead.create(data);
     res.status(201).json({ id: lead.id });
+
+    // Fire notification + client recap without blocking the response. Errors are
+    // swallowed inside sendLeadEmails so a mail issue never fails the submission.
+    void sendLeadEmails(lead.toJSON() as unknown as LeadForMail);
   }),
 );
 

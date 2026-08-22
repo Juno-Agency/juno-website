@@ -6,6 +6,7 @@ import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody, validateQuery } from '../middleware/validate';
 import { notFound } from '../middleware/http-error';
 import { requireAuth } from '../auth/auth.middleware';
+import { createLeadLimiter } from '../middleware/rate-limit';
 import {
   CreateLeadInput,
   CreateLeadSchema,
@@ -123,6 +124,7 @@ registry.registerPath({
 // Public: the intake form posts here.
 leadsRouter.post(
   '/',
+  createLeadLimiter,
   validateBody(CreateLeadSchema),
   asyncHandler(async (req, res) => {
     const data = req.body as CreateLeadInput;

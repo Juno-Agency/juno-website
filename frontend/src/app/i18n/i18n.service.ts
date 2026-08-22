@@ -37,9 +37,8 @@ export class I18nService {
 
   constructor() {
     if (this.isBrowser) {
-      // Resolve the target synchronously (reads storage/navigator, no writes),
-      // then apply it after hydration so the first client paint matches the
-      // server (FR) and no hydration mismatch occurs.
+      // Default is French. Only a previously-saved manual choice overrides it —
+      // applied after hydration so the first client paint matches the server.
       const target = this.detect();
       if (target !== 'fr') afterNextRender(() => this.apply(target, false));
       else this.reflect('fr');
@@ -57,6 +56,8 @@ export class I18nService {
     return TRANSLATIONS[l]?.[fr] ?? fr;
   };
 
+  /** French by default; a saved manual choice wins. Browser language is
+      intentionally NOT auto-detected. */
   private detect(): Lang {
     try {
       const saved = localStorage.getItem(STORE_KEY);
@@ -64,10 +65,7 @@ export class I18nService {
     } catch {
       /* storage unavailable */
     }
-    const nav = (this.doc.defaultView?.navigator?.language ?? 'fr')
-      .slice(0, 2)
-      .toLowerCase();
-    return isLang(nav) ? nav : 'fr';
+    return 'fr';
   }
 
   private apply(l: Lang, persist: boolean): void {

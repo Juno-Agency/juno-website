@@ -129,6 +129,9 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Merci: 'Thanks',
     'cliquez une réponse, ou tapez': 'click an answer, or type',
     Entrée: 'Enter',
+    'Étape précédente': 'Previous step',
+    Couleur: 'Colour',
+    'votre@email.fr': 'you@email.com',
 
     /* ---- intake · sections ---- */
     Vous: 'You',
@@ -489,6 +492,9 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Merci: 'Danke',
     'cliquez une réponse, ou tapez': 'Antwort anklicken oder tippen',
     Entrée: 'Enter',
+    'Étape précédente': 'Vorheriger Schritt',
+    Couleur: 'Farbe',
+    'votre@email.fr': 'ihre@email.de',
 
     /* ---- intake · sections ---- */
     Vous: 'Sie',

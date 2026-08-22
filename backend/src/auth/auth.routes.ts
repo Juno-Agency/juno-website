@@ -6,6 +6,7 @@ import { unauthorized } from '../middleware/http-error';
 import { LoginInput, LoginSchema, TokenSchema } from './auth.schema';
 import { signToken } from './jwt';
 import { config } from '../config';
+import { loginLimiter } from '../middleware/rate-limit';
 
 export const authRouter = Router();
 
@@ -36,6 +37,7 @@ registry.registerPath({
 
 authRouter.post(
   '/login',
+  loginLimiter,
   validateBody(LoginSchema),
   asyncHandler(async (req, res) => {
     const { email, password } = req.body as LoginInput;

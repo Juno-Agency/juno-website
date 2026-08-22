@@ -19,7 +19,7 @@
 <div class="shell">
   <!-- ============ LEFT RAIL ============ -->
   <aside class="rail">
-    <a routerLink="/" class="rail-brand" aria-label="JUNO — accueil">
+    <a routerLink="/" class="rail-brand" [attr.aria-label]="tr('JUNO — accueil')">
       <juno-mascot />
       <span class="word">JUNO</span>
     </a>
@@ -57,7 +57,7 @@
         class="back"
         [class.off]="(step() === 0 && !isRecap()) || done()"
         (click)="go(-1)"
-        aria-label="Étape précédente"
+        [attr.aria-label]="tr('Étape précédente')"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 19V5M6 11l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         {{ tr('précédent') }}
@@ -175,7 +175,7 @@
                   appAutofocus
                   autocomplete="off"
                   [value]="data().email"
-                  placeholder="votre@email.fr"
+                  [placeholder]="tr('votre@email.fr')"
                   (input)="setText('email', $event)"
                 />
                 <input
@@ -238,7 +238,7 @@
                       [class.on]="isColorOn(c)"
                       [style.background]="c"
                       (click)="toggleColor(c)"
-                      [attr.aria-label]="'Couleur ' + c"
+                      [attr.aria-label]="tr('Couleur') + ' ' + c"
                       [attr.aria-pressed]="isColorOn(c)"
                     ></button>
                   }
@@ -286,7 +286,7 @@
       class="preview-scrim"
       type="button"
       (click)="togglePreview()"
-      aria-label="Fermer l’aperçu"
+      [attr.aria-label]="tr('Fermer l’aperçu')"
     ></button>
   }
   <aside class="preview" [class.open]="previewOpen()">

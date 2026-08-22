@@ -271,6 +271,8 @@
 }
 .peek {
   display: none;
+  position: relative;
+  overflow: visible;
   background: none;
   border: 1px solid var(--line);
   border-radius: 100px;
@@ -286,6 +288,54 @@
 .peek:hover {
   color: var(--cream);
   border-color: var(--cream);
+}
+.peek-lab {
+  position: relative;
+  z-index: 1;
+}
+/* "updated" state — the mockup changed but the drawer is still closed */
+.peek.has-update {
+  color: var(--cream);
+  border-color: var(--cream);
+  animation: peek-attn 2.1s ease-in-out infinite;
+}
+.peek-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cream);
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.25s, transform 0.3s cubic-bezier(0.2, 1.6, 0.5, 1);
+}
+.peek.has-update .peek-badge {
+  opacity: 1;
+  transform: scale(1);
+  animation: peek-badge-pulse 1.9s ease-in-out infinite;
+}
+/* ripple replayed by the peekPing animation when a token lands in the button */
+.peek-ping {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 100px;
+  border: 1px solid var(--cream);
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes peek-attn {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(252, 252, 251, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(252, 252, 251, 0.09); }
+}
+@keyframes peek-badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(252, 252, 251, 0.55); }
+  70% { box-shadow: 0 0 0 6px rgba(252, 252, 251, 0); }
 }
 
 /* stage — panels stack in one grid cell so leave/enter overlap */
@@ -870,6 +920,43 @@
   padding: 30px;
   overflow: hidden;
 }
+/* Close affordance + tap-scrim — only surfaced when the preview is a mobile
+   drawer (see the max-width: 1180px block). Hidden while it's an inline pane. */
+.preview-close {
+  display: none;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg2) 70%, transparent);
+  color: var(--muted);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.preview-close svg {
+  width: 20px;
+  height: 20px;
+}
+.preview-close:hover {
+  color: var(--cream);
+  border-color: var(--cream);
+}
+.preview-scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  border: none;
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: fade 0.3s ease both;
+}
 .preview-in {
   width: 100%;
   max-width: 360px;
@@ -1265,6 +1352,8 @@
   }
   .peek {
     display: inline-flex;
+    align-items: center;
+    gap: 7px;
   }
   .preview {
     position: fixed;
@@ -1280,6 +1369,16 @@
   }
   .preview.open {
     transform: none;
+  }
+  .preview-close {
+    display: inline-flex;
+  }
+  .preview-scrim {
+    display: block;
+  }
+  /* leave room so the drawer content never hides under the close button */
+  .preview-in {
+    padding-top: 8px;
   }
 }
 

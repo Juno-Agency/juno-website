@@ -76,3 +76,23 @@
   gap: 18px;
   flex-wrap: wrap;
 }
+
+@media (max-width: 560px) {
+  /* shrink the giant JUNO so mascot + word fit within the screen edges */
+  .cta .big {
+    font-size: clamp(58px, 17vw, 96px);
+    gap: 10px;
+  }
+  .cta .big juno-mascot {
+    width: clamp(48px, 13vw, 72px);
+    height: clamp(48px, 13vw, 72px);
+  }
+  .cta .sub {
+    font-size: 19px;
+  }
+  .cta-foot {
+    justify-content: center;
+    text-align: center;
+    gap: 14px 22px;
+  }
+}

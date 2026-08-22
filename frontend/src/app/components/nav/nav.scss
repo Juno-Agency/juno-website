@@ -61,3 +61,18 @@
     display: none;
   }
 }
+@media (max-width: 460px) {
+  .nav {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .brand .word {
+    font-size: 20px;
+  }
+  /* trim the CTA so brand + button never collide on narrow phones */
+  .nav .btn {
+    padding: 10px 15px;
+    font-size: 12.5px;
+    gap: 7px;
+  }
+}

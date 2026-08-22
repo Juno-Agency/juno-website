@@ -111,8 +111,10 @@
 }
 .glow {
   position: absolute;
-  width: 520px;
-  height: 520px;
+  /* Cap to the viewport so the soft halo (which also scales to 1.1) can
+     never spill past the screen edge and force a horizontal scroll. */
+  width: min(520px, 82vw);
+  height: min(520px, 82vw);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(252, 252, 251, 0.14), transparent 64%);
   filter: blur(12px);
@@ -428,5 +430,46 @@
   .atelier {
     order: 2;
     height: 480px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    padding-top: 116px;
+    gap: 46px;
+  }
+  .hero-left {
+    gap: 26px;
+  }
+  /* keep the display heading from crowding the screen edges */
+  .hl {
+    font-size: clamp(42px, 12vw, 72px);
+  }
+  .lede {
+    font-size: 17px;
+  }
+  .cta-row {
+    gap: 10px;
+    width: 100%;
+  }
+  /* full-width primary CTA is easier to tap on a phone */
+  .cta-row .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .atelier {
+    height: 440px;
+  }
+  .chatw {
+    max-width: 100%;
+  }
+  .cw-thread {
+    height: 340px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cw-thread {
+    height: 300px;
   }
 }

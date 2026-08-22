@@ -4,10 +4,11 @@
     <span class="word">JUNO</span>
   </a>
   <div class="nav-right">
-    <a routerLink="/" fragment="methode" class="nav-link">La méthode</a>
-    <a routerLink="/" fragment="garanties" class="nav-link">Garanties</a>
+    <a routerLink="/" fragment="methode" class="nav-link">{{ tr('La méthode') }}</a>
+    <a routerLink="/" fragment="garanties" class="nav-link">{{ tr('Garanties') }}</a>
+    <app-lang-switcher />
     <a routerLink="/projet" class="btn btn-primary">
-      <span class="lab">Décrivez votre projet</span> <span class="arr">→</span>
+      <span class="lab">{{ tr('Décrivez votre projet') }}</span> <span class="arr">→</span>
     </a>
   </div>
 </nav>

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RevealDirective } from '../../directives/reveal.directive';
+import { I18nService } from '../../i18n/i18n.service';
 
 interface Step {
   n: string;
@@ -17,6 +18,9 @@ interface Step {
   styleUrl: './methode.scss',
 })
 export class MethodeComponent {
+  protected readonly tr = inject(I18nService).tr;
+  protected readonly h2Text =
+    'Quatre étapes. Vous gardez la main <em class="acc">à chaque fois</em>.';
   protected readonly steps: Step[] = [
     { n: '01', title: 'Vous décrivez', text: 'En quelques phrases, votre activité et ce que vous voulez. Pas de jargon.' },
     { n: '02', title: 'Juno vous dessine', text: 'Un premier rendu sur-mesure, prêt à regarder.', fast: 'En quelques minutes' },

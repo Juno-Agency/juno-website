@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RevealDirective } from '../../directives/reveal.directive';
+import { I18nService, Lang } from '../../i18n/i18n.service';
 
 interface Word {
   text: string;
@@ -10,6 +11,50 @@ interface Guarantee {
   title: string;
   text: string;
 }
+
+/** The headline statement, per language (word-split for the stagger; one
+    emphasised word gets the hollow-outline treatment). */
+const STATEMENTS: Record<Lang, Word[]> = {
+  fr: [
+    { text: 'Vous' },
+    { text: 'validez' },
+    { text: 'le' },
+    { text: 'design' },
+    { text: 'avant', em: true },
+    { text: 'qu’on' },
+    { text: 'développe.' },
+    { text: 'Jamais' },
+    { text: 'de' },
+    { text: 'mauvaise' },
+    { text: 'surprise.' },
+  ],
+  en: [
+    { text: 'You' },
+    { text: 'approve' },
+    { text: 'the' },
+    { text: 'design' },
+    { text: 'before', em: true },
+    { text: 'we' },
+    { text: 'build.' },
+    { text: 'Never' },
+    { text: 'a' },
+    { text: 'bad' },
+    { text: 'surprise.' },
+  ],
+  de: [
+    { text: 'Sie' },
+    { text: 'geben' },
+    { text: 'das' },
+    { text: 'Design' },
+    { text: 'frei,' },
+    { text: 'bevor', em: true },
+    { text: 'wir' },
+    { text: 'entwickeln.' },
+    { text: 'Nie' },
+    { text: 'böse' },
+    { text: 'Überraschungen.' },
+  ],
+};
 
 /**
  * The "promise" band: a large statement that staggers in word-by-word, plus
@@ -23,19 +68,9 @@ interface Guarantee {
   styleUrl: './garanties.scss',
 })
 export class GarantiesComponent {
-  protected readonly words: Word[] = [
-    { text: 'Vous' },
-    { text: 'validez' },
-    { text: 'le' },
-    { text: 'design' },
-    { text: 'avant', em: true },
-    { text: 'qu’on' },
-    { text: 'développe.' },
-    { text: 'Jamais' },
-    { text: 'de' },
-    { text: 'mauvaise' },
-    { text: 'surprise.' },
-  ];
+  private readonly i18n = inject(I18nService);
+  protected readonly tr = this.i18n.tr;
+  protected readonly words = computed<Word[]>(() => STATEMENTS[this.i18n.lang()]);
 
   protected readonly guarantees: Guarantee[] = [
     {

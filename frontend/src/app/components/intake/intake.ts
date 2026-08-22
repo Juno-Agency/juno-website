@@ -35,6 +35,8 @@ import {
 } from '../../models/intake.data';
 import { DataKey } from '../../models/intake.model';
 import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
+import { I18nService } from '../../i18n/i18n.service';
+import { LangSwitcherComponent } from '../lang-switcher/lang-switcher';
 
 interface Confetti {
   id: number;
@@ -116,7 +118,13 @@ const JUNO_SVG =
 @Component({
   selector: 'app-intake',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, GrainVignetteComponent, AutofocusDirective, JunoMascot],
+  imports: [
+    RouterLink,
+    GrainVignetteComponent,
+    AutofocusDirective,
+    JunoMascot,
+    LangSwitcherComponent,
+  ],
   templateUrl: './intake.html',
   styleUrl: './intake.scss',
   animations: [
@@ -159,6 +167,10 @@ const JUNO_SVG =
 })
 export class IntakeComponent {
   private readonly lead = inject(JunoLeadService);
+  private readonly i18n = inject(I18nService);
+  protected readonly tr = this.i18n.tr;
+  /** Recap heading carries an <em>, so it renders via [innerHTML]. */
+  protected readonly recapQ = 'On vérifie <em>ensemble</em>&nbsp;?';
 
   protected readonly rm = prefersReducedMotion();
   protected readonly letters = LETTERS;
@@ -356,8 +368,8 @@ export class IntakeComponent {
       echeance: 'Échéance',
       message: 'Message',
     };
-    if (q.key && map[q.key]) return map[q.key];
-    if (q.kind === 'refs') return 'Références';
+    if (q.key && map[q.key]) return this.tr(map[q.key]);
+    if (q.kind === 'refs') return this.tr('Références');
     return q.key ?? '—';
   }
 
@@ -367,7 +379,10 @@ export class IntakeComponent {
     if (q.kind === 'refs') {
       const parts: string[] = [];
       if (d.refs.trim()) parts.push(d.refs.trim());
-      if (d.colors.length) parts.push(`${d.colors.length} couleur${d.colors.length > 1 ? 's' : ''}`);
+      if (d.colors.length)
+        parts.push(
+          `${d.colors.length} ${this.tr(d.colors.length > 1 ? 'couleurs' : 'couleur')}`,
+        );
       return parts.length ? parts.join(' · ') : dash;
     }
     if (q.key === 'email') {
@@ -376,15 +391,16 @@ export class IntakeComponent {
     }
     if (q.key === 'existant') {
       return d.existant === 'refaire'
-        ? 'Oui, à refaire'
+        ? this.tr('Oui, à refaire')
         : d.existant === 'aucun'
-          ? 'Aucun pour l’instant'
+          ? this.tr('Aucun pour l’instant')
           : dash;
     }
     if (!q.key) return dash;
     const v = d[q.key];
-    if (Array.isArray(v)) return v.length ? v.join(', ') : dash;
-    return typeof v === 'string' && v.trim() ? v : dash;
+    // Option values are stored in French and translated only for display.
+    if (Array.isArray(v)) return v.length ? v.map((x) => this.tr(x)).join(', ') : dash;
+    return typeof v === 'string' && v.trim() ? this.tr(v) : dash;
   }
 
   /* ---------- resume ---------- */
@@ -689,22 +705,22 @@ export class IntakeComponent {
     if (!s.required) return true;
     const d = this.data();
     if (s.kind === 'text' && !d.nom.trim()) {
-      this.err.set('Dites-nous juste votre nom');
+      this.err.set(this.tr('Dites-nous juste votre nom'));
       return false;
     }
     if (s.kind === 'email') {
       const email = d.email.trim();
       if (!email) {
-        this.err.set('On a besoin d’un email pour vous répondre');
+        this.err.set(this.tr('On a besoin d’un email pour vous répondre'));
         return false;
       }
       if (!EMAIL_RE.test(email)) {
-        this.err.set('Cet email a l’air incomplet');
+        this.err.set(this.tr('Cet email a l’air incomplet'));
         return false;
       }
     }
     if ((s.kind === 'single' || s.kind === 'cards') && s.key && !this.stringVal(s.key)) {
-      this.err.set('Choisissez une option');
+      this.err.set(this.tr('Choisissez une option'));
       return false;
     }
     return true;
@@ -744,7 +760,7 @@ export class IntakeComponent {
   protected submit(): void {
     if (this.animating() || this.done()) return;
     if (!this.consent()) {
-      this.err.set('Merci d’accepter l’utilisation de vos informations pour continuer.');
+      this.err.set(this.tr('Merci d’accepter l’utilisation de vos informations pour continuer.'));
       return;
     }
     this.animating.set(true);

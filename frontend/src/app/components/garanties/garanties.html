@@ -1,7 +1,7 @@
 <div class="promise">
   <div class="promise-in">
     <p class="statement" appReveal>
-      @for (w of words; track $index) {
+      @for (w of words(); track $index) {
         <span class="w" [style.transitionDelay]="$index * 0.045 + 's'">
           @if (w.em) {
             <em>{{ w.text }}</em>
@@ -17,8 +17,8 @@
         <div class="grow">
           <span class="gn">{{ g.n }}</span>
           <div class="gt">
-            <h4>{{ g.title }}</h4>
-            <p>{{ g.text }}</p>
+            <h4>{{ tr(g.title) }}</h4>
+            <p>{{ tr(g.text) }}</p>
           </div>
         </div>
       }

@@ -1,18 +1,16 @@
 <section class="section" id="methode">
   <div class="shead">
-    <span class="eyebrow r" appReveal>La méthode</span>
-    <h2 class="h2 r d1" appReveal>
-      Quatre étapes. Vous gardez la main <em class="acc">à chaque fois</em>.
-    </h2>
+    <span class="eyebrow r" appReveal>{{ tr('La méthode') }}</span>
+    <h2 class="h2 r d1" appReveal [innerHTML]="tr(h2Text)"></h2>
   </div>
   <div class="steps" appReveal>
     @for (s of steps; track s.n) {
       <div class="step">
         <span class="node">{{ s.n }}</span>
-        <h3>{{ s.title }}</h3>
-        <p>{{ s.text }}</p>
+        <h3>{{ tr(s.title) }}</h3>
+        <p>{{ tr(s.text) }}</p>
         @if (s.fast) {
-          <span class="fast">{{ s.fast }}</span>
+          <span class="fast">{{ tr(s.fast) }}</span>
         }
       </div>
     }

@@ -5,37 +5,40 @@
     <juno-mascot />
     <span class="word">JUNO</span>
   </a>
-  <a routerLink="/" class="back">← Retour au site</a>
+  <div class="ltop-right">
+    <app-lang-switcher />
+    <a routerLink="/" class="back">{{ tr('← Retour au site') }}</a>
+  </div>
 </header>
 
 <article class="doc">
-  <p class="eyebrow">Informations légales</p>
-  <h1>{{ doc.title }}</h1>
-  <p class="updated">Dernière mise à jour : {{ doc.updated }}</p>
+  <p class="eyebrow">{{ tr('Informations légales') }}</p>
+  <h1>{{ tr(doc.title) }}</h1>
+  <p class="updated">{{ tr('Dernière mise à jour :') }} {{ tr(doc.updated) }}</p>
 
   @if (doc.intro) {
-    <p class="intro">{{ doc.intro }}</p>
+    <p class="intro">{{ tr(doc.intro) }}</p>
   }
 
   @for (s of doc.sections; track s.h) {
     <section class="sec">
-      <h2>{{ s.h }}</h2>
+      <h2>{{ tr(s.h) }}</h2>
       @for (line of s.p; track $index) {
         @if (line.startsWith('• ')) {
-          <p class="li">{{ line.slice(2) }}</p>
+          <p class="li">{{ tr(line).slice(2) }}</p>
         } @else {
-          <p>{{ line }}</p>
+          <p>{{ tr(line) }}</p>
         }
       }
     </section>
   }
 
   <a routerLink="/projet" class="btn btn-primary cta">
-    <span class="lab">Décrivez votre projet</span> <span class="arr">→</span>
+    <span class="lab">{{ tr('Décrivez votre projet') }}</span> <span class="arr">→</span>
   </a>
 
   <nav class="lnav">
-    <a routerLink="/mentions-legales">Mentions légales</a>
-    <a routerLink="/confidentialite">Politique de confidentialité</a>
+    <a routerLink="/mentions-legales">{{ tr('Mentions légales') }}</a>
+    <a routerLink="/confidentialite">{{ tr('Politique de confidentialité') }}</a>
   </nav>
 </article>

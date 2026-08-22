@@ -23,6 +23,8 @@ npm-debug.log*
 # design scratch (Claude Design canvases, MCP config)
 .ai/
 
+# playwright-mcp scratch output
+.playwright-mcp/
 # local secrets (never commit)
 atlas-credentials.env
 *.secret.env

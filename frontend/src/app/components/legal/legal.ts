@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GrainVignetteComponent } from '../grain-vignette/grain-vignette';
 import { LEGAL_DOCS, LegalDoc } from '../../models/legal.data';
+import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 
 /** Renders a static legal document chosen by the route's `data.doc`. */
 @Component({
   selector: 'app-legal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, GrainVignetteComponent],
+  imports: [RouterLink, GrainVignetteComponent, JunoMascot],
   templateUrl: './legal.html',
   styleUrl: './legal.scss',
 })

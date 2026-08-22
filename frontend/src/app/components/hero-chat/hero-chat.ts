@@ -10,6 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { prefersReducedMotion } from '../../utils/reduced-motion';
+import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 
 interface Sector {
   label: string;
@@ -59,7 +60,7 @@ const SECTORS: Record<string, Sector> = {
 @Component({
   selector: 'app-hero-chat',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, JunoMascot],
   templateUrl: './hero-chat.html',
   styleUrl: './hero-chat.scss',
 })

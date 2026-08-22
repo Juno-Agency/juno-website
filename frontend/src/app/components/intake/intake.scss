@@ -48,7 +48,8 @@
   box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.9);
   animation: pop-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
-.resume-card .juno-mark {
+.resume-card juno-mascot {
+  display: block;
   width: 52px;
   height: 52px;
   margin: 0 auto 14px;
@@ -108,7 +109,7 @@
   align-items: center;
   gap: 10px;
 }
-.rail-brand .juno-mark {
+.rail-brand juno-mascot {
   width: 28px;
   height: 28px;
 }

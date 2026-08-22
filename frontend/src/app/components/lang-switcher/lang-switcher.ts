@@ -8,50 +8,31 @@ import {
 import { I18nService, LANGS, Lang } from '../../i18n/i18n.service';
 
 /**
- * Language switcher with flags. Desktop: a FR/EN/DE segmented control.
- * Mobile (≤460px): a compact dropdown. The dropdown menu is position:fixed and
- * anchored via measured coordinates, so it never gets clipped by the rail's
- * horizontal-scroll overflow or the nav.
+ * Language dropdown with flags — same UI on desktop and mobile. The button
+ * shows the current flag + code; clicking opens a menu of FR / EN / DE. The
+ * menu is position:fixed and anchored via measured coordinates, so it is never
+ * clipped by the rail's horizontal-scroll overflow or the nav.
  */
 @Component({
   selector: 'app-lang-switcher',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <!-- desktop: segmented control -->
-    <div class="langsw seg" role="group" aria-label="Langue / Language / Sprache">
-      @for (l of langs; track l.code) {
-        <button
-          type="button"
-          class="lsw"
-          [class.on]="i18n.lang() === l.code"
-          [attr.aria-pressed]="i18n.lang() === l.code"
-          [attr.aria-label]="l.full"
-          (click)="i18n.setLang(l.code)"
-        >
-          <span class="fl">{{ l.flag }}</span><span class="cd">{{ l.label }}</span>
-        </button>
-      }
-    </div>
-
-    <!-- mobile: dropdown -->
-    <div class="langdd">
-      <button
-        #ddbtn
-        type="button"
-        class="langdd-btn"
-        [class.open]="open()"
-        [attr.aria-expanded]="open()"
-        aria-haspopup="menu"
-        [attr.aria-label]="current().full"
-        (click)="toggle(ddbtn)"
-      >
-        <span class="fl">{{ current().flag }}</span>
-        <span class="cd">{{ current().label }}</span>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
-    </div>
+    <button
+      #ddbtn
+      type="button"
+      class="langdd-btn"
+      [class.open]="open()"
+      [attr.aria-expanded]="open()"
+      aria-haspopup="menu"
+      [attr.aria-label]="current().full"
+      (click)="toggle(ddbtn)"
+    >
+      <span class="fl">{{ current().flag }}</span>
+      <span class="cd">{{ current().label }}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
 
     @if (open()) {
       <button class="langdd-backdrop" type="button" (click)="close()" aria-hidden="true" tabindex="-1"></button>
@@ -85,60 +66,9 @@ import { I18nService, LANGS, Lang } from '../../i18n/i18n.service';
       .fl {
         font-size: 13px;
         line-height: 1;
-        /* keep the emoji flags crisp even where the UI font would restyle them */
         font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
       }
 
-      /* ---- desktop segmented ---- */
-      .langsw {
-        display: inline-flex;
-        align-items: center;
-        gap: 2px;
-        padding: 3px;
-        border: 1px solid var(--line);
-        border-radius: 100px;
-        background: rgba(252, 252, 251, 0.03);
-      }
-      .lsw {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        appearance: none;
-        border: none;
-        background: transparent;
-        color: var(--faint);
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.06em;
-        line-height: 1;
-        padding: 6px 10px;
-        border-radius: 100px;
-        transition: color 0.2s, background 0.2s;
-      }
-      .lsw .fl {
-        filter: saturate(0.9);
-        transition: filter 0.2s, opacity 0.2s;
-        opacity: 0.85;
-      }
-      .lsw:hover {
-        color: var(--cream);
-      }
-      .lsw:hover .fl {
-        opacity: 1;
-      }
-      .lsw.on {
-        color: var(--on-accent);
-        background: var(--cream);
-      }
-      .lsw.on .fl {
-        filter: none;
-        opacity: 1;
-      }
-
-      /* ---- mobile dropdown (hidden on desktop) ---- */
-      .langdd {
-        display: none;
-      }
       .langdd-btn {
         display: inline-flex;
         align-items: center;
@@ -151,9 +81,9 @@ import { I18nService, LANGS, Lang } from '../../i18n/i18n.service';
         font-size: 11px;
         letter-spacing: 0.06em;
         line-height: 1;
-        padding: 7px 10px;
+        padding: 8px 11px;
         border-radius: 100px;
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, background 0.2s;
       }
       .langdd-btn .chev {
         width: 13px;
@@ -167,6 +97,7 @@ import { I18nService, LANGS, Lang } from '../../i18n/i18n.service';
       .langdd-btn.open,
       .langdd-btn:hover {
         border-color: var(--muted);
+        background: rgba(252, 252, 251, 0.06);
       }
 
       .langdd-backdrop {
@@ -179,7 +110,7 @@ import { I18nService, LANGS, Lang } from '../../i18n/i18n.service';
       }
       .langdd-menu {
         z-index: 80;
-        min-width: 148px;
+        min-width: 150px;
         display: flex;
         flex-direction: column;
         gap: 2px;
@@ -233,12 +164,9 @@ import { I18nService, LANGS, Lang } from '../../i18n/i18n.service';
         color: var(--cream);
       }
 
-      @media (max-width: 460px) {
-        .seg {
-          display: none;
-        }
-        .langdd {
-          display: inline-flex;
+      @media (prefers-reduced-motion: reduce) {
+        .langdd-menu {
+          animation: none;
         }
       }
     `,

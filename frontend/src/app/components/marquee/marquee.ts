@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { I18nService } from '../../i18n/i18n.service';
 
 /** Infinite scrolling band of target audiences; pauses on hover. */
 @Component({
@@ -8,6 +9,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './marquee.scss',
 })
 export class MarqueeComponent {
+  protected readonly tr = inject(I18nService).tr;
   // Duplicated list so the -50% translate loops seamlessly.
   private readonly base = [
     'Restaurants',

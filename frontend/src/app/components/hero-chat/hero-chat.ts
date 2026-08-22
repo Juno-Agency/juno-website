@@ -4,6 +4,7 @@ import {
   Component,
   OnDestroy,
   PLATFORM_ID,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -11,6 +12,30 @@ import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { prefersReducedMotion } from '../../utils/reduced-motion';
 import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
+import { I18nService, Lang } from '../../i18n/i18n.service';
+
+interface HlSeg {
+  t: string;
+  acc?: boolean;
+}
+/** Headline split into 3 lines of segments, per language (one accented word). */
+const HEADLINES: Record<Lang, HlSeg[][]> = {
+  fr: [
+    [{ t: 'Votre site,' }],
+    [{ t: 'dessiné', acc: true }, { t: ' en' }],
+    [{ t: 'quelques minutes.' }],
+  ],
+  en: [
+    [{ t: 'Your website,' }],
+    [{ t: 'designed', acc: true }, { t: ' in' }],
+    [{ t: 'minutes flat.' }],
+  ],
+  de: [
+    [{ t: 'Ihre Website,' }],
+    [{ t: 'in Minuten' }],
+    [{ t: 'gestaltet', acc: true }, { t: '.' }],
+  ],
+};
 
 interface Sector {
   label: string;
@@ -65,6 +90,10 @@ const SECTORS: Record<string, Sector> = {
   styleUrl: './hero-chat.scss',
 })
 export class HeroChatComponent implements AfterViewInit, OnDestroy {
+  private readonly i18n = inject(I18nService);
+  protected readonly tr = this.i18n.tr;
+  protected readonly headline = computed(() => HEADLINES[this.i18n.lang()]);
+
   protected readonly heroIn = signal(false);
   protected readonly items = signal<ChatItem[]>([]);
   protected readonly parallax = signal('');
@@ -72,7 +101,7 @@ export class HeroChatComponent implements AfterViewInit, OnDestroy {
 
   protected readonly sectorKeys = Object.keys(SECTORS);
   protected sectorLabel(key: string): string {
-    return SECTORS[key].label;
+    return this.tr(SECTORS[key].label);
   }
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -206,6 +235,8 @@ export class HeroChatComponent implements AfterViewInit, OnDestroy {
     const card = this.push({
       kind: 'gen',
       url: s.url,
+      // store the French source; the template translates at render time so the
+      // demo stays consistent and reacts to language changes.
       hero: s.hero,
       ready: false,
     });

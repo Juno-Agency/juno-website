@@ -63,16 +63,28 @@
 }
 @media (max-width: 460px) {
   .nav {
-    padding-left: 18px;
-    padding-right: 18px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .brand .word {
     font-size: 20px;
   }
-  /* trim the CTA so brand + button never collide on narrow phones */
+  .nav-right {
+    gap: 10px;
+  }
+  /* trim the CTA so brand + switcher + button never collide on narrow phones */
   .nav .btn {
-    padding: 10px 15px;
-    font-size: 12.5px;
+    padding: 10px 14px;
+    font-size: 12px;
     gap: 7px;
+  }
+}
+@media (max-width: 380px) {
+  /* very small phones: keep only the arrow on the primary CTA */
+  .nav .btn .lab {
+    display: none;
+  }
+  .nav .btn {
+    padding: 10px 13px;
   }
 }

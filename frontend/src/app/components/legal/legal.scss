@@ -30,6 +30,11 @@
   text-transform: uppercase;
   letter-spacing: 0.01em;
 }
+.ltop-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
 .ltop .back {
   font-family: var(--mono);
   font-size: 12px;

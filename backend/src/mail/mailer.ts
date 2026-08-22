@@ -3,11 +3,18 @@ import { config } from '../config';
 
 const resend = config.mail.resendApiKey ? new Resend(config.mail.resendApiKey) : null;
 
+export interface MailAttachment {
+  filename: string;
+  content: string; // base64
+  contentId?: string; // set for inline images referenced via cid:
+}
+
 export interface SendMailInput {
   to: string | string[];
   subject: string;
   html: string;
   replyTo?: string;
+  attachments?: MailAttachment[];
 }
 
 /**
@@ -15,7 +22,13 @@ export interface SendMailInput {
  * dev) it logs instead of throwing, so the lead flow keeps working end-to-end
  * without credentials. Returns true on a real send.
  */
-export async function sendMail({ to, subject, html, replyTo }: SendMailInput): Promise<boolean> {
+export async function sendMail({
+  to,
+  subject,
+  html,
+  replyTo,
+  attachments,
+}: SendMailInput): Promise<boolean> {
   const recipients = Array.isArray(to) ? to.filter(Boolean) : to ? [to] : [];
   if (recipients.length === 0) return false;
 
@@ -30,6 +43,7 @@ export async function sendMail({ to, subject, html, replyTo }: SendMailInput): P
     subject,
     html,
     ...(replyTo ? { replyTo } : {}),
+    ...(attachments && attachments.length ? { attachments } : {}),
   });
 
   if (error) {

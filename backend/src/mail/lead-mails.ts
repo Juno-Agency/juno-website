@@ -1,6 +1,7 @@
 import { config } from '../config';
 import { sendMail } from './mailer';
 import {
+  blobAttachment,
   chips,
   colorSwatches,
   escapeHtml,
@@ -69,7 +70,7 @@ export async function sendLeadEmails(
   try {
     if (config.mail.internalRecipients.length > 0) {
       const ctaHtml = config.mail.backofficeUrl
-        ? `<a href="${escapeHtml(config.mail.backofficeUrl)}" style="display:inline-block;background:#8cc63f;color:#0f172a;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:14px;">Ouvrir dans le back-office →</a>`
+        ? `<a href="${escapeHtml(config.mail.backofficeUrl)}" style="display:inline-block;background:#fcfcfb;color:#141414;font-weight:600;text-decoration:none;padding:14px 28px;border-radius:3px;font-size:15px;font-family:'Space Grotesk','Helvetica Neue',Arial,sans-serif;">Ouvrir dans le back-office&nbsp;&rarr;</a>`
         : '';
 
       const html = await renderLeadInternal({
@@ -94,6 +95,7 @@ export async function sendLeadEmails(
         to: config.mail.internalRecipients,
         subject: `Nouvelle demande — ${lead.nom} (${lead.type})`,
         html,
+        attachments: [blobAttachment],
       });
     }
   } catch (err) {
@@ -116,6 +118,7 @@ export async function sendLeadEmails(
       subject: 'Merci ! On a bien reçu votre demande — JUNO',
       html,
       replyTo: config.mail.replyTo || undefined,
+      attachments: [blobAttachment],
     });
   } catch (err) {
     console.error('[JUNO][mail] client recap failed', err);

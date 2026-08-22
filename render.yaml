@@ -27,6 +27,18 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
+      # --- E-mails (Resend) — set in the Render dashboard ---
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        # Ex. "JUNO <contact@juno.studio>" — le domaine doit être vérifié dans Resend.
+        sync: false
+      - key: MAIL_REPLY_TO
+        # Optionnel : adresse de réponse pour le récap client (ex. hello@juno.studio).
+        sync: false
+      - key: MAIL_INTERNAL_RECIPIENTS
+        # Destinataires de la notif interne, séparés par des virgules (toi, Juno, Noah).
+        sync: false
 
   - type: web
     name: juno-site

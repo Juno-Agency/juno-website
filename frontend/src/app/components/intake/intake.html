@@ -63,7 +63,17 @@
       </button>
       <span class="topmeta">
         <span class="pct">{{ progress() }}%</span>
-        <button class="peek" (click)="togglePreview()" [class.on]="previewOpen()">Aperçu</button>
+        <button
+          class="peek"
+          (click)="togglePreview()"
+          [class.on]="previewOpen()"
+          [class.has-update]="previewUnseen()"
+          [attr.aria-label]="previewUnseen() ? 'Aperçu — mis à jour' : 'Aperçu'"
+        >
+          <span class="peek-ping" [@peekPing]="pulseTick()" aria-hidden="true"></span>
+          <span class="peek-lab">Aperçu</span>
+          <span class="peek-badge" aria-hidden="true"></span>
+        </button>
       </span>
     </div>
 
@@ -256,8 +266,8 @@
               </div>
             } @else {
               <div class="foot stagger">
-                <button class="go" (click)="go(1)">
-                  <span>{{ isLast() ? 'Vérifier mes réponses' : 'OK' }}</span> <span class="arr">→</span>
+                <button class="go" (click)="flyThenGo($any($event.currentTarget))">
+                  <span>{{ isLast() ? 'Vérifier mes réponses' : 'Suivant' }}</span> <span class="arr">→</span>
                 </button>
                 <span class="hint">appuyez sur <kbd>Entrée ↵</kbd></span>
                 @if (canSkip()) {
@@ -272,7 +282,25 @@
   </main>
 
   <!-- ============ LIVE PREVIEW ============ -->
+  @if (previewOpen()) {
+    <button
+      class="preview-scrim"
+      type="button"
+      (click)="togglePreview()"
+      aria-label="Fermer l’aperçu"
+    ></button>
+  }
   <aside class="preview" [class.open]="previewOpen()">
+    <button
+      class="preview-close"
+      type="button"
+      (click)="togglePreview()"
+      aria-label="Fermer l’aperçu"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+      </svg>
+    </button>
     <div class="preview-in">
       <div class="preview-cap">
         <span class="pc-dot"></span>

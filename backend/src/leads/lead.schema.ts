@@ -27,6 +27,10 @@ export const CreateLeadSchema = registry.register(
       budget: z.string().trim().max(80).optional().openapi({ example: '1 000 – 3 000 €' }),
       echeance: z.string().trim().max(80).optional().openapi({ example: 'Sous 1 mois' }),
       message: z.string().max(4000).optional().openapi({ example: 'On veut lancer notre site avant l’été.' }),
+      // Anti-spam (not persisted): `website` is a honeypot that must stay empty;
+      // `startedAt` is the client ms timestamp of when the form was opened.
+      website: z.string().max(200).optional().openapi({ example: '' }),
+      startedAt: z.number().int().optional().openapi({ example: 1_699_999_999_000 }),
     })
     .openapi('CreateLead'),
 );

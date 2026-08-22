@@ -16,6 +16,18 @@
 
 <div class="pbar"><div class="fl" [style.width.%]="progress()"></div></div>
 
+<!-- Honeypot: hidden from users, off-screen; bots that fill it are dropped server-side. -->
+<input
+  class="hp-field"
+  type="text"
+  name="website"
+  tabindex="-1"
+  autocomplete="off"
+  aria-hidden="true"
+  [value]="honeypot()"
+  (input)="honeypot.set($any($event.target).value)"
+/>
+
 <div class="shell">
   <!-- ============ LEFT RAIL ============ -->
   <aside class="rail">

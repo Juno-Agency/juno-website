@@ -188,6 +188,10 @@ export class IntakeComponent {
   protected readonly resumeAvailable = signal(false);
   protected readonly previewOpen = signal(false);
   protected readonly consent = signal(false);
+  /** Honeypot value — stays empty for real users; filled = bot (dropped server-side). */
+  protected readonly honeypot = signal('');
+  /** When the form was opened, sent so the server can reject bot-speed submissions. */
+  private readonly startedAt = Date.now();
 
   /** Drives the "Aperçu" attention cue: the mockup changed but the drawer
       (mobile) hasn't been opened to see it yet. */
@@ -784,6 +788,8 @@ export class IntakeComponent {
       message: d.message?.trim() || undefined,
       budget: d.budget || undefined,
       echeance: d.echeance || undefined,
+      website: this.honeypot(),
+      startedAt: this.startedAt,
     };
   }
 

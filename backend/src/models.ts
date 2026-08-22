@@ -12,6 +12,25 @@ const toJSON = {
   },
 };
 
+/**
+ * One transactional email tied to a lead (team notification or client recap),
+ * with its Resend id and latest delivery status fed by the Resend webhook.
+ */
+const leadEmailSchema = new Schema(
+  {
+    resendId: { type: String, index: true },
+    kind: { type: String, enum: ['internal', 'client'] },
+    to: { type: String },
+    status: {
+      type: String,
+      enum: ['queued', 'sent', 'delivered', 'delivery_delayed', 'bounced', 'complained', 'opened', 'clicked'],
+      default: 'queued',
+    },
+    lastEventAt: { type: Date, default: null },
+  },
+  { _id: false, timestamps: false },
+);
+
 /* ---------------- Lead ---------------- */
 const leadSchema = new Schema(
   {
@@ -29,6 +48,7 @@ const leadSchema = new Schema(
     echeance: { type: String, default: null },
     message: { type: String, default: null },
     status: { type: String, enum: LEAD_STATUS, default: 'NEW', index: true },
+    emails: { type: [leadEmailSchema], default: [] },
   },
   { timestamps: true, versionKey: false, toJSON },
 );

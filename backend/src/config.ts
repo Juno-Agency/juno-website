@@ -59,7 +59,13 @@ export const config = {
       .filter(Boolean),
     // Base URL of the back-office, used to deep-link the lead in the notification.
     backofficeUrl: process.env.BACKOFFICE_URL ?? '',
+    // Signing secret for Resend delivery webhooks (empty = signature check skipped
+    // in dev; required in production so forged events are rejected).
+    resendWebhookSecret: process.env.RESEND_WEBHOOK_SECRET ?? '',
   },
+  // Anti-spam: minimum time (ms) a human takes to fill the multi-step intake.
+  // A submission faster than this (with a client timestamp) is dropped as a bot.
+  antispamMinFillMs: Number(process.env.ANTISPAM_MIN_FILL_MS ?? 2500),
 } as const;
 
 export const isProd = isProdEnv;

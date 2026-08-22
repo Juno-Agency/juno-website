@@ -20,7 +20,8 @@ export interface SendMailInput {
 /**
  * Send one email through Resend. When no API key is configured (typical in local
  * dev) it logs instead of throwing, so the lead flow keeps working end-to-end
- * without credentials. Returns true on a real send.
+ * without credentials. Returns the Resend message id on a real send (used to
+ * correlate delivery webhooks), or null when nothing was sent.
  */
 export async function sendMail({
   to,
@@ -28,16 +29,16 @@ export async function sendMail({
   html,
   replyTo,
   attachments,
-}: SendMailInput): Promise<boolean> {
+}: SendMailInput): Promise<string | null> {
   const recipients = Array.isArray(to) ? to.filter(Boolean) : to ? [to] : [];
-  if (recipients.length === 0) return false;
+  if (recipients.length === 0) return null;
 
   if (!resend) {
     console.log(`[JUNO][mail:dev] would send "${subject}" → ${recipients.join(', ')}`);
-    return false;
+    return null;
   }
 
-  const { error } = await resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: config.mail.from,
     to: recipients,
     subject,
@@ -48,7 +49,7 @@ export async function sendMail({
 
   if (error) {
     console.error(`[JUNO][mail] send failed "${subject}":`, error);
-    return false;
+    return null;
   }
-  return true;
+  return data?.id ?? null;
 }

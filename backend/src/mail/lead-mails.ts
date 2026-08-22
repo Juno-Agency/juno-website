@@ -1,4 +1,5 @@
 import { config } from '../config';
+import { Lead } from '../models';
 import { sendMail } from './mailer';
 import {
   blobAttachment,
@@ -58,6 +59,9 @@ export async function sendLeadEmails(
   lead: LeadForMail,
 ): Promise<{ internal: boolean; client: boolean }> {
   const result = { internal: false, client: false };
+  // Resend ids captured per send, persisted on the lead so the delivery webhook
+  // can correlate later status events back to the right message.
+  const sent: Array<{ resendId: string; kind: 'internal' | 'client'; to: string }> = [];
 
   const createdAt = dateFmt.format(lead.createdAt ? new Date(lead.createdAt) : new Date());
   const typeLabel = escapeHtml(lead.type);
@@ -91,12 +95,14 @@ export async function sendLeadEmails(
         ctaHtml,
       });
 
-      result.internal = await sendMail({
+      const id = await sendMail({
         to: config.mail.internalRecipients,
         subject: `Nouvelle demande — ${lead.nom} (${lead.type})`,
         html,
         attachments: [blobAttachment],
       });
+      result.internal = Boolean(id);
+      if (id) sent.push({ resendId: id, kind: 'internal', to: config.mail.internalRecipients.join(', ') });
     }
   } catch (err) {
     console.error('[JUNO][mail] internal notification failed', err);
@@ -113,15 +119,28 @@ export async function sendLeadEmails(
       colorsHtml,
     });
 
-    result.client = await sendMail({
+    const id = await sendMail({
       to: lead.email,
       subject: 'Merci ! On a bien reçu votre demande — JUNO',
       html,
       replyTo: config.mail.replyTo || undefined,
       attachments: [blobAttachment],
     });
+    result.client = Boolean(id);
+    if (id) sent.push({ resendId: id, kind: 'client', to: lead.email });
   } catch (err) {
     console.error('[JUNO][mail] client recap failed', err);
+  }
+
+  // Record the sent messages on the lead so delivery webhooks can update them.
+  if (sent.length > 0 && lead.id) {
+    try {
+      await Lead.findByIdAndUpdate(lead.id, {
+        $push: { emails: { $each: sent.map((s) => ({ ...s, status: 'sent' as const })) } },
+      });
+    } catch (err) {
+      console.error('[JUNO][mail] failed to record sent emails on lead', err);
+    }
   }
 
   return result;

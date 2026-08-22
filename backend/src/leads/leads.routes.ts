@@ -18,6 +18,8 @@ import {
 } from './lead.schema';
 import { buildStats, StatsInput } from './leads.stats';
 import { sendLeadEmails, LeadForMail } from '../mail/lead-mails';
+import { config } from '../config';
+import { isBotSubmission } from './antispam';
 
 export const leadsRouter = Router();
 
@@ -128,7 +130,16 @@ leadsRouter.post(
   createLeadLimiter,
   validateBody(CreateLeadSchema),
   asyncHandler(async (req, res) => {
-    const data = req.body as CreateLeadInput;
+    const { website, startedAt, ...data } = req.body as CreateLeadInput;
+
+    // Anti-spam (fail-safe): drop bots but answer 201 anyway so they can't tell,
+    // and never block a real user (see isBotSubmission).
+    if (isBotSubmission({ website, startedAt, now: Date.now(), minFillMs: config.antispamMinFillMs })) {
+      console.warn('[JUNO] lead dropped as spam', { honeypot: Boolean(website) });
+      res.status(201).json({ id: 'ok' });
+      return;
+    }
+
     const lead = await Lead.create(data);
     res.status(201).json({ id: lead.id });
 

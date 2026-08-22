@@ -27,6 +27,10 @@ export interface LeadPayload {
   budget?: string;
   echeance?: string;
   message?: string;
+  /** Honeypot — always empty for real users; a filled value flags a bot. */
+  website?: string;
+  /** ms timestamp of when the form was opened (bot-speed detection). */
+  startedAt?: number;
 }
 
 export interface LeadResult {

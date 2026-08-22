@@ -1451,3 +1451,16 @@
     flex-basis: 100%;
   }
 }
+
+/* Honeypot: off-screen (not display:none, which some bots skip) and inert to
+   real users — keyboard, screen readers and pointer all bypass it. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

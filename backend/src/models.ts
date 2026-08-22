@@ -49,6 +49,8 @@ const leadSchema = new Schema(
     message: { type: String, default: null },
     status: { type: String, enum: LEAD_STATUS, default: 'NEW', index: true },
     emails: { type: [leadEmailSchema], default: [] },
+    // Other leads from the same client, linked when they choose "combine".
+    relatedLeadIds: { type: [String], default: [] },
   },
   { timestamps: true, versionKey: false, toJSON },
 );

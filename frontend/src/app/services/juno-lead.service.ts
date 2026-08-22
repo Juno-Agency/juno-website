@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -31,6 +31,8 @@ export interface LeadPayload {
   website?: string;
   /** ms timestamp of when the form was opened (bot-speed detection). */
   startedAt?: number;
+  /** Set when a returning client chose to link this to their existing request. */
+  combineWithExisting?: boolean;
 }
 
 export interface LeadResult {
@@ -61,6 +63,18 @@ export class JunoLeadService {
         // gracefully so a backend hiccup never blocks the user.
         return of({ ok: false });
       }),
+    );
+  }
+
+  /**
+   * Returns true if a request already exists for this email. Fails open (false)
+   * so a check error never blocks a submission.
+   */
+  exists(email: string): Observable<boolean> {
+    const params = new HttpParams().set('email', email);
+    return this.http.get<{ exists: boolean }>(`${API_BASE}/leads/exists`, { params }).pipe(
+      map((res) => res.exists === true),
+      catchError(() => of(false)),
     );
   }
 }

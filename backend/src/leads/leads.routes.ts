@@ -6,11 +6,12 @@ import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody, validateQuery } from '../middleware/validate';
 import { notFound } from '../middleware/http-error';
 import { requireAuth } from '../auth/auth.middleware';
-import { createLeadLimiter } from '../middleware/rate-limit';
+import { createLeadLimiter, checkLeadLimiter } from '../middleware/rate-limit';
 import {
   CreateLeadInput,
   CreateLeadSchema,
   CreatedLeadSchema,
+  ExistsQuerySchema,
   LeadSchema,
   ListLeadsQuerySchema,
   StatsSchema,
@@ -29,6 +30,20 @@ type UpdateLead = z.infer<typeof UpdateLeadSchema>;
 /** 404 for ids that aren't valid Mongo ObjectIds (avoids a cast error). */
 function requireObjectId(id: string): void {
   if (!isValidObjectId(id)) throw notFound('Demande introuvable');
+}
+
+/** Bidirectionally link a lead to every other lead sharing its email (case-insensitive). */
+async function linkLeadsByEmail(newId: unknown, email: string): Promise<void> {
+  const others = await Lead.find({ email, _id: { $ne: newId } })
+    .collation({ locale: 'en', strength: 2 })
+    .select('_id');
+  if (others.length === 0) return;
+  const otherIds = others.map((o) => String(o._id));
+  await Lead.updateOne({ _id: newId }, { $addToSet: { relatedLeadIds: { $each: otherIds } } });
+  await Lead.updateMany(
+    { _id: { $in: others.map((o) => o._id) } },
+    { $addToSet: { relatedLeadIds: String(newId) } },
+  );
 }
 
 /* ---------------- OpenAPI paths ---------------- */
@@ -130,7 +145,7 @@ leadsRouter.post(
   createLeadLimiter,
   validateBody(CreateLeadSchema),
   asyncHandler(async (req, res) => {
-    const { website, startedAt, ...data } = req.body as CreateLeadInput;
+    const { website, startedAt, combineWithExisting, ...data } = req.body as CreateLeadInput;
 
     // Anti-spam (fail-safe): drop bots but answer 201 anyway so they can't tell,
     // and never block a real user (see isBotSubmission).
@@ -141,11 +156,35 @@ leadsRouter.post(
     }
 
     const lead = await Lead.create(data);
+
+    // Returning client chose "combine": bidirectionally link this lead to their
+    // existing ones (same email, case-insensitive).
+    if (combineWithExisting) {
+      try {
+        await linkLeadsByEmail(lead._id, lead.email);
+      } catch (err) {
+        console.error('[JUNO] failed to link related leads', err);
+      }
+    }
+
     res.status(201).json({ id: lead.id });
 
     // Fire notification + client recap without blocking the response. Errors are
     // swallowed inside sendLeadEmails so a mail issue never fails the submission.
     void sendLeadEmails(lead.toJSON() as unknown as LeadForMail);
+  }),
+);
+
+// Public duplicate pre-check: does a lead already exist for this email? Returns
+// only a boolean (no lead details) to avoid leaking who is a client.
+leadsRouter.get(
+  '/exists',
+  checkLeadLimiter,
+  validateQuery(ExistsQuerySchema),
+  asyncHandler(async (_req, res) => {
+    const { email } = res.locals['query'] as { email: string };
+    const found = await Lead.exists({ email }).collation({ locale: 'en', strength: 2 });
+    res.json({ exists: Boolean(found) });
   }),
 );
 

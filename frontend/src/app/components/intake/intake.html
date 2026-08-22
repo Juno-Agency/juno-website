@@ -14,6 +14,23 @@
   </div>
 }
 
+@if (dupOpen()) {
+  <div class="resume-overlay">
+    <div class="resume-card">
+      <juno-mascot />
+      <h3>{{ tr('Vous avez déjà une demande chez nous') }}</h3>
+      <p>{{ tr('On dirait que vous nous avez déjà contactés. S’agit-il du même projet, ou d’un nouveau ?') }}</p>
+      <div class="resume-actions dup-actions">
+        <button class="go" (click)="dupCombine()">
+          <span>{{ tr('C’est le même projet') }}</span> <span class="arr">→</span>
+        </button>
+        <button class="ghostlink" (click)="dupNew()">{{ tr('Non, un nouveau projet') }}</button>
+        <button class="ghostlink" (click)="dupCancel()">{{ tr('Annuler') }}</button>
+      </div>
+    </div>
+  </div>
+}
+
 <div class="pbar"><div class="fl" [style.width.%]="progress()"></div></div>
 
 <!-- Honeypot: hidden from users, off-screen; bots that fill it are dropped server-side. -->

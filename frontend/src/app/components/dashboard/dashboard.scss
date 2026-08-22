@@ -569,3 +569,32 @@ select.in { appearance: none; cursor: pointer; }
 .text.muted {
   color: var(--faint);
 }
+
+/* Linked requests (returning client) */
+.linkedlead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--cream);
+  transition: border-color 0.15s ease;
+}
+.linkedlead:hover {
+  border-color: color-mix(in srgb, var(--cream) 30%, transparent);
+}
+.ll-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.ll-meta {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}

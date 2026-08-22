@@ -31,6 +31,9 @@ export const CreateLeadSchema = registry.register(
       // `startedAt` is the client ms timestamp of when the form was opened.
       website: z.string().max(200).optional().openapi({ example: '' }),
       startedAt: z.number().int().optional().openapi({ example: 1_699_999_999_000 }),
+      // When the client confirmed this is a returning project: link the new lead
+      // to their existing one(s) with the same email.
+      combineWithExisting: z.boolean().optional().openapi({ example: false }),
     })
     .openapi('CreateLead'),
 );
@@ -57,11 +60,17 @@ export const LeadSchema = registry.register(
       echeance: z.string().nullable(),
       message: z.string().nullable(),
       status: z.enum(LEAD_STATUS),
+      relatedLeadIds: z.array(z.string()).default([]),
       createdAt: z.string().datetime(),
       updatedAt: z.string().datetime(),
     })
     .openapi('Lead'),
 );
+
+/** Query for GET /api/leads/exists — public duplicate pre-check. */
+export const ExistsQuerySchema = z.object({
+  email: z.string().trim().email().max(180),
+});
 
 /** Body for PATCH /api/leads/:id — every field optional (back office edit). */
 export const UpdateLeadSchema = registry.register(

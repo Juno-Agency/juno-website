@@ -192,6 +192,9 @@ export class IntakeComponent {
   protected readonly honeypot = signal('');
   /** When the form was opened, sent so the server can reject bot-speed submissions. */
   private readonly startedAt = Date.now();
+  /** Duplicate pre-check: true while checking, and whether to show the choice modal. */
+  protected readonly checkingDup = signal(false);
+  protected readonly dupOpen = signal(false);
 
   /** Drives the "Aperçu" attention cue: the mockup changed but the drawer
       (mobile) hasn't been opened to see it yet. */
@@ -762,13 +765,44 @@ export class IntakeComponent {
 
   /* ---------- submit + confirmation ---------- */
   protected submit(): void {
-    if (this.animating() || this.done()) return;
+    if (this.animating() || this.done() || this.checkingDup()) return;
     if (!this.consent()) {
       this.err.set(this.tr('Merci d’accepter l’utilisation de vos informations pour continuer.'));
       return;
     }
+    // Duplicate pre-check: if a request already exists for this email, let the
+    // visitor decide (new project vs. link to the existing one) before sending.
+    const email = this.data().email.trim();
+    if (!email) {
+      this.finalize(false);
+      return;
+    }
+    this.checkingDup.set(true);
+    this.lead.exists(email).subscribe((exists) => {
+      this.checkingDup.set(false);
+      if (exists) this.dupOpen.set(true);
+      else this.finalize(false);
+    });
+  }
+
+  /** Duplicate modal choices. */
+  protected dupNew(): void {
+    this.dupOpen.set(false);
+    this.finalize(false);
+  }
+  protected dupCombine(): void {
+    this.dupOpen.set(false);
+    this.finalize(true);
+  }
+  protected dupCancel(): void {
+    this.dupOpen.set(false);
+  }
+
+  /** Actually send the lead (after the duplicate check is resolved). */
+  private finalize(combine: boolean): void {
+    if (this.animating() || this.done()) return;
     this.animating.set(true);
-    const payload: LeadPayload = this.buildPayload();
+    const payload: LeadPayload = this.buildPayload(combine);
     this.lead.submit(payload).subscribe();
     this.clearSaved();
     this.persistOn = false;
@@ -777,7 +811,7 @@ export class IntakeComponent {
     setTimeout(() => this.animating.set(false), this.rm ? 0 : 300);
   }
 
-  private buildPayload(): LeadPayload {
+  private buildPayload(combine = false): LeadPayload {
     const d = this.data();
     return {
       ...d,
@@ -790,6 +824,7 @@ export class IntakeComponent {
       echeance: d.echeance || undefined,
       website: this.honeypot(),
       startedAt: this.startedAt,
+      combineWithExisting: combine || undefined,
     };
   }
 

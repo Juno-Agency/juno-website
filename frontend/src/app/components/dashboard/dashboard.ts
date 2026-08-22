@@ -108,6 +108,15 @@ export class AdminDashboardComponent implements OnInit {
     return lead.emails?.find((e) => e.kind === 'client')?.status;
   }
 
+  /** Resolve a lead's linked requests to the loaded lead objects. */
+  protected relatedLeads(lead: AdminLead | null): AdminLead[] {
+    if (!lead?.relatedLeadIds?.length) return [];
+    const byId = new Map(this.leads().map((l) => [l.id, l]));
+    return lead.relatedLeadIds
+      .map((id) => byId.get(id))
+      .filter((l): l is AdminLead => Boolean(l));
+  }
+
   ngOnInit(): void {
     this.load();
   }

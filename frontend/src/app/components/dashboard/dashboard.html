@@ -142,6 +142,19 @@
             <div class="field"><span class="blabel">Échéance</span><span class="val">{{ l.echeance || '—' }}</span></div>
           </div>
 
+          @if (relatedLeads(l).length) {
+            <div class="block"><span class="blabel">Demandes liées</span>
+              <div class="maillist">
+                @for (rl of relatedLeads(l); track rl.id) {
+                  <button class="linkedlead" (click)="open(rl)">
+                    <span class="ll-name">{{ rl.nom }}</span>
+                    <span class="badge" [style.--c]="statusMeta[rl.status].color">{{ statusMeta[rl.status].label }}</span>
+                    <span class="ll-meta">{{ rl.type }} · {{ fmtDate(rl.createdAt) }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
           @if (l.pages.length) {
             <div class="block"><span class="blabel">Pages</span>
               <div class="chiprow">@for (p of l.pages; track p) { <span class="tagchip">{{ p }}</span> }</div>

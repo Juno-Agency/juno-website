@@ -25,6 +25,8 @@ export interface AdminLead {
   message: string | null;
   status: LeadStatus;
   emails?: LeadEmail[];
+  /** Ids of other leads from the same client, linked at submission. */
+  relatedLeadIds?: string[];
   createdAt: string;
   updatedAt: string;
 }

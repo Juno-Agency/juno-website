@@ -17,3 +17,12 @@ export const createLeadLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Trop de demandes envoyées. Réessayez plus tard.' },
 });
+
+/** Limiter on the public duplicate pre-check — blunts email enumeration. */
+export const checkLeadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 30, // 30 checks per IP per window
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Trop de requêtes. Réessayez dans un instant.' },
+});

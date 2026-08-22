@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../db';
+import { AdminUser } from '../models';
 import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody } from '../middleware/validate';
 import { unauthorized } from '../middleware/http-error';
@@ -32,7 +32,7 @@ authRouter.post(
   validateBody(LoginSchema),
   asyncHandler(async (req, res) => {
     const { email, password } = req.body as LoginInput;
-    const admin = await prisma.adminUser.findUnique({ where: { email } });
+    const admin = await AdminUser.findOne({ email });
     if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {
       throw unauthorized('Identifiants invalides');
     }

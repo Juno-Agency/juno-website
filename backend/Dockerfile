@@ -1,30 +1,25 @@
 # ---------- build stage ----------
-FROM node:22-alpine AS build
+FROM node:22-slim AS build
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm ci
-
-COPY prisma ./prisma
-RUN npx prisma generate
 
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
 # ---------- runtime stage ----------
-FROM node:22-alpine AS runtime
+FROM node:22-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Prisma needs OpenSSL at runtime on Alpine.
-RUN apk add --no-cache openssl
+# CA certificates for the TLS connection to MongoDB Atlas.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 RUN npm ci --omit=dev
-
-COPY prisma ./prisma
-RUN npx prisma generate
 
 COPY --from=build /app/dist ./dist
 COPY docker-entrypoint.sh ./

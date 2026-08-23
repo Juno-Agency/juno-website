@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JUNO">
+  <!--
+    Favicon JUNO — la mascotte au repos, figée.
+    Silhouette produite par blobPath(0.55, 0.06) de
+    frontend/src/app/shared/juno-mascot/blob.ts, réduite à rx 21.5 / ry 22 pour
+    laisser une marge dans le carré. L'amplitude est plus forte que celle du
+    repos animé (0.025) : à 16 px, une déformation trop discrète se lit comme un
+    cercle et la mascotte perd son caractère. Yeux et sourire sont volontairement
+    plus épais que sur le composant, pour la même raison. Pas de reflets d'yeux
+    ni d'ombre portée — du bruit à cette taille.
+  -->
+  <rect width="64" height="64" rx="14" fill="#141414"/>
+  <path d="M53.51 32.00C53.79 36.27 52.52 41.95 50.03 45.40C47.54 48.86 42.69 51.49 38.58 52.74C34.47 53.98 29.40 54.16 25.37 52.89C21.33 51.61 16.73 48.59 14.37 45.11C12.01 41.63 11.14 36.31 11.22 32.00C11.30 27.69 12.54 22.92 14.84 19.24C17.13 15.56 21.01 11.29 24.98 9.90C28.96 8.52 34.79 9.26 38.70 10.91C42.60 12.56 45.93 16.29 48.40 19.81C50.87 23.32 53.24 27.73 53.51 32.00Z" fill="#fcfcfb"/>
+  <circle cx="26" cy="29.6" r="3.6" fill="#141414"/>
+  <circle cx="38" cy="29.6" r="3.6" fill="#141414"/>
+  <path d="M25.6 38.4 Q32 44.2 38.4 38.4" stroke="#141414" stroke-width="3.1" fill="none" stroke-linecap="round"/>
+</svg>

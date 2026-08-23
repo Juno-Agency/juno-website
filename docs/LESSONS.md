@@ -18,3 +18,21 @@ pas le layout.
 
 **Corollaire** — une extraction de composant n'est pas vérifiée par un build vert.
 Il faut comparer les dimensions calculées avant/après dans le navigateur.
+
+## Audit — ouvrir les assets, pas seulement les lister
+
+**2026-08-23 — favicon.** Lors de l'audit du site public, `frontend/public/`
+a été inventorié (« ne contient qu'un favicon.ico ») sans que le fichier soit
+ouvert. C'était le bouclier Angular par défaut, présent depuis le commit
+initial et visible dans l'onglet de chaque visiteur. Le manque le plus voyant
+du site est passé sous le radar d'un audit qui, par ailleurs, lisait le HTML
+prérendu ligne à ligne.
+
+**Règle** — un audit ne s'arrête pas au nom des fichiers. Tout asset binaire
+livré au visiteur (favicon, OG image, logo, police) se regarde : `sips -s
+format png … && Read`, ou un rendu navigateur. Un `ls` ne dit rien du contenu.
+
+**Corollaire** — se méfier des fichiers datant du commit initial : ce sont les
+valeurs par défaut du générateur, donc les candidats les plus probables à
+l'oubli.
+

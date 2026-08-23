@@ -23,6 +23,14 @@
         {{ statusLabel[s] }} <span class="n">{{ counts()[s] }}</span>
       </button>
     }
+
+    <select class="who" (change)="setWhoFilter($any($event.target).value)" aria-label="Filtrer par assigné">
+      <option value="" [selected]="whoFilter() === null">Tout le monde</option>
+      @for (a of ASSIGNEES; track a) {
+        <option [value]="a" [selected]="whoFilter() === a">{{ assigneeLabel[a] }}</option>
+      }
+      <option value="NONE" [selected]="whoFilter() === 'NONE'">Non assignés</option>
+    </select>
   </nav>
 
   @if (loading()) {
@@ -65,6 +73,18 @@
           >
             @for (p of PRIORITIES; track p) {
               <option [value]="p" [selected]="p === t.priority">{{ priorityLabel[p] }}</option>
+            }
+          </select>
+
+          <select
+            class="sel who"
+            [class.none]="t.assignee === null"
+            (change)="setAssignee(t, $any($event.target).value)"
+            [attr.aria-label]="'Assigné de ' + t.key"
+          >
+            <option value="" [selected]="t.assignee === null">—</option>
+            @for (a of ASSIGNEES; track a) {
+              <option [value]="a" [selected]="a === t.assignee">{{ assigneeLabel[a] }}</option>
             }
           </select>
 
@@ -130,6 +150,18 @@
             <select (change)="patch({ priority: $any($event.target).value })">
               @for (p of PRIORITIES; track p) {
                 <option [value]="p" [selected]="p === draft().priority">{{ priorityLabel[p] }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Assigné à</span>
+            <select
+              (change)="patch({ assignee: $any($event.target).value || null })"
+            >
+              <option value="" [selected]="draft().assignee === null">Personne</option>
+              @for (a of ASSIGNEES; track a) {
+                <option [value]="a" [selected]="a === draft().assignee">{{ assigneeLabel[a] }}</option>
               }
             </select>
           </label>

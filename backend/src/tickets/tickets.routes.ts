@@ -105,8 +105,11 @@ ticketsRouter.get(
   requireAuth,
   validateQuery(ListTicketsQuerySchema),
   asyncHandler(async (_req, res) => {
-    const { status, take, skip } = res.locals['query'] as ListQuery;
-    const tickets = await Ticket.find(status ? { status } : {})
+    const { status, assignee, take, skip } = res.locals['query'] as ListQuery;
+    const filter: Record<string, unknown> = {};
+    if (status) filter['status'] = status;
+    if (assignee) filter['assignee'] = assignee;
+    const tickets = await Ticket.find(filter)
       .sort({ seq: -1 })
       .skip(skip)
       .limit(take);

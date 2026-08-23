@@ -99,6 +99,31 @@
   opacity: 0.7;
 }
 
+/* Le filtre par personne est poussé à droite : c'est une seconde dimension de
+   tri, pas un statut de plus. */
+.filters .who {
+  margin-left: auto;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+}
+.filters .who:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--cream) 40%, transparent);
+}
+
+/* Un ticket que personne n'a pris s'affiche en creux : le « — » ne doit pas
+   peser autant qu'un nom. */
+.sel.who.none {
+  color: var(--faint);
+}
+
 .state {
   padding: 60px 0;
   text-align: center;
@@ -114,7 +139,7 @@
 }
 .trow {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr) 116px 106px 52px auto;
+  grid-template-columns: 88px minmax(0, 1fr) 112px 100px 96px 46px auto;
   align-items: center;
   gap: 14px;
   padding: 13px 16px;
@@ -303,7 +328,7 @@
 }
 .row2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
 
@@ -320,7 +345,8 @@
     grid-template-columns: 88px minmax(0, 1fr) auto;
     grid-template-areas:
       'key info actions'
-      'status prio date';
+      'status prio who'
+      'date date date';
     row-gap: 10px;
   }
   .tkey {
@@ -338,9 +364,15 @@
   .sel.prio {
     grid-area: prio;
   }
+  .sel.who {
+    grid-area: who;
+  }
   .tdate {
     grid-area: date;
-    align-self: center;
+    text-align: left;
+  }
+  .filters .who {
+    margin-left: 0;
   }
   .row2 {
     grid-template-columns: 1fr;

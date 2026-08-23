@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { LEAD_STATUS } from './leads/lead.schema';
-import { TICKET_PRIORITY, TICKET_STATUS } from './tickets/ticket.schema';
+import { TICKET_ASSIGNEE, TICKET_PRIORITY, TICKET_STATUS } from './tickets/ticket.schema';
 
 /**
  * Shared toJSON transform: expose `id` (string) instead of `_id`/`__v`,
@@ -109,6 +109,8 @@ const ticketSchema = new Schema(
     description: { type: String, default: '' },
     status: { type: String, enum: TICKET_STATUS, default: 'TODO', index: true },
     priority: { type: String, enum: TICKET_PRIORITY, default: 'MEDIUM' },
+    // null = personne ne l'a pris ; le ticket reste au backlog commun.
+    assignee: { type: String, enum: [...TICKET_ASSIGNEE, null], default: null, index: true },
   },
   { timestamps: true, versionKey: false, toJSON },
 );

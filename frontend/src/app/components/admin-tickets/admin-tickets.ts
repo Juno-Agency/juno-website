@@ -2,11 +2,14 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 
 import { TicketService } from '../../services/ticket.service';
 import {
+  TICKET_ASSIGNEES,
+  TICKET_ASSIGNEE_LABEL,
   TICKET_PRIORITIES,
   TICKET_PRIORITY_LABEL,
   TICKET_STATUSES,
   TICKET_STATUS_LABEL,
   Ticket,
+  TicketAssignee,
   TicketDraft,
   TicketPriority,
   TicketStatus,
@@ -29,14 +32,18 @@ export class AdminTicketsComponent implements OnInit {
 
   protected readonly STATUSES = TICKET_STATUSES;
   protected readonly PRIORITIES = TICKET_PRIORITIES;
+  protected readonly ASSIGNEES = TICKET_ASSIGNEES;
   protected readonly statusLabel = TICKET_STATUS_LABEL;
   protected readonly priorityLabel = TICKET_PRIORITY_LABEL;
+  protected readonly assigneeLabel = TICKET_ASSIGNEE_LABEL;
 
   protected readonly tickets = signal<Ticket[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
   /** null = tous les statuts. */
   protected readonly filter = signal<TicketStatus | null>(null);
+  /** null = tout le monde ; 'NONE' = les tickets que personne n'a pris. */
+  protected readonly whoFilter = signal<TicketAssignee | 'NONE' | null>(null);
 
   protected readonly editorOpen = signal(false);
   protected readonly editingId = signal<string | null>(null);
@@ -51,8 +58,14 @@ export class AdminTicketsComponent implements OnInit {
    * plus) et on évite un aller-retour réseau à chaque clic d'onglet.
    */
   protected readonly visible = computed(() => {
-    const f = this.filter();
-    return f ? this.tickets().filter((t) => t.status === f) : this.tickets();
+    const status = this.filter();
+    const who = this.whoFilter();
+    return this.tickets().filter((t) => {
+      if (status && t.status !== status) return false;
+      if (who === 'NONE') return t.assignee === null;
+      if (who && t.assignee !== who) return false;
+      return true;
+    });
   });
 
   /** Compteur par statut, pour les pastilles des filtres. */
@@ -85,6 +98,18 @@ export class AdminTicketsComponent implements OnInit {
 
   protected setFilter(status: TicketStatus | null): void {
     this.filter.set(status);
+  }
+
+  /** Le select renvoie '' pour « tout le monde » : les valeurs HTML sont des chaînes. */
+  protected setWhoFilter(value: string): void {
+    this.whoFilter.set(value === '' ? null : (value as TicketAssignee | 'NONE'));
+  }
+
+  /** Idem sur une ligne : '' signifie « rendre au backlog », donc null en base. */
+  protected setAssignee(t: Ticket, value: string): void {
+    const assignee = value === '' ? null : (value as TicketAssignee);
+    if (assignee === t.assignee) return;
+    this.applyInline(t, { assignee });
   }
 
   protected patch(part: Partial<TicketDraft>): void {

@@ -73,3 +73,26 @@ statut, pas de lien avec les leads.
   tous la première option — voir `docs/LESSONS.md`.
 - Vérifié après rechargement complet : création (JUNO-05), persistance du
   statut, filtres et compteurs, suppression confirmée, zéro erreur console.
+
+## Back-office — assignation des tickets (2026-08-23)
+
+- [x] `ticket.schema.spec.ts` — assignation et désassignation (rouge d'abord)
+- [x] `assignee` dans le schéma Zod, le modèle Mongoose et le filtre de liste
+- [x] Colonne « assigné » éditable sur la ligne + champ dans l'éditeur
+- [x] Filtre par personne, avec « Non assignés »
+- [x] Vérification navigateur + état réel en base
+
+### Review
+
+- Liste fermée (`NOAH`, `JULIEN`) plutôt qu'un texte libre : à deux, une faute
+  de frappe qui invente un troisième assigné coûte plus cher que la souplesse
+  ne rapporte. Ajouter quelqu'un = une entrée dans `TICKET_ASSIGNEE`.
+- `null` = personne, le ticket est au backlog commun. Le cas piégeux est la
+  désassignation : `{ assignee: null }` doit effacer, `{}` ne doit rien
+  toucher. Deux tests le figent, et c'est vérifié à l'API.
+- Filtre par personne côté client, comme celui par statut, avec une entrée
+  « Non assignés » — c'est la vue qui sert à piocher du travail.
+- Anomalie constatée une fois pendant les essais (un statut revenu à « À
+  faire ») et non reproduite depuis : trois vérifications enchaînées, à l'API
+  puis dans l'interface, montrent le statut préservé par un changement
+  d'assigné. Cause non établie ; à surveiller.

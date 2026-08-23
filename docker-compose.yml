@@ -1,19 +1,18 @@
 services:
   db:
-    image: bitnami/mongodb:7.0
+    # Image officielle : les images publiques Bitnami ont été retirées, et
+    # `bitnami/mongodb:7.0` ne se résout plus du tout. Le replica set qui allait
+    # avec n'a plus lieu d'être non plus — il ne servait qu'aux transactions
+    # exigées par Prisma, remplacé depuis par Mongoose.
+    image: mongo:7
     container_name: juno-db
     restart: unless-stopped
     environment:
-      MONGODB_ROOT_USER: ${MONGO_USER:-root}
-      MONGODB_ROOT_PASSWORD: ${MONGO_PASSWORD:-juno}
-      MONGODB_DATABASE: ${MONGO_DB:-juno}
-      # Prisma requires a replica set (transactions) — run a single-node RS.
-      MONGODB_REPLICA_SET_MODE: primary
-      MONGODB_REPLICA_SET_NAME: rs0
-      MONGODB_REPLICA_SET_KEY: ${MONGO_REPLICA_KEY:-junoreplicasetkey0}
-      MONGODB_ADVERTISED_HOSTNAME: db
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-juno}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-juno}
     volumes:
-      - juno-mongo-data:/bitnami/mongodb
+      - juno-mongo-data:/data/db
     healthcheck:
       test:
         [

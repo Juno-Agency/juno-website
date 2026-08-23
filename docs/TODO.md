@@ -33,3 +33,43 @@
   jamais la mascotte coincée à plat.
 - Préexistant, non traité : `ng build` échoue sur le budget de `intake.scss`
   (20,08 kB pour 20 kB) — déjà le cas sur `main`.
+
+## Back-office — onglet Tickets (2026-08-23)
+
+Backlog interne JUNO, identifiants `JUNO-01`, `JUNO-02`… Liste filtrable par
+statut, pas de lien avec les leads.
+
+### Backend
+- [x] Vitest en devDependency + script `test` (première infra de test du backend)
+- [x] `tickets/ticket-key.spec.ts` — clé et séquence (rouge d'abord)
+- [x] `tickets/ticket-key.ts` — `formatTicketKey`, `nextTicketSeq` (compteur atomique)
+- [x] `models.ts` — schémas `Ticket` et `Counter`
+- [x] `tickets/ticket.schema.ts` — Zod + OpenAPI
+- [x] `tickets/tickets.routes.ts` — CRUD sous `requireAuth`, monté dans `app.ts`
+
+### Frontend
+- [x] `models/ticket.model.ts` + `services/ticket.service.ts`
+- [x] `components/admin-tickets/` — table, filtres statut, création, édition, suppression
+- [x] Route `admin/tickets` + onglet « Tickets » dans `layout.html`
+
+### Vérification
+- [x] Tests verts, build back + front
+- [x] Essai navigateur : JUNO-01/02/03, filtre, changement de statut, suppression sans recyclage du numéro
+
+### Review
+
+- Backend calqué sur `portfolio/` : schéma Zod → OpenAPI, routes CRUD sous
+  `requireAuth`, modèle Mongoose. Rien d'inédit à apprendre pour y revenir.
+- Les identifiants viennent d'un compteur dédié (`counters`, `$inc` atomique
+  sur un document unique), pas du nombre de tickets : deux créations
+  simultanées ne peuvent pas se voir attribuer le même numéro, et un ticket
+  supprimé ne libère pas le sien. Vérifié en direct : JUNO-02 supprimé, le
+  ticket suivant est JUNO-04.
+- Première infrastructure de test du backend (Vitest, 7 tests). Les specs sont
+  exclues de `tsconfig` pour ne pas atterrir dans `dist/`.
+- Statut et priorité se changent depuis la ligne, écriture optimiste avec
+  retour à l'état précédent et message si l'API refuse.
+- Régression attrapée en vérification navigateur : les `<select>` affichaient
+  tous la première option — voir `docs/LESSONS.md`.
+- Vérifié après rechargement complet : création (JUNO-05), persistance du
+  statut, filtres et compteurs, suppression confirmée, zéro erreur console.

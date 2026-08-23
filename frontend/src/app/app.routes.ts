@@ -64,6 +64,14 @@ export const routes: Routes = [
           import('./components/stats/stats').then((m) => m.AdminStatsComponent),
       },
       {
+        path: 'tickets',
+        title: 'JUNO — Tickets',
+        loadComponent: () =>
+          import('./components/admin-tickets/admin-tickets').then(
+            (m) => m.AdminTicketsComponent,
+          ),
+      },
+      {
         path: 'portfolio',
         title: 'JUNO — Portfolio',
         loadComponent: () =>

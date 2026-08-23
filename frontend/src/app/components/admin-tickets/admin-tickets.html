@@ -1,0 +1,147 @@
+<main class="atk">
+  <header class="atk-head">
+    <div>
+      <h1>Tickets</h1>
+      <p class="sub">
+        {{ tickets().length }} ticket{{ tickets().length > 1 ? 's' : '' }} ·
+        {{ counts().TODO }} à faire
+      </p>
+    </div>
+    <button class="btn" (click)="openNew()"><span>+ Nouveau ticket</span></button>
+  </header>
+
+  @if (error() && !editorOpen()) {
+    <p class="banner">{{ error() }}</p>
+  }
+
+  <nav class="filters" aria-label="Filtrer par statut">
+    <button class="chip" [class.on]="filter() === null" (click)="setFilter(null)">
+      Tous <span class="n">{{ tickets().length }}</span>
+    </button>
+    @for (s of STATUSES; track s) {
+      <button class="chip" [class.on]="filter() === s" (click)="setFilter(s)">
+        {{ statusLabel[s] }} <span class="n">{{ counts()[s] }}</span>
+      </button>
+    }
+  </nav>
+
+  @if (loading()) {
+    <div class="state">Chargement…</div>
+  } @else if (!visible().length) {
+    <div class="state">
+      @if (tickets().length) {
+        Aucun ticket avec ce statut.
+      } @else {
+        Rien à faire pour l’instant. Cliquez « Nouveau ticket ».
+      }
+    </div>
+  } @else {
+    <div class="tlist">
+      @for (t of visible(); track t.id) {
+        <div class="trow" [class.done]="t.status === 'DONE'">
+          <span class="tkey">{{ t.key }}</span>
+
+          <div class="tinfo">
+            <span class="tt">{{ t.title }}</span>
+            @if (t.description) { <span class="td">{{ t.description }}</span> }
+          </div>
+
+          <select
+            class="sel status"
+            (change)="setStatus(t, $any($event.target).value)"
+            [attr.aria-label]="'Statut de ' + t.key"
+          >
+            @for (s of STATUSES; track s) {
+              <option [value]="s" [selected]="s === t.status">{{ statusLabel[s] }}</option>
+            }
+          </select>
+
+          <select
+            class="sel prio"
+            [class.high]="t.priority === 'HIGH'"
+            [class.low]="t.priority === 'LOW'"
+            (change)="setPriority(t, $any($event.target).value)"
+            [attr.aria-label]="'Priorité de ' + t.key"
+          >
+            @for (p of PRIORITIES; track p) {
+              <option [value]="p" [selected]="p === t.priority">{{ priorityLabel[p] }}</option>
+            }
+          </select>
+
+          <span class="tdate">{{ formatDate(t.createdAt) }}</span>
+
+          <div class="tactions">
+            <button class="iconbtn" (click)="openEdit(t)" title="Modifier">✎</button>
+            @if (confirmDeleteId() === t.id) {
+              <button class="iconbtn danger" (click)="doDelete(t.id)" title="Confirmer">✓</button>
+              <button class="iconbtn" (click)="cancelDelete()" title="Annuler">×</button>
+            } @else {
+              <button class="iconbtn danger" (click)="askDelete(t.id)" title="Supprimer">🗑</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</main>
+
+@if (editorOpen()) {
+  <div class="overlay" (click)="close()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="x" (click)="close()" aria-label="Fermer">×</button>
+      <h2>{{ isEditing() ? 'Modifier le ticket' : 'Nouveau ticket' }}</h2>
+      @if (error()) { <p class="banner">{{ error() }}</p> }
+
+      <div class="form">
+        <label class="field">
+          <span>Titre</span>
+          <input
+            type="text"
+            [value]="draft().title"
+            (input)="patch({ title: $any($event.target).value })"
+            placeholder="Corriger le lead perdu en silence"
+            maxlength="160"
+          />
+        </label>
+
+        <label class="field">
+          <span>Description</span>
+          <textarea
+            rows="5"
+            [value]="draft().description"
+            (input)="patch({ description: $any($event.target).value })"
+            placeholder="Contexte, critère de fin…"
+            maxlength="4000"
+          ></textarea>
+        </label>
+
+        <div class="row2">
+          <label class="field">
+            <span>Statut</span>
+            <select (change)="patch({ status: $any($event.target).value })">
+              @for (s of STATUSES; track s) {
+                <option [value]="s" [selected]="s === draft().status">{{ statusLabel[s] }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Priorité</span>
+            <select (change)="patch({ priority: $any($event.target).value })">
+              @for (p of PRIORITIES; track p) {
+                <option [value]="p" [selected]="p === draft().priority">{{ priorityLabel[p] }}</option>
+              }
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" (click)="close()">Annuler</button>
+        <button class="btn" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Enregistrement…' : isEditing() ? 'Enregistrer' : 'Créer le ticket' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

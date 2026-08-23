@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { LEAD_STATUS } from './leads/lead.schema';
+import { TICKET_PRIORITY, TICKET_STATUS } from './tickets/ticket.schema';
 
 /**
  * Shared toJSON transform: expose `id` (string) instead of `_id`/`__v`,
@@ -81,3 +82,37 @@ const portfolioSchema = new Schema(
 portfolioSchema.index({ order: 1, createdAt: -1 });
 
 export const Portfolio = model('Portfolio', portfolioSchema);
+
+/* ---------------- Tickets (back-office) ---------------- */
+
+/**
+ * Compteurs de séquence. Un document par compteur, incrémenté atomiquement —
+ * voir tickets/ticket-key.ts.
+ */
+const counterSchema = new Schema(
+  {
+    _id: { type: String },
+    value: { type: Number, default: 0 },
+  },
+  { versionKey: false },
+);
+
+export const Counter = model('Counter', counterSchema);
+
+const ticketSchema = new Schema(
+  {
+    // Identifiant lisible (JUNO-01). Unique : deux tickets ne peuvent pas le
+    // partager, même si le compteur venait à être remis à zéro par erreur.
+    key: { type: String, required: true, unique: true },
+    seq: { type: Number, required: true, unique: true },
+    title: { type: String, required: true },
+    description: { type: String, default: '' },
+    status: { type: String, enum: TICKET_STATUS, default: 'TODO', index: true },
+    priority: { type: String, enum: TICKET_PRIORITY, default: 'MEDIUM' },
+  },
+  { timestamps: true, versionKey: false, toJSON },
+);
+// La liste s'affiche du plus récent au plus ancien, filtrée par statut.
+ticketSchema.index({ status: 1, seq: -1 });
+
+export const Ticket = model('Ticket', ticketSchema);

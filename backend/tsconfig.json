@@ -15,5 +15,7 @@
     "sourceMap": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  // Les specs Vitest ne sont pas transpilées vers dist : elles ne servent qu'au
+  // runner, qui lit directement le TypeScript.
+  "exclude": ["node_modules", "dist", "src/**/*.spec.ts"]
 }

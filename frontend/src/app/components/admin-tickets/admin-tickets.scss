@@ -1,0 +1,348 @@
+:host {
+  display: block;
+}
+
+.atk {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+}
+.atk-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.atk-head h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+.atk-head .sub {
+  margin: 4px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 11px 20px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--cream);
+  border-color: var(--line);
+}
+
+.banner {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, #a3737b 16%, transparent);
+  border: 1px solid color-mix(in srgb, #a3737b 45%, transparent);
+  color: #e2c4c8;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+
+/* ---------------- filtres ---------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+}
+.chip:hover {
+  color: var(--cream);
+  border-color: color-mix(in srgb, var(--cream) 28%, transparent);
+}
+.chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.chip .n {
+  font-family: var(--mono);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.state {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--sans);
+}
+
+/* ---------------- liste ---------------- */
+.tlist {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.trow {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 116px 106px 52px auto;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line2);
+  background: var(--bg2);
+}
+.trow:last-child {
+  border-bottom: none;
+}
+.trow:hover {
+  background: var(--bg3);
+}
+/* Un ticket fait s'efface sans disparaître : il reste consultable, il ne tire
+   plus l'œil. */
+.trow.done .tinfo {
+  opacity: 0.5;
+}
+.trow.done .tt {
+  text-decoration: line-through;
+}
+
+.tkey {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+}
+.tinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.tt {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--cream);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.td {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tdate {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+  text-align: right;
+}
+
+.sel {
+  appearance: none;
+  width: 100%;
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.sel:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--cream) 40%, transparent);
+}
+/* La priorité se lit à la couleur du texte : une pastille de plus alourdirait
+   une ligne qui porte déjà six colonnes. */
+.sel.prio.high {
+  color: #e0b3b8;
+  border-color: color-mix(in srgb, #a3737b 45%, transparent);
+}
+.sel.prio.low {
+  color: var(--faint);
+}
+
+.tactions {
+  display: flex;
+  gap: 6px;
+}
+.iconbtn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+.iconbtn:hover {
+  color: var(--cream);
+  border-color: color-mix(in srgb, var(--cream) 30%, transparent);
+}
+.iconbtn.danger:hover {
+  color: #d8b3b8;
+  border-color: color-mix(in srgb, #a3737b 55%, transparent);
+}
+
+/* ---------------- éditeur ---------------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(8, 8, 8, 0.72);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow: auto;
+}
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.9);
+}
+.modal h2 {
+  margin: 0 0 18px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--cream);
+}
+.x {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field > span {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+.field input,
+.field textarea,
+.field select {
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 13px;
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: 14px;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--cream) 40%, transparent);
+}
+.field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+@media (max-width: 760px) {
+  /* La ligne passe en deux étages : identité au-dessus, contrôles en dessous. */
+  .trow {
+    grid-template-columns: 88px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'key info actions'
+      'status prio date';
+    row-gap: 10px;
+  }
+  .tkey {
+    grid-area: key;
+  }
+  .tinfo {
+    grid-area: info;
+  }
+  .tactions {
+    grid-area: actions;
+  }
+  .sel.status {
+    grid-area: status;
+  }
+  .sel.prio {
+    grid-area: prio;
+  }
+  .tdate {
+    grid-area: date;
+    align-self: center;
+  }
+  .row2 {
+    grid-template-columns: 1fr;
+  }
+}

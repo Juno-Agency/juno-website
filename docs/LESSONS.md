@@ -36,3 +36,20 @@ format png … && Read`, ou un rendu navigateur. Un `ls` ne dit rien du contenu.
 valeurs par défaut du générateur, donc les candidats les plus probables à
 l'oubli.
 
+## Angular — un `<select>` ne se pilote pas par `[value]` sur le select
+
+**2026-08-23 — onglet Tickets.** Les listes déroulantes de statut et de
+priorité affichaient toutes la première option (« Basse »), quelle que soit la
+valeur du ticket. `[value]` sur le `<select>` est appliqué avant que le `@for`
+n'ait créé les `<option>` : le navigateur ne trouve alors aucune option
+correspondante et retombe sur la première. Le build passait, les tests aussi,
+et la classe conditionnelle (`.high`) était correcte — seul le texte affiché
+mentait.
+
+**Règle** — porter la sélection sur l'option (`<option [value]="x"
+[selected]="x === valeurCourante">`), pas sur le select. Vaut pour tout
+rendu où les options sont générées par un `@for`.
+
+**Corollaire** — un écran de formulaire se relit dans le navigateur, valeurs
+réelles en base à l'appui. Ici, deux tickets sur trois affichaient une priorité
+fausse et rien dans la chaîne de build ne l'a signalé.

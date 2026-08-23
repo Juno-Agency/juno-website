@@ -57,3 +57,27 @@ const leadSchema = new Schema(
 leadSchema.index({ createdAt: 1 });
 
 export const Lead = model('Lead', leadSchema);
+
+/* ---------------- Portfolio ---------------- */
+const portfolioSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    client: { type: String, default: '' },
+    category: { type: String, default: '' },
+    tags: { type: [String], default: [] },
+    description: { type: String, default: '' },
+    // Public image URL (served from the CDN) + storage key (for deletion).
+    imageUrl: { type: String, default: '' },
+    imageKey: { type: String, default: '' },
+    url: { type: String, default: '' },
+    year: { type: String, default: '' },
+    featured: { type: Boolean, default: false },
+    published: { type: Boolean, default: true, index: true },
+    // Manual sort order for the public grid (lower = first).
+    order: { type: Number, default: 0, index: true },
+  },
+  { timestamps: true, versionKey: false, toJSON },
+);
+portfolioSchema.index({ order: 1, createdAt: -1 });
+
+export const Portfolio = model('Portfolio', portfolioSchema);

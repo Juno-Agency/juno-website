@@ -66,6 +66,16 @@ export const config = {
   // Anti-spam: minimum time (ms) a human takes to fill the multi-step intake.
   // A submission faster than this (with a client timestamp) is dropped as a bot.
   antispamMinFillMs: Number(process.env.ANTISPAM_MIN_FILL_MS ?? 2500),
+  // Cloudflare R2 (S3-compatible) object storage for portfolio images. When
+  // unconfigured, image upload is disabled and the API says so.
+  storage: {
+    r2AccountId: process.env.R2_ACCOUNT_ID ?? '',
+    r2AccessKeyId: process.env.R2_ACCESS_KEY_ID ?? '',
+    r2SecretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? '',
+    r2Bucket: process.env.R2_BUCKET ?? '',
+    // Public base URL the images are served from, e.g. https://cdn.agency-juno.com
+    r2PublicBaseUrl: (process.env.R2_PUBLIC_BASE_URL ?? '').replace(/\/+$/, ''),
+  },
 } as const;
 
 export const isProd = isProdEnv;

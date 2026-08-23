@@ -42,6 +42,17 @@ services:
       - key: RESEND_WEBHOOK_SECRET
         # Secret de signature du webhook Resend (Dashboard Resend → Webhooks).
         sync: false
+      # --- Portfolio image storage (Cloudflare R2) — set in the dashboard ---
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_PUBLIC_BASE_URL
+        sync: false
 
   - type: web
     name: juno-site

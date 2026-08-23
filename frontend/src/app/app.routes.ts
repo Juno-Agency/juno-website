@@ -17,6 +17,13 @@ export const routes: Routes = [
       import('./components/intake/intake').then((m) => m.IntakeComponent),
   },
   {
+    path: 'realisations',
+    title: 'JUNO — Nos réalisations',
+    canActivate: [backofficeHostGuard],
+    loadComponent: () =>
+      import('./components/portfolio/portfolio').then((m) => m.PortfolioComponent),
+  },
+  {
     path: 'mentions-legales',
     title: 'JUNO — Mentions légales',
     data: { doc: 'mentions' },
@@ -55,6 +62,14 @@ export const routes: Routes = [
         title: 'JUNO — Statistiques',
         loadComponent: () =>
           import('./components/stats/stats').then((m) => m.AdminStatsComponent),
+      },
+      {
+        path: 'portfolio',
+        title: 'JUNO — Portfolio',
+        loadComponent: () =>
+          import('./components/admin-portfolio/admin-portfolio').then(
+            (m) => m.AdminPortfolioComponent,
+          ),
       },
     ],
   },

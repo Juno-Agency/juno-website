@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import { config, isProd } from './config';
 import { authRouter } from './auth/auth.routes';
 import { leadsRouter } from './leads/leads.routes';
+import { portfolioRouter } from './portfolio/portfolio.routes';
 import { webhooksRouter } from './webhooks/resend.routes';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { buildOpenApiDocument } from './openapi/document';
@@ -36,6 +37,7 @@ export function createApp(): Express {
 
   // Feature routers.
   app.use('/api/leads', leadsRouter);
+  app.use('/api/portfolio', portfolioRouter);
   app.use('/api/auth', authRouter);
 
   // API docs (spec generated from the Zod schemas) — DEVELOPMENT ONLY, so the

@@ -1,0 +1,116 @@
+<main class="apf">
+  <header class="apf-head">
+    <div>
+      <h1>Portfolio</h1>
+      <p class="sub">{{ items().length }} projet{{ items().length > 1 ? 's' : '' }}</p>
+    </div>
+    <button class="btn" (click)="openNew()"><span>+ Nouveau projet</span></button>
+  </header>
+
+  @if (error() && !editorOpen()) { <p class="banner">{{ error() }}</p> }
+
+  @if (loading()) {
+    <div class="state">Chargement…</div>
+  } @else if (!items().length) {
+    <div class="state">Aucun projet pour l’instant. Cliquez « Nouveau projet ».</div>
+  } @else {
+    <div class="plist">
+      @for (p of items(); track p.id) {
+        <div class="prow">
+          <div class="pthumb">
+            @if (p.imageUrl) { <img [src]="p.imageUrl" [alt]="p.title" /> } @else { <span class="ph">—</span> }
+          </div>
+          <div class="pinfo">
+            <span class="pt">{{ p.title }}</span>
+            <span class="pm">{{ p.category || '—' }}{{ p.client ? ' · ' + p.client : '' }}{{ p.year ? ' · ' + p.year : '' }}</span>
+          </div>
+          <div class="pflags">
+            @if (p.featured) { <span class="badge feat">Featured</span> }
+            <span class="badge" [class.on]="p.published">{{ p.published ? 'Publié' : 'Brouillon' }}</span>
+            <span class="ord">#{{ p.order }}</span>
+          </div>
+          <div class="pactions">
+            <button class="iconbtn" (click)="openEdit(p)" title="Modifier">✎</button>
+            @if (confirmDeleteId() === p.id) {
+              <button class="iconbtn danger" (click)="doDelete(p.id)" title="Confirmer">✓</button>
+              <button class="iconbtn" (click)="cancelDelete()" title="Annuler">×</button>
+            } @else {
+              <button class="iconbtn danger" (click)="askDelete(p.id)" title="Supprimer">🗑</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</main>
+
+@if (editorOpen()) {
+  <div class="overlay" (click)="close()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="x" (click)="close()" aria-label="Fermer">×</button>
+      <h2>{{ isEditing() ? 'Modifier le projet' : 'Nouveau projet' }}</h2>
+      @if (error()) { <p class="banner">{{ error() }}</p> }
+
+      <div class="form">
+        <div class="imgfield">
+          <div class="imgprev">
+            @if (draft().imageUrl) { <img [src]="draft().imageUrl" alt="" /> } @else { <span>Pas d’image</span> }
+          </div>
+          <div class="imgctl">
+            <label class="btn ghost filebtn">
+              <span>{{ uploading() ? 'Upload…' : (draft().imageUrl ? 'Remplacer l’image' : 'Choisir une image') }}</span>
+              <input type="file" accept="image/*" (change)="onImagePicked($event)" hidden [disabled]="uploading()" />
+            </label>
+            @if (uploadErr()) { <span class="err">{{ uploadErr() }}</span> }
+            <span class="hint">JPG, PNG, WebP, AVIF · max 8 Mo</span>
+          </div>
+        </div>
+
+        <label class="f"><span>Titre *</span>
+          <input [value]="draft().title" (input)="patch({ title: $any($event.target).value })" />
+        </label>
+
+        <div class="frow">
+          <label class="f"><span>Client</span>
+            <input [value]="draft().client" (input)="patch({ client: $any($event.target).value })" />
+          </label>
+          <label class="f"><span>Catégorie</span>
+            <input [value]="draft().category" (input)="patch({ category: $any($event.target).value })" placeholder="Site vitrine…" />
+          </label>
+        </div>
+
+        <div class="frow">
+          <label class="f"><span>Année</span>
+            <input [value]="draft().year" (input)="patch({ year: $any($event.target).value })" placeholder="2026" />
+          </label>
+          <label class="f"><span>Lien (URL du site)</span>
+            <input [value]="draft().url" (input)="patch({ url: $any($event.target).value })" placeholder="https://…" />
+          </label>
+        </div>
+
+        <label class="f"><span>Tags (séparés par des virgules)</span>
+          <input [value]="tagsText()" (input)="tagsText.set($any($event.target).value)" placeholder="Épuré, Moderne…" />
+        </label>
+
+        <label class="f"><span>Description</span>
+          <textarea rows="3" [value]="draft().description" (input)="patch({ description: $any($event.target).value })"></textarea>
+        </label>
+
+        <div class="frow bottom">
+          <label class="f small"><span>Ordre</span>
+            <input type="number" [value]="draft().order" (input)="patch({ order: +$any($event.target).value })" />
+          </label>
+          <label class="chk"><input type="checkbox" [checked]="draft().featured" (change)="patch({ featured: $any($event.target).checked })" /> <span>Mis en avant</span></label>
+          <label class="chk"><input type="checkbox" [checked]="draft().published" (change)="patch({ published: $any($event.target).checked })" /> <span>Publié</span></label>
+        </div>
+      </div>
+
+      <div class="mfoot">
+        <button class="btn ghost" (click)="close()">Annuler</button>
+        <button class="btn" (click)="save()" [disabled]="saving() || uploading()">
+          <span>{{ saving() ? 'Enregistrement…' : 'Enregistrer' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

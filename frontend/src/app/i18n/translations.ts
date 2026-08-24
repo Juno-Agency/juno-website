@@ -328,8 +328,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     '• SIREN / RCS : [SIREN] — RCS de [VILLE]':
       '• SIREN / trade register: [SIREN] — register of [CITY]',
     '• N° TVA intracommunautaire : [N° TVA]': '• EU VAT number: [VAT NO.]',
-    '• Contact : hello@juno.studio — [TÉLÉPHONE]':
-      '• Contact: hello@juno.studio — [PHONE]',
+    '• Contact : agencyjuno@gmail.com — [TÉLÉPHONE]':
+      '• Contact: agencyjuno@gmail.com — [PHONE]',
     '• Directeur de la publication : [NOM DU DIRECTEUR DE PUBLICATION]':
       '• Publication director: [PUBLICATION DIRECTOR NAME]',
     Hébergement: 'Hosting',
@@ -353,8 +353,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Responsable du traitement': 'Data controller',
     'Le responsable du traitement des données est [RAISON SOCIALE], [ADRESSE].':
       'The data controller is [COMPANY NAME], [ADDRESS].',
-    'Pour toute question relative à vos données : hello@juno.studio.':
-      'For any question about your data: hello@juno.studio.',
+    'Pour toute question relative à vos données : agencyjuno@gmail.com.':
+      'For any question about your data: agencyjuno@gmail.com.',
     'Données collectées': 'Data collected',
     'Via notre formulaire « Décrivez votre projet », nous collectons uniquement les informations que vous nous transmettez :':
       'Through our “Describe your project” form, we collect only the information you provide:',
@@ -378,8 +378,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Vos droits': 'Your rights',
     'Conformément au RGPD, vous disposez des droits suivants sur vos données : accès, rectification, effacement, limitation, opposition et portabilité.':
       'Under the GDPR, you have the following rights over your data: access, rectification, erasure, restriction, objection and portability.',
-    'Pour les exercer, écrivez-nous à hello@juno.studio. Nous répondrons dans un délai maximum d’un mois.':
-      'To exercise them, write to us at hello@juno.studio. We will respond within one month at most.',
+    'Pour les exercer, écrivez-nous à agencyjuno@gmail.com. Nous répondrons dans un délai maximum d’un mois.':
+      'To exercise them, write to us at agencyjuno@gmail.com. We will respond within one month at most.',
     'Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr) si vous estimez que vos droits ne sont pas respectés.':
       'You may also lodge a complaint with the French CNIL (www.cnil.fr) if you believe your rights are not respected.',
     Sécurité: 'Security',
@@ -704,8 +704,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     '• SIREN / RCS : [SIREN] — RCS de [VILLE]':
       '• Handelsregister: [SIREN] — Register [STADT]',
     '• N° TVA intracommunautaire : [N° TVA]': '• USt-IdNr.: [UST-IDNR.]',
-    '• Contact : hello@juno.studio — [TÉLÉPHONE]':
-      '• Kontakt: hello@juno.studio — [TELEFON]',
+    '• Contact : agencyjuno@gmail.com — [TÉLÉPHONE]':
+      '• Kontakt: agencyjuno@gmail.com — [TELEFON]',
     '• Directeur de la publication : [NOM DU DIRECTEUR DE PUBLICATION]':
       '• Verantwortlich für den Inhalt: [NAME]',
     Hébergement: 'Hosting',
@@ -729,8 +729,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Responsable du traitement': 'Verantwortlicher',
     'Le responsable du traitement des données est [RAISON SOCIALE], [ADRESSE].':
       'Verantwortlicher für die Datenverarbeitung ist [FIRMENNAME], [ANSCHRIFT].',
-    'Pour toute question relative à vos données : hello@juno.studio.':
-      'Bei Fragen zu Ihren Daten: hello@juno.studio.',
+    'Pour toute question relative à vos données : agencyjuno@gmail.com.':
+      'Bei Fragen zu Ihren Daten: agencyjuno@gmail.com.',
     'Données collectées': 'Erhobene Daten',
     'Via notre formulaire « Décrivez votre projet », nous collectons uniquement les informations que vous nous transmettez :':
       'Über unser Formular „Projekt beschreiben“ erheben wir ausschließlich die von Ihnen übermittelten Informationen:',
@@ -754,8 +754,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Vos droits': 'Ihre Rechte',
     'Conformément au RGPD, vous disposez des droits suivants sur vos données : accès, rectification, effacement, limitation, opposition et portabilité.':
       'Gemäß der DSGVO haben Sie folgende Rechte an Ihren Daten: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Übertragbarkeit.',
-    'Pour les exercer, écrivez-nous à hello@juno.studio. Nous répondrons dans un délai maximum d’un mois.':
-      'Zur Ausübung schreiben Sie uns an hello@juno.studio. Wir antworten innerhalb von höchstens einem Monat.',
+    'Pour les exercer, écrivez-nous à agencyjuno@gmail.com. Nous répondrons dans un délai maximum d’un mois.':
+      'Zur Ausübung schreiben Sie uns an agencyjuno@gmail.com. Wir antworten innerhalb von höchstens einem Monat.',
     'Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr) si vous estimez que vos droits ne sont pas respectés.':
       'Sie können sich außerdem bei der zuständigen Datenschutzbehörde beschweren (in Frankreich die CNIL, www.cnil.fr), wenn Sie der Ansicht sind, dass Ihre Rechte nicht gewahrt werden.',
     Sécurité: 'Sicherheit',

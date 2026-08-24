@@ -34,7 +34,7 @@ services:
         # Ex. "JUNO <contact@juno.studio>" — le domaine doit être vérifié dans Resend.
         sync: false
       - key: MAIL_REPLY_TO
-        # Optionnel : adresse de réponse pour le récap client (ex. hello@juno.studio).
+        # Optionnel : adresse de réponse pour le récap client (ex. agencyjuno@gmail.com).
         sync: false
       - key: MAIL_INTERNAL_RECIPIENTS
         # Destinataires de la notif interne, séparés par des virgules (toi, Juno, Noah).

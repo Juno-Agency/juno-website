@@ -18,7 +18,7 @@ export interface LegalDoc {
   sections: LegalSection[];
 }
 
-const CONTACT_EMAIL = 'hello@juno.studio';
+const CONTACT_EMAIL = 'agencyjuno@gmail.com';
 
 export const LEGAL_DOCS: Record<string, LegalDoc> = {
   mentions: {

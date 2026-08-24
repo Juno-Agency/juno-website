@@ -10,7 +10,17 @@
     ×
   </button>
   <article class="d-layout">
-    <div class="d-slot" #slot aria-hidden="true"></div>
+    <div class="d-slot" #slot aria-hidden="true">
+      @if (item(); as p) {
+        <div class="seat" #seat>
+          @if (p.imageUrl) {
+            <img [src]="p.imageUrl" alt="" draggable="false" />
+          } @else {
+            <div class="noimg"></div>
+          }
+        </div>
+      }
+    </div>
     <div class="d-body">
       @if (item(); as p) {
         <div class="d-top">

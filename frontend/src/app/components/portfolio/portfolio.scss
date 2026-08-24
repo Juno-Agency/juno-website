@@ -103,7 +103,23 @@
 
 @media (max-width: 720px) {
   .pf {
-    padding-top: 108px;
+    padding-top: 104px;
+  }
+  .pf-head {
+    margin-bottom: 22px;
+  }
+  .title {
+    font-size: clamp(40px, 12vw, 52px);
+  }
+  .lede {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+  .after {
+    margin-top: 32px;
+  }
+  .statement {
+    font-size: 15px;
   }
 }
 

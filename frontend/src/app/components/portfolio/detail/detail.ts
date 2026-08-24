@@ -11,14 +11,26 @@ import {
 import { I18nService } from '../../../i18n/i18n.service';
 import { PortfolioItem } from '../../../models/portfolio.model';
 
+interface Box {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 /**
- * The foreground view of one project: a blurred backdrop, an empty seat on
- * the left that the carousel glides the lifted card into, and the project's
- * copy on the right.
+ * The foreground view of one project: a blurred backdrop, a slot on the left
+ * (on top, on phones) that the carousel glides the lifted card into, and the
+ * project's copy beside it.
+ *
+ * The slot holds a *seat* — an in-flow copy of the card's image. While the
+ * card flies in and out the carousel animates its own fixed clone; once it
+ * has landed the seat takes over, so the image scrolls with the copy on
+ * phones and swipes have an element to drag.
  *
  * Visibility is driven directly on the DOM by the carousel (`show` / `setOpen`
- * / `hide`) so it can measure the seat the very frame it appears — the copy
- * itself goes through normal bindings, its fade hides the one-tick delay.
+ * / `hide` / `showSeat`) so it can measure the slot the very frame it appears —
+ * the copy itself goes through normal bindings, its fade hides the one-tick delay.
  */
 @Component({
   selector: 'app-portfolio-detail',
@@ -41,9 +53,10 @@ export class PortfolioDetailComponent {
 
   private readonly root = viewChild.required<ElementRef<HTMLElement>>('root');
   private readonly slot = viewChild.required<ElementRef<HTMLElement>>('slot');
+  private readonly seat = viewChild<ElementRef<HTMLElement>>('seat');
   private readonly close = viewChild.required<ElementRef<HTMLButtonElement>>('close');
 
-  /** Render the overlay (still transparent) so the seat can be measured. */
+  /** Render the overlay (still transparent) so the slot can be measured. */
   show(): void {
     this.root().nativeElement.hidden = false;
   }
@@ -54,16 +67,43 @@ export class PortfolioDetailComponent {
   }
 
   hide(): void {
-    this.root().nativeElement.hidden = true;
+    const root = this.root().nativeElement;
+    root.hidden = true;
+    root.scrollTop = 0;
   }
 
   focusClose(): void {
     this.close().nativeElement.focus();
   }
 
-  /** Viewport box of the seat the lifted card glides into. */
+  /** Viewport box of the slot the lifted card glides into. */
   slotRect(): DOMRect {
     return this.slot().nativeElement.getBoundingClientRect();
+  }
+
+  /** The seat element (present once an item is set), for swipes. */
+  seatEl(): HTMLElement | null {
+    return this.seat()?.nativeElement ?? null;
+  }
+
+  /** Viewport box of the seat — where the card sits right now. */
+  seatRect(): DOMRect {
+    return (this.seat()?.nativeElement ?? this.slot().nativeElement).getBoundingClientRect();
+  }
+
+  /** Place the seat inside the slot (box relative to the slot). */
+  fitSeat(box: Box): void {
+    const el = this.seat()?.nativeElement;
+    if (!el) return;
+    el.style.left = `${box.left}px`;
+    el.style.top = `${box.top}px`;
+    el.style.width = `${box.width}px`;
+    el.style.height = `${box.height}px`;
+  }
+
+  /** Reveal the seat once the flying card has landed on it (and hide it again before take-off). */
+  showSeat(on: boolean): void {
+    this.seat()?.nativeElement.classList.toggle('on', on);
   }
 }
 

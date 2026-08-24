@@ -2,10 +2,15 @@
   display: contents;
 }
 
+/* The overlay is the scroll container: on phones the sheet is taller than the
+   screen and the page behind is locked, so this is where scrolling happens. */
 .detail {
   position: fixed;
   inset: 0;
   z-index: 60;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   display: grid;
   place-items: center;
   padding: clamp(16px, 4vh, 48px) var(--gutter);
@@ -18,7 +23,7 @@
 }
 
 .d-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(12, 12, 12, 0.74);
   backdrop-filter: blur(12px);
@@ -31,7 +36,7 @@
 }
 
 .d-close {
-  position: absolute;
+  position: fixed;
   top: 18px;
   right: var(--gutter);
   z-index: 3;
@@ -63,19 +68,45 @@
   position: relative;
   z-index: 1;
   width: min(1040px, 100%);
-  max-height: 100%;
   display: grid;
   grid-template-columns: minmax(260px, 420px) 1fr;
   gap: clamp(28px, 5vw, 72px);
   align-items: center;
 }
 
-/* The empty seat the lifted card glides into (the carousel positions its
-   clone over this box). */
+/* The slot the lifted card glides into. The carousel positions its flying
+   clone over this box, then hands over to the seat inside it. */
 .d-slot {
+  position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
   max-height: 78vh;
+}
+.seat {
+  position: absolute;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  box-shadow: 0 60px 120px -30px rgba(0, 0, 0, 0.95);
+  visibility: hidden;
+  cursor: grab;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); /* spring back after a short swipe */
+}
+.seat.on {
+  visibility: visible;
+}
+.seat img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+.seat .noimg {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(120% 120% at 50% 30%, var(--bg3), var(--bg2));
 }
 
 .d-body {
@@ -205,34 +236,62 @@
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 860px) {
+/* ---- Phones: a vertical sheet. Card on top (under the close button), copy
+   below, the whole overlay scrolls. ---- */
+@media (max-width: 720px) {
+  .detail {
+    place-items: start center;
+    padding: 76px 20px 40px;
+  }
+  .d-close {
+    top: 14px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+  }
   .d-layout {
     grid-template-columns: 1fr;
-    gap: 20px;
-    align-content: start;
-    max-height: 100%;
+    gap: 26px;
   }
   .d-slot {
-    width: min(200px, 40vw);
+    width: min(62vw, 250px);
     margin: 0 auto;
-    max-height: 32vh;
+    max-height: none;
+  }
+  .seat {
+    box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9);
   }
   .d-body {
     max-height: none;
+    overflow: visible;
+    padding-right: 0;
+    gap: 14px;
     transform: translateY(14px);
   }
   .d-title {
-    font-size: 30px;
+    font-size: 34px;
+  }
+  .d-client {
+    margin-top: -2px;
   }
   .d-desc {
-    font-size: 15px;
+    font-size: 15.5px;
+    max-width: none;
+  }
+  .d-link {
+    align-self: stretch;
+    justify-content: center;
+  }
+  .d-nav {
+    margin-top: 6px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .d-backdrop,
   .d-body,
-  .d-close {
+  .d-close,
+  .seat {
     transition: none;
   }
 }

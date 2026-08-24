@@ -280,9 +280,27 @@
   color: var(--faint);
 }
 
+/* Phones: one big card with its neighbours peeking; the stage hugs the card
+   and the perspective is tighter so the arc still reads. */
 @media (max-width: 720px) {
+  .carousel {
+    padding: 8px 0 4px;
+  }
   .stage {
-    height: min(56vh, 420px);
+    height: min(58vh, 440px);
+    perspective: 900px;
+  }
+  .glow {
+    width: 90%;
+  }
+  .ttl {
+    font-size: 21px;
+  }
+  .meta {
+    padding: 18px;
+  }
+  .drag-hint {
+    margin-top: 4px;
   }
 }
 

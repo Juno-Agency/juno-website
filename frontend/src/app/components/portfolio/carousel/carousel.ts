@@ -21,6 +21,13 @@ interface Slot {
   key: string;
 }
 
+interface Box {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 interface Tween {
   from: number;
   delta: number;
@@ -48,6 +55,8 @@ const SWIPE_DIST = 60;
 const SWIPE_FOLLOW = 0.45;
 /** Ring slots: the projects repeat to fill this many cells for a gentle curve. */
 const RING_SLOTS = 18;
+/** Below this stage width the ring shows one big card with its neighbours peeking. */
+const PHONE = 720;
 
 /**
  * A curved panoramic carousel: projects sit on a large-radius cylinder that
@@ -126,6 +135,8 @@ export class PortfolioCarouselComponent {
   private ghost: HTMLElement | null = null;
   /** Horizontal distance of the current / last swipe on the open project. */
   private swipeDx = 0;
+  /** On-screen size of the lifted card when it left the ring. */
+  private liftedSize = { w: 1, h: 1 };
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -220,41 +231,45 @@ export class PortfolioCarouselComponent {
       };
       const onResize = () => {
         this.layout();
-        if (this.ghost && this.lifted && !this.busy) {
-          this.place(this.ghost, this.slotRect(this.cardOf(this.lifted).getBoundingClientRect()));
-        }
+        if (this.lifted && !this.busy) this.fitSeat();
       };
 
-      // Swiping the open project: drag left / right on the lifted card or the
+      // Swiping the open project: drag left / right on the seated card or the
       // backdrop (not the copy, not the close button) to slide to the neighbour.
       // The card follows the pointer with some resistance and springs back
       // when the drag is too short.
-      let swiping = false;
+      let swiping: HTMLElement | null = null;
       let swipeX0 = 0;
       const onSwipeDown = (e: PointerEvent) => {
-        if (!this.lifted || !this.ghost || this.busy || e.button !== 0) return;
+        if (!this.lifted || this.busy || e.button !== 0) return;
         const t = e.target as Element;
-        if (t.closest('.d-body, .d-close')) return;
-        if (!t.closest('.detail, .ghost')) return;
-        swiping = true;
+        if (t.closest('.d-body, .d-close') || !t.closest('.detail')) return;
+        const seat = this.detail().seatEl();
+        if (!seat) return;
+        swiping = seat;
         swipeX0 = e.clientX;
         this.swipeDx = 0;
-        this.ghost.style.transition = 'none';
+        seat.style.transition = 'none';
       };
       const onSwipeMove = (e: PointerEvent) => {
-        if (!swiping || !this.ghost) return;
+        if (!swiping) return;
         this.swipeDx = e.clientX - swipeX0;
         const dx = this.swipeDx * SWIPE_FOLLOW;
-        this.ghost.style.transform = `translateX(${dx}px) rotate(${dx * 0.02}deg)`;
+        swiping.style.transform = `translateX(${dx}px) rotate(${dx * 0.02}deg)`;
       };
       const onSwipeUp = () => {
         if (!swiping) return;
-        swiping = false;
-        const ghost = this.ghost;
-        if (!ghost) return;
-        ghost.style.transition = '';
-        ghost.style.transform = '';
-        if (Math.abs(this.swipeDx) > SWIPE_DIST) this.swap(this.swipeDx < 0 ? 1 : -1);
+        const seat = swiping;
+        swiping = null;
+        if (Math.abs(this.swipeDx) > SWIPE_DIST) {
+          seat.style.transform = ''; // snap straight, the ghost is measured from here
+          seat.getBoundingClientRect();
+          seat.style.transition = '';
+          this.swap(this.swipeDx < 0 ? 1 : -1);
+        } else {
+          seat.style.transition = ''; // spring back
+          seat.style.transform = '';
+        }
       };
 
       stage.addEventListener('pointerdown', onDown);
@@ -305,11 +320,13 @@ export class PortfolioCarouselComponent {
 
   // ------------------------------------------------------------------ ring
 
-  /** Size the portrait cards (~5 across) and derive the cylinder radius so
+  /** Size the portrait cards (~5 across on desktop, one big one with its
+   *  neighbours peeking on phones) and derive the cylinder radius so
    *  neighbours sit edge to edge along a gentle arc. */
   private layout(): void {
     const stage = this.stage().nativeElement;
-    const cellW = Math.min(300, Math.max(150, stage.clientWidth / 5.2));
+    const w = stage.clientWidth;
+    const cellW = w < PHONE ? Math.min(300, w * 0.64) : Math.min(300, Math.max(150, w / 5.2));
     const cellH = Math.min(stage.clientHeight * 0.92, cellW * 1.34);
     stage.style.setProperty('--cell-w', `${cellW}px`);
     stage.style.setProperty('--cell-h', `${cellH}px`);
@@ -391,28 +408,43 @@ export class PortfolioCarouselComponent {
     return cell.querySelector<HTMLElement>('.card')!;
   }
 
-  private place(
-    el: HTMLElement,
-    r: { left: number; top: number; width: number; height: number },
-  ): void {
+  private place(el: HTMLElement, r: Box): void {
     el.style.left = `${r.left}px`;
     el.style.top = `${r.top}px`;
     el.style.width = `${r.width}px`;
     el.style.height = `${r.height}px`;
   }
 
-  /** Where the ghost ends up: fitted inside the detail's seat, keeping the card's aspect. */
-  private slotRect(card: DOMRect): { left: number; top: number; width: number; height: number } {
+  /** Where the lifted card ends up: fitted inside the detail's slot, keeping
+   *  the card's own aspect (it varies with the stage height). */
+  private seatBox(): Box {
     const s = this.detail().slotRect();
-    const k = Math.min(s.width / card.width, s.height / card.height);
-    const w = card.width * k;
-    const h = card.height * k;
+    const k = Math.min(s.width / this.liftedSize.w, s.height / this.liftedSize.h);
+    const w = this.liftedSize.w * k;
+    const h = this.liftedSize.h * k;
     return {
       left: s.left + (s.width - w) / 2,
       top: s.top + (s.height - h) / 2,
       width: w,
       height: h,
     };
+  }
+
+  /** Size the detail's seat (an in-flow copy of the card) to the seat box. */
+  private fitSeat(): void {
+    const detail = this.detail();
+    const s = detail.slotRect();
+    const b = this.seatBox();
+    detail.fitSeat({ left: b.left - s.left, top: b.top - s.top, width: b.width, height: b.height });
+  }
+
+  private makeGhost(cell: HTMLElement, at: Box): HTMLElement {
+    const ghost = this.cardOf(cell).cloneNode(true) as HTMLElement;
+    ghost.classList.add('ghost');
+    this.place(ghost, at);
+    this.doc.body.appendChild(ghost);
+    this.ghost = ghost;
+    return ghost;
   }
 
   private openDetail(cell: HTMLElement): void {
@@ -425,13 +457,9 @@ export class PortfolioCarouselComponent {
     this.detailItem.set(this.slots()[i].item);
 
     this.spinTo(-i * this.step, () => {
-      const card = this.cardOf(cell);
-      const from = card.getBoundingClientRect();
-      const ghost = card.cloneNode(true) as HTMLElement;
-      ghost.classList.add('ghost');
-      this.place(ghost, from);
-      this.doc.body.appendChild(ghost);
-      this.ghost = ghost;
+      const from = this.cardOf(cell).getBoundingClientRect();
+      this.liftedSize = { w: from.width, h: from.height };
+      const ghost = this.makeGhost(cell, from);
       this.lifted = cell;
       cell.style.visibility = 'hidden';
 
@@ -442,22 +470,37 @@ export class PortfolioCarouselComponent {
       requestAnimationFrame(() => {
         detail.setOpen(true);
         ghost.classList.add('fore');
-        this.place(ghost, this.slotRect(from));
+        this.place(ghost, this.seatBox());
         const settle = () => {
+          // Hand over to the in-flow seat so the card scrolls with the copy
+          // (the overlay scrolls on phones) and swipes have something to move.
+          this.fitSeat();
+          detail.showSeat(true);
+          ghost.remove();
+          this.ghost = null;
           this.busy = false;
           detail.focusClose();
         };
-        this.reduced ? settle() : setTimeout(settle, LIFT_MS);
+        // Even with reduced motion, wait a tick: the seat only exists once
+        // change detection has rendered the item.
+        setTimeout(settle, this.reduced ? 0 : LIFT_MS);
       });
     });
   }
 
   private closeDetail(then?: () => void): void {
-    if (this.busy || !this.lifted || !this.ghost) return;
+    if (this.busy || !this.lifted) return;
     this.busy = true;
     const cell = this.lifted;
-    const ghost = this.ghost;
     const detail = this.detail();
+    let ghost = this.ghost;
+    if (!ghost) {
+      // Settled: take the card back from the seat, exactly where it sits now.
+      ghost = this.makeGhost(cell, detail.seatRect());
+      ghost.classList.add('fore');
+      ghost.getBoundingClientRect();
+      detail.showSeat(false);
+    }
     detail.setOpen(false);
     ghost.classList.remove('fore');
     this.place(ghost, this.cardOf(cell).getBoundingClientRect()); // the ring has not moved
@@ -480,7 +523,7 @@ export class PortfolioCarouselComponent {
         cell.focus({ preventScroll: true });
       }
     };
-    this.reduced ? done() : setTimeout(done, LIFT_MS);
+    setTimeout(done, this.reduced ? 0 : LIFT_MS);
   }
 
   /** Prev / next = the card sitting to the left / right of this one in the

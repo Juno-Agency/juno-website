@@ -59,6 +59,17 @@ const leadSchema = new Schema(
   { timestamps: true, versionKey: false, toJSON },
 );
 leadSchema.index({ createdAt: 1 });
+// Retention promised in the privacy policy: leads are purged 3 years after the
+// last contact (`updatedAt`). Won clients are kept — contractual/accounting
+// documents must outlive that window, and they are real customers.
+const THREE_YEARS_S = 3 * 365 * 24 * 60 * 60;
+leadSchema.index(
+  { updatedAt: 1 },
+  {
+    expireAfterSeconds: THREE_YEARS_S,
+    partialFilterExpression: { status: { $in: ['NEW', 'CONTACTED', 'QUOTED', 'LOST'] } },
+  },
+);
 
 export const Lead = model('Lead', leadSchema);
 

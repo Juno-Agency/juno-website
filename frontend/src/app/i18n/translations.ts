@@ -7,8 +7,7 @@ import type { Lang } from './i18n.service';
  * French.
  *
  * ⚠️ Legal copy (mentions légales / politique de confidentialité) is translated
- * for convenience and MUST be reviewed by a professional before going live —
- * the [BRACKET] placeholders are not filled either.
+ * for convenience; the French version is the authoritative one.
  */
 export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> = {
   en: {
@@ -313,30 +312,33 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     /* ---- legal · shared ---- */
     'Informations légales': 'Legal information',
     'Dernière mise à jour :': 'Last updated:',
-    '21 août 2026': '21 August 2026',
+    '24 août 2026': '24 August 2026',
 
     /* ---- legal · mentions ---- */
     'Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique, voici les informations relatives à l’éditeur et à l’hébergement de ce site.':
       'In accordance with French Act No. 2004-575 of 21 June 2004 on confidence in the digital economy, here is the information about the publisher and hosting of this site.',
     'Éditeur du site': 'Site publisher',
-    'Le site JUNO est édité par :': 'The JUNO site is published by:',
-    '• Raison sociale : [RAISON SOCIALE]': '• Company name: [COMPANY NAME]',
-    '• Forme juridique : [FORME JURIDIQUE] au capital de [CAPITAL] €':
-      '• Legal form: [LEGAL FORM] with share capital of €[CAPITAL]',
-    '• Siège social : [ADRESSE COMPLÈTE]':
-      '• Registered office: [FULL ADDRESS]',
-    '• SIREN / RCS : [SIREN] — RCS de [VILLE]':
-      '• SIREN / trade register: [SIREN] — register of [CITY]',
-    '• N° TVA intracommunautaire : [N° TVA]': '• EU VAT number: [VAT NO.]',
-    '• Contact : agencyjuno@gmail.com — [TÉLÉPHONE]':
-      '• Contact: agencyjuno@gmail.com — [PHONE]',
-    '• Directeur de la publication : [NOM DU DIRECTEUR DE PUBLICATION]':
-      '• Publication director: [PUBLICATION DIRECTOR NAME]',
+    'Le site JUNO (agency-juno.com) est édité par :': 'The JUNO site (agency-juno.com) is published by:',
+    '• Julien Dietschy — entrepreneur individuel (micro-entreprise), exerçant sous le nom commercial DIETSCHYDIGIT':
+      '• Julien Dietschy — sole trader (French micro-entreprise), trading as DIETSCHYDIGIT',
+    '• Adresse : 26 quai Armand Lalande, 33000 Bordeaux, France':
+      '• Address: 26 quai Armand Lalande, 33000 Bordeaux, France',
+    '• SIREN : 991 553 630': '• SIREN (French business ID): 991 553 630',
+    '• TVA non applicable, article 293 B du CGI':
+      '• VAT not applicable, Article 293 B of the French General Tax Code',
+    '• Contact : agencyjuno@gmail.com': '• Contact: agencyjuno@gmail.com',
+    '• Directeur de la publication : Julien Dietschy': '• Publication director: Julien Dietschy',
+    'JUNO est le nom commercial sous lequel DIETSCHYDIGIT propose ses services de création de sites web.':
+      'JUNO is the trade name under which DIETSCHYDIGIT offers its website design services.',
     Hébergement: 'Hosting',
-    'Le site est hébergé par :': 'The site is hosted by:',
-    '• [NOM DE L’HÉBERGEUR]': '• [HOST NAME]',
-    '• [ADRESSE DE L’HÉBERGEUR]': '• [HOST ADDRESS]',
-    '• [SITE / TÉLÉPHONE DE L’HÉBERGEUR]': '• [HOST WEBSITE / PHONE]',
+    'Le site et son interface de traitement des demandes sont hébergés par :':
+      'The site and its request-handling back end are hosted by:',
+    '• Render Services, Inc.': '• Render Services, Inc.',
+    '• 525 Brannan Street, Suite 300, San Francisco, CA 94107, États-Unis':
+      '• 525 Brannan Street, Suite 300, San Francisco, CA 94107, USA',
+    '• render.com': '• render.com',
+    'La base de données est hébergée par MongoDB, Inc. (service MongoDB Atlas), les images du portfolio par Cloudflare, Inc. et les e-mails sont envoyés via Resend, Inc.':
+      'The database is hosted by MongoDB, Inc. (MongoDB Atlas), portfolio images by Cloudflare, Inc., and emails are sent through Resend, Inc.',
     'Propriété intellectuelle': 'Intellectual property',
     'L’ensemble des contenus de ce site (textes, visuels, logo, code, éléments graphiques) est la propriété exclusive de l’éditeur, sauf mention contraire. Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation écrite préalable, est interdite et constitue une contrefaçon.':
       'All content on this site (text, visuals, logo, code, graphic elements) is the exclusive property of the publisher unless otherwise stated. Any reproduction, representation or distribution, in whole or in part, without prior written authorisation is prohibited and constitutes infringement.',
@@ -344,15 +346,15 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Les informations transmises via le formulaire de contact sont traitées conformément à notre Politique de confidentialité, que nous vous invitons à consulter.':
       'Information submitted through the contact form is processed in accordance with our Privacy Policy, which we invite you to review.',
     Cookies: 'Cookies',
-    'Ce site n’utilise pas de cookies publicitaires ni de traceurs tiers à des fins marketing. Seul un stockage local (localStorage) est utilisé pour vous permettre de reprendre un formulaire commencé ; il reste sur votre appareil et n’est jamais transmis à des tiers.':
-      'This site uses no advertising cookies or third-party trackers for marketing. Only local storage (localStorage) is used to let you resume a form you started; it stays on your device and is never shared with third parties.',
+    'Ce site n’utilise pas de cookies publicitaires ni de traceurs tiers à des fins marketing, et aucun outil de mesure d’audience n’est installé. Seul un stockage local (localStorage) est utilisé pour mémoriser votre choix de langue et vous permettre de reprendre un formulaire commencé ; il reste sur votre appareil et n’est jamais transmis à des tiers.':
+      'This site uses no advertising cookies or third-party marketing trackers, and no audience-measurement tool is installed. Only local storage (localStorage) is used to remember your language choice and let you resume a form you started; it stays on your device and is never shared with third parties.',
 
     /* ---- legal · confidentialité ---- */
     'Nous accordons une grande importance à la protection de vos données personnelles. Cette politique explique quelles données nous collectons, pourquoi, et quels sont vos droits, conformément au Règlement général sur la protection des données (RGPD).':
       'We take the protection of your personal data seriously. This policy explains what data we collect, why, and what your rights are, in accordance with the General Data Protection Regulation (GDPR).',
     'Responsable du traitement': 'Data controller',
-    'Le responsable du traitement des données est [RAISON SOCIALE], [ADRESSE].':
-      'The data controller is [COMPANY NAME], [ADDRESS].',
+    'Le responsable du traitement des données est Julien Dietschy (DIETSCHYDIGIT, micro-entreprise), 26 quai Armand Lalande, 33000 Bordeaux, France.':
+      'The data controller is Julien Dietschy (DIETSCHYDIGIT, sole trader), 26 quai Armand Lalande, 33000 Bordeaux, France.',
     'Pour toute question relative à vos données : agencyjuno@gmail.com.':
       'For any question about your data: agencyjuno@gmail.com.',
     'Données collectées': 'Data collected',
@@ -364,17 +366,36 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
       '• The elements describing your project: field, site type, pages, vibe, budget, timeline, references and colours, free-text message.',
     'Aucune donnée sensible n’est demandée. Vous restez libre de ne renseigner que les champs obligatoires.':
       'No sensitive data is requested. You are free to fill in only the required fields.',
+    'Par ailleurs, comme tout site web, nos serveurs enregistrent automatiquement des données techniques (adresse IP, type de navigateur, pages consultées, date et heure) dans des journaux utilisés uniquement pour la sécurité et le bon fonctionnement du service, notamment la protection du formulaire contre les abus. Ces journaux sont conservés au maximum un mois.':
+      'In addition, like any website, our servers automatically record technical data (IP address, browser type, pages visited, date and time) in logs used solely for the security and proper operation of the service, in particular to protect the form against abuse. These logs are kept for one month at most.',
     'Finalités et base légale': 'Purposes and legal basis',
     'Vos données sont utilisées pour vous recontacter, étudier votre demande et vous proposer une maquette puis un devis.':
       'Your data is used to get back to you, review your request and offer you a mockup and then a quote.',
     'La base légale est votre consentement (recueilli lors de l’envoi du formulaire) et, le cas échéant, l’exécution de mesures précontractuelles prises à votre demande.':
       'The legal basis is your consent (collected when the form is submitted) and, where applicable, the performance of pre-contractual steps taken at your request.',
-    Destinataires: 'Recipients',
-    'Vos données sont destinées uniquement à l’équipe de JUNO. Elles ne sont ni vendues, ni louées, ni cédées à des tiers à des fins commerciales. Elles peuvent être traitées par nos prestataires techniques (hébergement) dans la seule mesure nécessaire au fonctionnement du service.':
-      'Your data is intended solely for the JUNO team. It is neither sold, rented, nor transferred to third parties for commercial purposes. It may be processed by our technical providers (hosting) only insofar as necessary to run the service.',
+    'Les données techniques sont traitées sur la base de notre intérêt légitime à assurer la sécurité et la disponibilité du site.':
+      'Technical data is processed on the basis of our legitimate interest in keeping the site secure and available.',
+    'Destinataires et sous-traitants': 'Recipients and processors',
+    'Vos données sont destinées uniquement à l’équipe de JUNO. Elles ne sont ni vendues, ni louées, ni cédées à des tiers à des fins commerciales.':
+      'Your data is intended solely for the JUNO team. It is neither sold, rented, nor transferred to third parties for commercial purposes.',
+    'Pour faire fonctionner le service, nous faisons appel aux prestataires suivants, qui n’accèdent aux données que dans la mesure strictement nécessaire :':
+      'To run the service, we rely on the following providers, which access data only insofar as strictly necessary:',
+    '• Render Services, Inc. (États-Unis) — hébergement du site et de l’interface de traitement des demandes.':
+      '• Render Services, Inc. (USA) — hosting of the site and of the request-handling back end.',
+    '• MongoDB, Inc. (États-Unis) — hébergement de la base de données (MongoDB Atlas).':
+      '• MongoDB, Inc. (USA) — database hosting (MongoDB Atlas).',
+    '• Resend, Inc. (États-Unis) — envoi des e-mails de confirmation et de notification.':
+      '• Resend, Inc. (USA) — sending of confirmation and notification emails.',
+    '• Cloudflare, Inc. (États-Unis) — diffusion du site et hébergement des images du portfolio.':
+      '• Cloudflare, Inc. (USA) — site delivery and hosting of portfolio images.',
+    '• Google LLC (États-Unis) — chargement des polices de caractères (Google Fonts), ce qui transmet votre adresse IP à Google lors de la visite.':
+      '• Google LLC (USA) — loading of fonts (Google Fonts), which transmits your IP address to Google when you visit.',
+    'Transferts hors Union européenne': 'Transfers outside the European Union',
+    'Ces prestataires sont établis aux États-Unis. Les transferts de données sont encadrés par les clauses contractuelles types adoptées par la Commission européenne et, pour les prestataires certifiés, par le cadre de protection des données UE–États-Unis (Data Privacy Framework).':
+      'These providers are based in the United States. Data transfers are governed by the Standard Contractual Clauses adopted by the European Commission and, for certified providers, by the EU–US Data Privacy Framework.',
     'Durée de conservation': 'Retention period',
-    'Vos données sont conservées le temps nécessaire au traitement de votre demande, puis archivées ou supprimées au plus tard [DURÉE — ex. 3 ans] après notre dernier contact, sauf obligation légale contraire.':
-      'Your data is kept for as long as needed to process your request, then archived or deleted no later than [PERIOD — e.g. 3 years] after our last contact, unless otherwise legally required.',
+    'Vos données sont conservées le temps nécessaire au traitement de votre demande, puis supprimées au plus tard 3 ans après notre dernier contact, sauf obligation légale contraire (par exemple la conservation des documents contractuels et comptables si un projet est réalisé).':
+      'Your data is kept for as long as needed to process your request, then deleted no later than 3 years after our last contact, unless otherwise legally required (for instance the retention of contractual and accounting documents if a project is carried out).',
     'Vos droits': 'Your rights',
     'Conformément au RGPD, vous disposez des droits suivants sur vos données : accès, rectification, effacement, limitation, opposition et portabilité.':
       'Under the GDPR, you have the following rights over your data: access, rectification, erasure, restriction, objection and portability.',
@@ -690,29 +711,33 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     /* ---- legal · shared ---- */
     'Informations légales': 'Rechtliche Informationen',
     'Dernière mise à jour :': 'Zuletzt aktualisiert:',
-    '21 août 2026': '21. August 2026',
+    '24 août 2026': '24. August 2026',
 
     /* ---- legal · mentions ---- */
     'Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique, voici les informations relatives à l’éditeur et à l’hébergement de ce site.':
       'Gemäß dem französischen Gesetz Nr. 2004-575 vom 21. Juni 2004 über das Vertrauen in die digitale Wirtschaft finden Sie hier die Angaben zum Herausgeber und zum Hosting dieser Website.',
     'Éditeur du site': 'Herausgeber der Website',
-    'Le site JUNO est édité par :': 'Die Website JUNO wird herausgegeben von:',
-    '• Raison sociale : [RAISON SOCIALE]': '• Firmenname: [FIRMENNAME]',
-    '• Forme juridique : [FORME JURIDIQUE] au capital de [CAPITAL] €':
-      '• Rechtsform: [RECHTSFORM] mit einem Kapital von [KAPITAL] €',
-    '• Siège social : [ADRESSE COMPLÈTE]': '• Sitz: [VOLLSTÄNDIGE ANSCHRIFT]',
-    '• SIREN / RCS : [SIREN] — RCS de [VILLE]':
-      '• Handelsregister: [SIREN] — Register [STADT]',
-    '• N° TVA intracommunautaire : [N° TVA]': '• USt-IdNr.: [UST-IDNR.]',
-    '• Contact : agencyjuno@gmail.com — [TÉLÉPHONE]':
-      '• Kontakt: agencyjuno@gmail.com — [TELEFON]',
-    '• Directeur de la publication : [NOM DU DIRECTEUR DE PUBLICATION]':
-      '• Verantwortlich für den Inhalt: [NAME]',
+    'Le site JUNO (agency-juno.com) est édité par :': 'Die Website JUNO (agency-juno.com) wird herausgegeben von:',
+    '• Julien Dietschy — entrepreneur individuel (micro-entreprise), exerçant sous le nom commercial DIETSCHYDIGIT':
+      '• Julien Dietschy — Einzelunternehmer (französische Micro-entreprise), tätig unter dem Handelsnamen DIETSCHYDIGIT',
+    '• Adresse : 26 quai Armand Lalande, 33000 Bordeaux, France':
+      '• Anschrift: 26 quai Armand Lalande, 33000 Bordeaux, Frankreich',
+    '• SIREN : 991 553 630': '• SIREN (französische Unternehmensnummer): 991 553 630',
+    '• TVA non applicable, article 293 B du CGI':
+      '• Umsatzsteuer nicht anwendbar, Art. 293 B des französischen Steuergesetzbuchs (CGI)',
+    '• Contact : agencyjuno@gmail.com': '• Kontakt: agencyjuno@gmail.com',
+    '• Directeur de la publication : Julien Dietschy': '• Verantwortlich für den Inhalt: Julien Dietschy',
+    'JUNO est le nom commercial sous lequel DIETSCHYDIGIT propose ses services de création de sites web.':
+      'JUNO ist der Handelsname, unter dem DIETSCHYDIGIT seine Dienstleistungen zur Erstellung von Websites anbietet.',
     Hébergement: 'Hosting',
-    'Le site est hébergé par :': 'Die Website wird gehostet von:',
-    '• [NOM DE L’HÉBERGEUR]': '• [NAME DES HOSTERS]',
-    '• [ADRESSE DE L’HÉBERGEUR]': '• [ANSCHRIFT DES HOSTERS]',
-    '• [SITE / TÉLÉPHONE DE L’HÉBERGEUR]': '• [WEBSITE / TELEFON DES HOSTERS]',
+    'Le site et son interface de traitement des demandes sont hébergés par :':
+      'Die Website und ihr System zur Bearbeitung der Anfragen werden gehostet von:',
+    '• Render Services, Inc.': '• Render Services, Inc.',
+    '• 525 Brannan Street, Suite 300, San Francisco, CA 94107, États-Unis':
+      '• 525 Brannan Street, Suite 300, San Francisco, CA 94107, USA',
+    '• render.com': '• render.com',
+    'La base de données est hébergée par MongoDB, Inc. (service MongoDB Atlas), les images du portfolio par Cloudflare, Inc. et les e-mails sont envoyés via Resend, Inc.':
+      'Die Datenbank wird von MongoDB, Inc. (MongoDB Atlas) gehostet, die Portfolio-Bilder von Cloudflare, Inc., und E-Mails werden über Resend, Inc. versendet.',
     'Propriété intellectuelle': 'Geistiges Eigentum',
     'L’ensemble des contenus de ce site (textes, visuels, logo, code, éléments graphiques) est la propriété exclusive de l’éditeur, sauf mention contraire. Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation écrite préalable, est interdite et constitue une contrefaçon.':
       'Sämtliche Inhalte dieser Website (Texte, Grafiken, Logo, Code, gestalterische Elemente) sind, sofern nicht anders angegeben, ausschließliches Eigentum des Herausgebers. Jede vollständige oder teilweise Vervielfältigung, Wiedergabe oder Verbreitung ohne vorherige schriftliche Genehmigung ist untersagt und stellt eine Rechtsverletzung dar.',
@@ -720,15 +745,15 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Les informations transmises via le formulaire de contact sont traitées conformément à notre Politique de confidentialité, que nous vous invitons à consulter.':
       'Die über das Kontaktformular übermittelten Informationen werden gemäß unserer Datenschutzerklärung verarbeitet, die wir Sie einzusehen bitten.',
     Cookies: 'Cookies',
-    'Ce site n’utilise pas de cookies publicitaires ni de traceurs tiers à des fins marketing. Seul un stockage local (localStorage) est utilisé pour vous permettre de reprendre un formulaire commencé ; il reste sur votre appareil et n’est jamais transmis à des tiers.':
-      'Diese Website verwendet keine Werbe-Cookies oder Tracker Dritter zu Marketingzwecken. Es wird lediglich ein lokaler Speicher (localStorage) genutzt, damit Sie ein begonnenes Formular fortsetzen können; er verbleibt auf Ihrem Gerät und wird niemals an Dritte übermittelt.',
+    'Ce site n’utilise pas de cookies publicitaires ni de traceurs tiers à des fins marketing, et aucun outil de mesure d’audience n’est installé. Seul un stockage local (localStorage) est utilisé pour mémoriser votre choix de langue et vous permettre de reprendre un formulaire commencé ; il reste sur votre appareil et n’est jamais transmis à des tiers.':
+      'Diese Website verwendet keine Werbe-Cookies oder Marketing-Tracker Dritter, und es ist kein Tool zur Reichweitenmessung installiert. Es wird lediglich ein lokaler Speicher (localStorage) genutzt, um Ihre Sprachwahl zu merken und Ihnen das Fortsetzen eines begonnenen Formulars zu ermöglichen; er verbleibt auf Ihrem Gerät und wird niemals an Dritte übermittelt.',
 
     /* ---- legal · confidentialité ---- */
     'Nous accordons une grande importance à la protection de vos données personnelles. Cette politique explique quelles données nous collectons, pourquoi, et quels sont vos droits, conformément au Règlement général sur la protection des données (RGPD).':
       'Der Schutz Ihrer personenbezogenen Daten ist uns sehr wichtig. Diese Erklärung legt dar, welche Daten wir erheben, warum, und welche Rechte Sie haben, gemäß der Datenschutz-Grundverordnung (DSGVO).',
     'Responsable du traitement': 'Verantwortlicher',
-    'Le responsable du traitement des données est [RAISON SOCIALE], [ADRESSE].':
-      'Verantwortlicher für die Datenverarbeitung ist [FIRMENNAME], [ANSCHRIFT].',
+    'Le responsable du traitement des données est Julien Dietschy (DIETSCHYDIGIT, micro-entreprise), 26 quai Armand Lalande, 33000 Bordeaux, France.':
+      'Verantwortlicher für die Datenverarbeitung ist Julien Dietschy (DIETSCHYDIGIT, Einzelunternehmen), 26 quai Armand Lalande, 33000 Bordeaux, Frankreich.',
     'Pour toute question relative à vos données : agencyjuno@gmail.com.':
       'Bei Fragen zu Ihren Daten: agencyjuno@gmail.com.',
     'Données collectées': 'Erhobene Daten',
@@ -740,17 +765,36 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
       '• Die Angaben zu Ihrem Projekt: Branche, Website-Typ, Seiten, Stimmung, Budget, Zeitrahmen, Referenzen und Farben, Freitextnachricht.',
     'Aucune donnée sensible n’est demandée. Vous restez libre de ne renseigner que les champs obligatoires.':
       'Es werden keine sensiblen Daten abgefragt. Sie können auch nur die Pflichtfelder ausfüllen.',
+    'Par ailleurs, comme tout site web, nos serveurs enregistrent automatiquement des données techniques (adresse IP, type de navigateur, pages consultées, date et heure) dans des journaux utilisés uniquement pour la sécurité et le bon fonctionnement du service, notamment la protection du formulaire contre les abus. Ces journaux sont conservés au maximum un mois.':
+      'Darüber hinaus zeichnen unsere Server, wie bei jeder Website, automatisch technische Daten (IP-Adresse, Browsertyp, aufgerufene Seiten, Datum und Uhrzeit) in Protokollen auf, die ausschließlich der Sicherheit und dem ordnungsgemäßen Betrieb des Dienstes dienen, insbesondere dem Schutz des Formulars vor Missbrauch. Diese Protokolle werden höchstens einen Monat aufbewahrt.',
     'Finalités et base légale': 'Zwecke und Rechtsgrundlage',
     'Vos données sont utilisées pour vous recontacter, étudier votre demande et vous proposer une maquette puis un devis.':
       'Ihre Daten werden verwendet, um Sie zu kontaktieren, Ihre Anfrage zu prüfen und Ihnen einen Entwurf sowie ein Angebot zu unterbreiten.',
     'La base légale est votre consentement (recueilli lors de l’envoi du formulaire) et, le cas échéant, l’exécution de mesures précontractuelles prises à votre demande.':
       'Rechtsgrundlage ist Ihre Einwilligung (erteilt beim Absenden des Formulars) sowie ggf. die Durchführung vorvertraglicher Maßnahmen auf Ihre Anfrage hin.',
-    Destinataires: 'Empfänger',
-    'Vos données sont destinées uniquement à l’équipe de JUNO. Elles ne sont ni vendues, ni louées, ni cédées à des tiers à des fins commerciales. Elles peuvent être traitées par nos prestataires techniques (hébergement) dans la seule mesure nécessaire au fonctionnement du service.':
-      'Ihre Daten sind ausschließlich für das JUNO-Team bestimmt. Sie werden weder verkauft, vermietet noch zu kommerziellen Zwecken an Dritte weitergegeben. Sie können von unseren technischen Dienstleistern (Hosting) nur soweit verarbeitet werden, wie es für den Betrieb des Dienstes erforderlich ist.',
+    'Les données techniques sont traitées sur la base de notre intérêt légitime à assurer la sécurité et la disponibilité du site.':
+      'Technische Daten werden auf Grundlage unseres berechtigten Interesses an der Sicherheit und Verfügbarkeit der Website verarbeitet.',
+    'Destinataires et sous-traitants': 'Empfänger und Auftragsverarbeiter',
+    'Vos données sont destinées uniquement à l’équipe de JUNO. Elles ne sont ni vendues, ni louées, ni cédées à des tiers à des fins commerciales.':
+      'Ihre Daten sind ausschließlich für das JUNO-Team bestimmt. Sie werden weder verkauft, vermietet noch zu kommerziellen Zwecken an Dritte weitergegeben.',
+    'Pour faire fonctionner le service, nous faisons appel aux prestataires suivants, qui n’accèdent aux données que dans la mesure strictement nécessaire :':
+      'Für den Betrieb des Dienstes setzen wir folgende Dienstleister ein, die nur im unbedingt erforderlichen Umfang auf die Daten zugreifen:',
+    '• Render Services, Inc. (États-Unis) — hébergement du site et de l’interface de traitement des demandes.':
+      '• Render Services, Inc. (USA) — Hosting der Website und des Systems zur Bearbeitung der Anfragen.',
+    '• MongoDB, Inc. (États-Unis) — hébergement de la base de données (MongoDB Atlas).':
+      '• MongoDB, Inc. (USA) — Hosting der Datenbank (MongoDB Atlas).',
+    '• Resend, Inc. (États-Unis) — envoi des e-mails de confirmation et de notification.':
+      '• Resend, Inc. (USA) — Versand der Bestätigungs- und Benachrichtigungs-E-Mails.',
+    '• Cloudflare, Inc. (États-Unis) — diffusion du site et hébergement des images du portfolio.':
+      '• Cloudflare, Inc. (USA) — Auslieferung der Website und Hosting der Portfolio-Bilder.',
+    '• Google LLC (États-Unis) — chargement des polices de caractères (Google Fonts), ce qui transmet votre adresse IP à Google lors de la visite.':
+      '• Google LLC (USA) — Laden der Schriftarten (Google Fonts), wodurch Ihre IP-Adresse beim Besuch an Google übermittelt wird.',
+    'Transferts hors Union européenne': 'Übermittlung außerhalb der Europäischen Union',
+    'Ces prestataires sont établis aux États-Unis. Les transferts de données sont encadrés par les clauses contractuelles types adoptées par la Commission européenne et, pour les prestataires certifiés, par le cadre de protection des données UE–États-Unis (Data Privacy Framework).':
+      'Diese Dienstleister sind in den USA ansässig. Die Datenübermittlung erfolgt auf Grundlage der von der Europäischen Kommission erlassenen Standardvertragsklauseln und, bei zertifizierten Anbietern, des EU-US-Datenschutzrahmens (Data Privacy Framework).',
     'Durée de conservation': 'Speicherdauer',
-    'Vos données sont conservées le temps nécessaire au traitement de votre demande, puis archivées ou supprimées au plus tard [DURÉE — ex. 3 ans] après notre dernier contact, sauf obligation légale contraire.':
-      'Ihre Daten werden so lange gespeichert, wie es für die Bearbeitung Ihrer Anfrage erforderlich ist, und spätestens [DAUER — z. B. 3 Jahre] nach unserem letzten Kontakt archiviert oder gelöscht, sofern keine gesetzliche Pflicht entgegensteht.',
+    'Vos données sont conservées le temps nécessaire au traitement de votre demande, puis supprimées au plus tard 3 ans après notre dernier contact, sauf obligation légale contraire (par exemple la conservation des documents contractuels et comptables si un projet est réalisé).':
+      'Ihre Daten werden so lange gespeichert, wie es für die Bearbeitung Ihrer Anfrage erforderlich ist, und spätestens 3 Jahre nach unserem letzten Kontakt gelöscht, sofern keine gesetzliche Pflicht entgegensteht (z. B. die Aufbewahrung von Vertrags- und Buchhaltungsunterlagen, wenn ein Projekt umgesetzt wird).',
     'Vos droits': 'Ihre Rechte',
     'Conformément au RGPD, vous disposez des droits suivants sur vos données : accès, rectification, effacement, limitation, opposition et portabilité.':
       'Gemäß der DSGVO haben Sie folgende Rechte an Ihren Daten: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Übertragbarkeit.',

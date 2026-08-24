@@ -289,9 +289,18 @@ export class PortfolioCarouselComponent {
         this.doc.removeEventListener('pointercancel', onSwipeUp);
         removeEventListener('resize', onResize);
         this.ghost?.remove();
-        this.doc.body.style.overflow = '';
+        this.lockScroll(false);
       });
     });
+  }
+
+  /** Freeze the page behind an open project. `html` already carries an
+   *  `overflow-x` in the global styles, so it — not `body` — owns the
+   *  viewport scroll and must be locked too. */
+  private lockScroll(on: boolean): void {
+    const v = on ? 'hidden' : '';
+    this.doc.documentElement.style.overflow = v;
+    this.doc.body.style.overflow = v;
   }
 
   // ------------------------------------------------------------------ ring
@@ -428,7 +437,7 @@ export class PortfolioCarouselComponent {
 
       const detail = this.detail();
       detail.show();
-      this.doc.body.style.overflow = 'hidden';
+      this.lockScroll(true);
       ghost.getBoundingClientRect(); // commit the start position before transitioning
       requestAnimationFrame(() => {
         detail.setOpen(true);
@@ -460,7 +469,7 @@ export class PortfolioCarouselComponent {
       cell.style.visibility = '';
       this.render();
       detail.hide();
-      this.doc.body.style.overflow = '';
+      this.lockScroll(false);
       this.stage().nativeElement.classList.remove('frozen');
       this.busy = false;
       if (then) {

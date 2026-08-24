@@ -9,6 +9,9 @@
   display: grid;
   place-items: center;
   padding: clamp(16px, 4vh, 48px) var(--gutter);
+  touch-action: pan-y; /* horizontal swipes slide between projects */
+  user-select: none;
+  -webkit-user-select: none;
 }
 .detail[hidden] {
   display: none;
@@ -82,6 +85,8 @@
   max-height: 78vh;
   overflow-y: auto;
   padding-right: 4px;
+  user-select: text; /* the copy stays selectable — swipes never start here */
+  -webkit-user-select: text;
   opacity: 0;
   transform: translateX(18px);
   transition:

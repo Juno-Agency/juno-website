@@ -42,6 +42,10 @@ const DRAG_GAIN = 0.16;
 const AUTO_VEL = -0.045;
 /** How long the lifted card takes to glide to / from the foreground (matches the SCSS). */
 const LIFT_MS = 620;
+/** Horizontal drag on the open project past this distance moves to the neighbour. */
+const SWIPE_DIST = 60;
+/** How much of the drag the lifted card follows (resistance). */
+const SWIPE_FOLLOW = 0.45;
 /** Ring slots: the projects repeat to fill this many cells for a gentle curve. */
 const RING_SLOTS = 18;
 
@@ -120,6 +124,8 @@ export class PortfolioCarouselComponent {
   private busy = false;
   private lifted: HTMLElement | null = null;
   private ghost: HTMLElement | null = null;
+  /** Horizontal distance of the current / last swipe on the open project. */
+  private swipeDx = 0;
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -219,6 +225,38 @@ export class PortfolioCarouselComponent {
         }
       };
 
+      // Swiping the open project: drag left / right on the lifted card or the
+      // backdrop (not the copy, not the close button) to slide to the neighbour.
+      // The card follows the pointer with some resistance and springs back
+      // when the drag is too short.
+      let swiping = false;
+      let swipeX0 = 0;
+      const onSwipeDown = (e: PointerEvent) => {
+        if (!this.lifted || !this.ghost || this.busy || e.button !== 0) return;
+        const t = e.target as Element;
+        if (t.closest('.d-body, .d-close')) return;
+        if (!t.closest('.detail, .ghost')) return;
+        swiping = true;
+        swipeX0 = e.clientX;
+        this.swipeDx = 0;
+        this.ghost.style.transition = 'none';
+      };
+      const onSwipeMove = (e: PointerEvent) => {
+        if (!swiping || !this.ghost) return;
+        this.swipeDx = e.clientX - swipeX0;
+        const dx = this.swipeDx * SWIPE_FOLLOW;
+        this.ghost.style.transform = `translateX(${dx}px) rotate(${dx * 0.02}deg)`;
+      };
+      const onSwipeUp = () => {
+        if (!swiping) return;
+        swiping = false;
+        const ghost = this.ghost;
+        if (!ghost) return;
+        ghost.style.transition = '';
+        ghost.style.transform = '';
+        if (Math.abs(this.swipeDx) > SWIPE_DIST) this.swap(this.swipeDx < 0 ? 1 : -1);
+      };
+
       stage.addEventListener('pointerdown', onDown);
       stage.addEventListener('pointermove', onMove);
       stage.addEventListener('pointerup', onUp);
@@ -227,6 +265,10 @@ export class PortfolioCarouselComponent {
       stage.addEventListener('keydown', onKey);
       stage.addEventListener('dragstart', onDragStart);
       this.doc.addEventListener('keydown', onDocKey);
+      this.doc.addEventListener('pointerdown', onSwipeDown);
+      this.doc.addEventListener('pointermove', onSwipeMove);
+      this.doc.addEventListener('pointerup', onSwipeUp);
+      this.doc.addEventListener('pointercancel', onSwipeUp);
       addEventListener('resize', onResize);
 
       this.render();
@@ -241,6 +283,10 @@ export class PortfolioCarouselComponent {
         stage.removeEventListener('keydown', onKey);
         stage.removeEventListener('dragstart', onDragStart);
         this.doc.removeEventListener('keydown', onDocKey);
+        this.doc.removeEventListener('pointerdown', onSwipeDown);
+        this.doc.removeEventListener('pointermove', onSwipeMove);
+        this.doc.removeEventListener('pointerup', onSwipeUp);
+        this.doc.removeEventListener('pointercancel', onSwipeUp);
         removeEventListener('resize', onResize);
         this.ghost?.remove();
         this.doc.body.style.overflow = '';
@@ -439,7 +485,12 @@ export class PortfolioCarouselComponent {
     this.closeDetail(() => this.openDetail(this.cells[j]));
   }
 
+  /** Backdrop / close button. A swipe that ended on the backdrop is not a click. */
   protected onClose(): void {
+    if (Math.abs(this.swipeDx) > DEAD_ZONE) {
+      this.swipeDx = 0;
+      return;
+    }
     this.closeDetail();
   }
   protected onPrev(): void {

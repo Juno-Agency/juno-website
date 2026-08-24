@@ -6,7 +6,11 @@
     <span class="kicker">{{ tr('Portfolio') }}</span>
     <h1 class="title">{{ tr('Nos réalisations') }}</h1>
     <p class="lede">
-      {{ tr('Une sélection de sites qu’on a dessinés, codés et livrés. Chaque projet, pensé sur-mesure.') }}
+      {{
+        tr(
+          'Une sélection de sites qu’on a dessinés, codés et livrés. Chaque projet, pensé sur-mesure.'
+        )
+      }}
     </p>
   </header>
 
@@ -20,34 +24,17 @@
       <p>{{ tr('Nos premières réalisations arrivent très bientôt.') }}</p>
     </div>
   } @else {
-    <section class="grid">
-      @for (p of items(); track p.id; let i = $index) {
-        <a
-          class="pcard"
-          [class.feat]="p.featured"
-          [href]="p.url || null"
-          [attr.target]="p.url ? '_blank' : null"
-          [attr.rel]="p.url ? 'noopener noreferrer' : null"
-          [style.animation-delay.ms]="i * 55"
-        >
-          <div class="thumb">
-            @if (p.imageUrl) {
-              <img [src]="p.imageUrl" [alt]="p.title" loading="lazy" />
-            } @else {
-              <div class="noimg"><juno-mascot /></div>
-            }
-            <span class="veil"></span>
-            @if (p.year) { <span class="yr">{{ p.year }}</span> }
-            @if (p.url) { <span class="go" aria-hidden="true">↗</span> }
-            <div class="meta">
-              @if (p.category) { <span class="cat">{{ p.category }}</span> }
-              <h3 class="ttl">{{ p.title }}</h3>
-              @if (p.client) { <span class="cli">{{ p.client }}</span> }
-            </div>
-          </div>
-        </a>
-      }
-    </section>
+    <app-portfolio-carousel [items]="items()" />
+    <div class="after">
+      <p class="statement">
+        {{
+          tr(
+            'On conçoit chaque site depuis une page blanche, pour des commerces et des indépendants. Pas de template, pas de thème recyclé, pas de raccourci.'
+          )
+        }}
+      </p>
+      <a routerLink="/projet" class="link">{{ tr('Décrivez votre projet') }}</a>
+    </div>
   }
 </main>
 

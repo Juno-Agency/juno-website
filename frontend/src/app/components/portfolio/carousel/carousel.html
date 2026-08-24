@@ -1,0 +1,59 @@
+<div class="carousel">
+  <div class="glow"></div>
+  <div class="stage" #stage>
+    <div class="ring" #ring>
+      @for (s of slots(); track s.key) {
+        <div
+          class="cell"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="s.item.title + ' — ' + tr('Voir le projet')"
+        >
+          <div class="card">
+            @if (s.item.imageUrl) {
+              <img [src]="s.item.imageUrl" [alt]="s.item.title" draggable="false" />
+            } @else {
+              <div class="noimg"></div>
+            }
+            <span class="veil"></span>
+            @if (s.item.year) {
+              <span class="yr">{{ s.item.year }}</span>
+            }
+            <span class="eye" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </span>
+            <div class="meta">
+              @if (s.item.category) {
+                <span class="cat">{{ s.item.category }}</span>
+              }
+              <h3 class="ttl">{{ s.item.title }}</h3>
+              <span class="see">{{ tr('Voir le projet') }} <i>→</i></span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  <p class="drag-hint" aria-hidden="true">
+    <span>{{ tr('Glissez pour explorer') }}</span>
+  </p>
+
+  <app-portfolio-detail
+    [item]="detailItem()"
+    [index]="detailIndex()"
+    [total]="items().length"
+    (closed)="onClose()"
+    (prev)="onPrev()"
+    (next)="onNext()"
+  />
+</div>

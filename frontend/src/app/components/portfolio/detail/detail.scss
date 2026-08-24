@@ -1,0 +1,233 @@
+:host {
+  display: contents;
+}
+
+.detail {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vh, 48px) var(--gutter);
+}
+.detail[hidden] {
+  display: none;
+}
+
+.d-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 12, 12, 0.74);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.detail.open .d-backdrop {
+  opacity: 1;
+}
+
+.d-close {
+  position: absolute;
+  top: 18px;
+  right: var(--gutter);
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--on-accent);
+  border: 0;
+  font: 400 26px/1 var(--sans);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.4s ease 0.2s,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+}
+.detail.open .d-close {
+  opacity: 1;
+  transform: none;
+}
+.d-close:hover {
+  transform: rotate(90deg);
+}
+
+.d-layout {
+  position: relative;
+  z-index: 1;
+  width: min(1040px, 100%);
+  max-height: 100%;
+  display: grid;
+  grid-template-columns: minmax(260px, 420px) 1fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+
+/* The empty seat the lifted card glides into (the carousel positions its
+   clone over this box). */
+.d-slot {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 78vh;
+}
+
+.d-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 78vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  opacity: 0;
+  transform: translateX(18px);
+  transition:
+    opacity 0.5s ease 0.18s,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.18s;
+}
+.detail.open .d-body {
+  opacity: 1;
+  transform: none;
+}
+
+.d-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.kicker::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--muted);
+}
+.d-year {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+.d-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+.d-client {
+  margin: -6px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.d-desc {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 46ch;
+}
+.d-tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.d-tags li {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cream);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+}
+.d-link {
+  align-self: flex-start;
+  margin-top: 6px;
+}
+.d-nav {
+  margin-top: 10px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.d-nav button {
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.d-nav button:hover {
+  color: var(--cream);
+}
+.d-count {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px) {
+  .d-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-content: start;
+    max-height: 100%;
+  }
+  .d-slot {
+    width: min(200px, 40vw);
+    margin: 0 auto;
+    max-height: 32vh;
+  }
+  .d-body {
+    max-height: none;
+    transform: translateY(14px);
+  }
+  .d-title {
+    font-size: 30px;
+  }
+  .d-desc {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d-backdrop,
+  .d-body,
+  .d-close {
+    transition: none;
+  }
+}

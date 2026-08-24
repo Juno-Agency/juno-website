@@ -1,17 +1,26 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { GrainVignetteComponent } from '../grain-vignette/grain-vignette';
 import { NavComponent } from '../nav/nav';
 import { CtaFinalComponent } from '../cta-final/cta-final';
 import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
+import { PortfolioCarouselComponent } from './carousel/carousel';
 import { I18nService } from '../../i18n/i18n.service';
 import { PortfolioService } from '../../services/portfolio.service';
 import { PortfolioItem } from '../../models/portfolio.model';
 
-/** Public portfolio page — an animated editorial grid of realised projects. */
+/** Public portfolio page — a 3D carousel of realised projects. */
 @Component({
   selector: 'app-portfolio',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [GrainVignetteComponent, NavComponent, CtaFinalComponent, JunoMascot],
+  imports: [
+    RouterLink,
+    GrainVignetteComponent,
+    NavComponent,
+    CtaFinalComponent,
+    JunoMascot,
+    PortfolioCarouselComponent,
+  ],
   templateUrl: './portfolio.html',
   styleUrl: './portfolio.scss',
 })

@@ -1,0 +1,58 @@
+<div class="detail" #root hidden role="dialog" aria-modal="true" [attr.aria-label]="item()?.title">
+  <div class="d-backdrop" (click)="closed.emit()"></div>
+  <button
+    type="button"
+    class="d-close"
+    #close
+    (click)="closed.emit()"
+    [attr.aria-label]="tr('Fermer')"
+  >
+    ×
+  </button>
+  <article class="d-layout">
+    <div class="d-slot" #slot aria-hidden="true"></div>
+    <div class="d-body">
+      @if (item(); as p) {
+        <div class="d-top">
+          @if (p.category) {
+            <span class="kicker">{{ p.category }}</span>
+          }
+          @if (p.year) {
+            <span class="d-year">{{ p.year }}</span>
+          }
+        </div>
+        <h2 class="d-title">{{ p.title }}</h2>
+        @if (p.client) {
+          <p class="d-client">{{ p.client }}</p>
+        }
+        @if (p.description) {
+          <p class="d-desc">{{ p.description }}</p>
+        }
+        @if (p.tags.length) {
+          <ul class="d-tags">
+            @for (t of p.tags; track t) {
+              <li>{{ t }}</li>
+            }
+          </ul>
+        }
+        @if (p.url) {
+          <a
+            class="btn btn-primary d-link"
+            [href]="p.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="lab">{{ tr('Voir le site') }}</span> <span class="arr">↗</span>
+          </a>
+        }
+      }
+      @if (total() > 1) {
+        <nav class="d-nav" [attr.aria-label]="tr('Autres projets')">
+          <button type="button" (click)="prev.emit()">← {{ tr('Précédent') }}</button>
+          <span class="d-count">{{ count() }}</span>
+          <button type="button" (click)="next.emit()">{{ tr('Suivant') }} →</button>
+        </nav>
+      }
+    </div>
+  </article>
+</div>

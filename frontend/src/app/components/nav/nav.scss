@@ -56,9 +56,15 @@
   padding: 11px 20px;
   font-size: 13.5px;
 }
+/* Phones: the bar keeps the brand, the "Réalisations" link and the language
+   switcher; the "Décrivez votre projet" CTA goes — it lives in the hero and
+   the final CTA anyway. */
 @media (max-width: 720px) {
-  .nav-link {
+  .nav .btn {
     display: none;
+  }
+  .nav-right {
+    gap: 18px;
   }
 }
 @media (max-width: 460px) {
@@ -70,21 +76,6 @@
     font-size: 20px;
   }
   .nav-right {
-    gap: 10px;
-  }
-  /* trim the CTA so brand + switcher + button never collide on narrow phones */
-  .nav .btn {
-    padding: 10px 14px;
-    font-size: 12px;
-    gap: 7px;
-  }
-}
-@media (max-width: 380px) {
-  /* very small phones: keep only the arrow on the primary CTA */
-  .nav .btn .lab {
-    display: none;
-  }
-  .nav .btn {
-    padding: 10px 13px;
+    gap: 14px;
   }
 }

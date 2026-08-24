@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { config } from './config';
+import { closeTicketsConnection } from './tickets/tickets-connection';
 
 mongoose.set('strictQuery', true);
 
@@ -10,5 +11,8 @@ export async function connectDb(): Promise<void> {
 }
 
 export async function disconnectDb(): Promise<void> {
+  // La connexion des tickets est distincte quand TICKETS_DATABASE_URL est
+  // renseignée : `disconnect()` ne la fermerait pas.
+  await closeTicketsConnection();
   await mongoose.disconnect();
 }

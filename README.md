@@ -95,6 +95,31 @@ Si le port 3000 est déjà pris sur votre machine, changez `PORT` dans
 `backend/.env` **et** la cible dans `frontend/proxy.conf.json` — les deux
 doivent concorder.
 
+### Backlog de tickets partagé, reste en local
+
+Renseignez `TICKETS_DATABASE_URL` dans `backend/.env` avec l'URI Atlas : les
+collections `tickets` et `counters` passent sur une connexion dédiée vers cette
+base, pendant que leads et portfolio restent sur votre Mongo local.
+
+```
+backend local
+├── connexion principale → localhost      leads, portfolio
+└── connexion tickets    → Atlas          tickets, counters
+```
+
+Vous travaillez donc contre **une seule API — la vôtre** : votre JWT local reste
+valable pour tout, et il n'y a aucun jeton à faire coïncider entre deux serveurs.
+En production la variable est absente, tout se comporte comme avant.
+
+Créez pour cela un utilisateur Atlas dédié (`juno-tickets`) avec un rôle
+personnalisé limité aux collections `tickets` et `counters`. L'utilisateur de
+l'application ouvrirait aussi les leads, donc des données personnelles de
+prospects, sur chaque poste de développement.
+
+Le compteur d'identifiants vit avec les tickets : chaque base a sa propre
+séquence, il n'y a pas de collision possible entre le backlog local et celui de
+production.
+
 ### Travailler sur les données de production
 
 ```bash

@@ -1,4 +1,7 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
+
+import { config } from './config';
+import { resolveTicketsConnection } from './tickets/tickets-connection';
 import { LEAD_STATUS } from './leads/lead.schema';
 import { TICKET_ASSIGNEE, TICKET_PRIORITY, TICKET_STATUS } from './tickets/ticket.schema';
 
@@ -97,7 +100,17 @@ const counterSchema = new Schema(
   { versionKey: false },
 );
 
-export const Counter = model('Counter', counterSchema);
+/**
+ * Tickets et compteur vivent sur `TICKETS_DATABASE_URL` quand elle est
+ * renseignée, sur la base de l'application sinon. Voir
+ * tickets/tickets-connection.ts pour le pourquoi.
+ */
+const ticketsConnection = resolveTicketsConnection(
+  mongoose.connection,
+  config.ticketsDatabaseUrl,
+);
+
+export const Counter = ticketsConnection.model('Counter', counterSchema);
 
 const ticketSchema = new Schema(
   {
@@ -117,4 +130,4 @@ const ticketSchema = new Schema(
 // La liste s'affiche du plus récent au plus ancien, filtrée par statut.
 ticketSchema.index({ status: 1, seq: -1 });
 
-export const Ticket = model('Ticket', ticketSchema);
+export const Ticket = ticketsConnection.model('Ticket', ticketSchema);

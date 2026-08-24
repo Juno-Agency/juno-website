@@ -122,3 +122,27 @@ statut, pas de lien avec les leads.
 - Piège de vérification : `dragTo` de Playwright ne déclenche pas le CDK (pas
   de mouvements intermédiaires), il faut piloter la souris pas à pas. Un
   glissé « qui ne marche pas » en test automatisé n'est pas une preuve de bug.
+
+## Backend — backlog de tickets sur une base séparée (2026-08-24)
+
+- [x] `tickets-connection.spec.ts` + `tickets-connection.ts` (rouge d'abord)
+- [x] `TICKETS_DATABASE_URL` dans la config, `Ticket`/`Counter` sur la connexion dédiée
+- [x] Fermeture de la connexion dédiée dans `disconnectDb`
+- [x] `.env.example` et README
+- [x] Vérification avec deux bases réelles
+
+### Review
+
+- Répond à « les tickets sur la prod, le reste en local » sans proxy et sans
+  toucher à l'authentification : une seule API, celle qui tourne en local, donc
+  le JWT local reste valable pour tout. Rien à ouvrir publiquement.
+- Variable absente = comportement d'avant. La production n'est pas concernée.
+- La connexion est mémorisée : `Ticket` et `Counter` la partagent, sinon deux
+  pools et un compteur potentiellement incohérent.
+- Vérifié avec deux bases : le ticket créé atterrit dans `juno_backlog.tickets`
+  avec son compteur, les anciens restent dans `juno.tickets`, et un lead créé
+  dans la foulée va bien dans `juno.leads` et pas ailleurs.
+- Le compteur vit avec les tickets : chaque base a sa séquence, donc aucune
+  collision entre backlog local et backlog de production.
+- Reste à faire côté Atlas : créer l'utilisateur `juno-tickets` avec un rôle
+  limité aux collections `tickets` et `counters`, et fournir l'URI.

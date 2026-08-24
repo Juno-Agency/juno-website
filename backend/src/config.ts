@@ -32,6 +32,13 @@ export const config = {
     'DATABASE_URL',
     'mongodb://root:juno@localhost:27017/juno?authSource=admin&directConnection=true',
   ),
+  /**
+   * Base dédiée aux tickets. Vide (le cas en production) = ils vivent dans
+   * `databaseUrl`, avec le reste. Renseignée en développement, elle permet de
+   * travailler sur le backlog partagé tout en gardant leads et portfolio en
+   * local — voir tickets/tickets-connection.ts.
+   */
+  ticketsDatabaseUrl: process.env.TICKETS_DATABASE_URL ?? '',
   jwtSecret: requiredInProd('JWT_SECRET', 'dev-insecure-secret-change-me'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '12h',
   // Back-office admin — authenticated straight from the environment (no DB user).

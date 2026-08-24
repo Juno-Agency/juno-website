@@ -4,9 +4,9 @@
   min-height: 100vh;
 }
 
+/* No z-index here: it would open a stacking context and trap the project
+   sheet (z 60) underneath the fixed nav (z 40). */
 .pf {
-  position: relative;
-  z-index: 2;
   padding: 132px 0 0;
 }
 

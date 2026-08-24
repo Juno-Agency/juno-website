@@ -3,103 +3,110 @@
     <div>
       <h1>Tickets</h1>
       <p class="sub">
-        {{ tickets().length }} ticket{{ tickets().length > 1 ? 's' : '' }} ·
-        {{ counts().TODO }} à faire
+        {{ tickets().length }} ticket{{ tickets().length > 1 ? 's' : '' }} au total
       </p>
     </div>
-    <button class="btn" (click)="openNew()"><span>+ Nouveau ticket</span></button>
+
+    <div class="head-right">
+      <select
+        class="who"
+        (change)="setWhoFilter($any($event.target).value)"
+        aria-label="Filtrer par assigné"
+      >
+        <option value="" [selected]="whoFilter() === null">Tout le monde</option>
+        @for (a of ASSIGNEES; track a) {
+          <option [value]="a" [selected]="whoFilter() === a">{{ assigneeLabel[a] }}</option>
+        }
+        <option value="NONE" [selected]="whoFilter() === 'NONE'">Non assignés</option>
+      </select>
+      <button class="btn" (click)="openNew()"><span>+ Nouveau ticket</span></button>
+    </div>
   </header>
 
   @if (error() && !editorOpen()) {
     <p class="banner">{{ error() }}</p>
   }
 
-  <nav class="filters" aria-label="Filtrer par statut">
-    <button class="chip" [class.on]="filter() === null" (click)="setFilter(null)">
-      Tous <span class="n">{{ tickets().length }}</span>
-    </button>
-    @for (s of STATUSES; track s) {
-      <button class="chip" [class.on]="filter() === s" (click)="setFilter(s)">
-        {{ statusLabel[s] }} <span class="n">{{ counts()[s] }}</span>
-      </button>
-    }
-
-    <select class="who" (change)="setWhoFilter($any($event.target).value)" aria-label="Filtrer par assigné">
-      <option value="" [selected]="whoFilter() === null">Tout le monde</option>
-      @for (a of ASSIGNEES; track a) {
-        <option [value]="a" [selected]="whoFilter() === a">{{ assigneeLabel[a] }}</option>
-      }
-      <option value="NONE" [selected]="whoFilter() === 'NONE'">Non assignés</option>
-    </select>
-  </nav>
-
   @if (loading()) {
     <div class="state">Chargement…</div>
-  } @else if (!visible().length) {
-    <div class="state">
-      @if (tickets().length) {
-        Aucun ticket avec ce statut.
-      } @else {
-        Rien à faire pour l’instant. Cliquez « Nouveau ticket ».
-      }
-    </div>
   } @else {
-    <div class="tlist">
-      @for (t of visible(); track t.id) {
-        <div class="trow" [class.done]="t.status === 'DONE'">
-          <span class="tkey">{{ t.key }}</span>
+    <div class="board" cdkDropListGroup>
+      @for (col of columns(); track col.status) {
+        <section class="col">
+          <header class="col-head">
+            <h2>{{ statusLabel[col.status] }}</h2>
+            <span class="n">{{ col.tickets.length }}</span>
+          </header>
 
-          <div class="tinfo">
-            <span class="tt">{{ t.title }}</span>
-            @if (t.description) { <span class="td">{{ t.description }}</span> }
+          <div
+            class="col-body"
+            cdkDropList
+            [id]="'col-' + col.status"
+            [cdkDropListData]="col.status"
+            [cdkDropListConnectedTo]="dropListIds"
+            (cdkDropListDropped)="onDrop($event, col.status)"
+          >
+            @for (t of col.tickets; track t.id) {
+              <article class="card" cdkDrag [cdkDragData]="t">
+                <div class="card-top">
+                  <span class="ckey">{{ t.key }}</span>
+                  <div class="cactions">
+                    <button class="iconbtn" (click)="openEdit(t)" title="Modifier">✎</button>
+                    @if (confirmDeleteId() === t.id) {
+                      <button class="iconbtn danger" (click)="doDelete(t.id)" title="Confirmer">✓</button>
+                      <button class="iconbtn" (click)="cancelDelete()" title="Annuler">×</button>
+                    } @else {
+                      <button class="iconbtn danger" (click)="askDelete(t.id)" title="Supprimer">🗑</button>
+                    }
+                  </div>
+                </div>
+
+                <p class="ctitle">{{ t.title }}</p>
+                @if (t.description) { <p class="cdesc">{{ t.description }}</p> }
+
+                <div class="card-foot">
+                  <!-- Le glissé n'est pas pilotable au clavier : ce sélecteur reste
+                       le chemin d'accès au changement de statut sans souris. -->
+                  <select
+                    class="sel status"
+                    (change)="setStatus(t, $any($event.target).value)"
+                    [attr.aria-label]="'Statut de ' + t.key"
+                  >
+                    @for (s of STATUSES; track s) {
+                      <option [value]="s" [selected]="s === t.status">{{ statusLabel[s] }}</option>
+                    }
+                  </select>
+
+                  <select
+                    class="sel prio"
+                    [class.high]="t.priority === 'HIGH'"
+                    [class.low]="t.priority === 'LOW'"
+                    (change)="setPriority(t, $any($event.target).value)"
+                    [attr.aria-label]="'Priorité de ' + t.key"
+                  >
+                    @for (p of PRIORITIES; track p) {
+                      <option [value]="p" [selected]="p === t.priority">{{ priorityLabel[p] }}</option>
+                    }
+                  </select>
+
+                  <select
+                    class="sel who"
+                    [class.none]="t.assignee === null"
+                    (change)="setAssignee(t, $any($event.target).value)"
+                    [attr.aria-label]="'Assigné de ' + t.key"
+                  >
+                    <option value="" [selected]="t.assignee === null">—</option>
+                    @for (a of ASSIGNEES; track a) {
+                      <option [value]="a" [selected]="a === t.assignee">{{ assigneeLabel[a] }}</option>
+                    }
+                  </select>
+                </div>
+              </article>
+            } @empty {
+              <p class="col-empty">Rien ici.</p>
+            }
           </div>
-
-          <select
-            class="sel status"
-            (change)="setStatus(t, $any($event.target).value)"
-            [attr.aria-label]="'Statut de ' + t.key"
-          >
-            @for (s of STATUSES; track s) {
-              <option [value]="s" [selected]="s === t.status">{{ statusLabel[s] }}</option>
-            }
-          </select>
-
-          <select
-            class="sel prio"
-            [class.high]="t.priority === 'HIGH'"
-            [class.low]="t.priority === 'LOW'"
-            (change)="setPriority(t, $any($event.target).value)"
-            [attr.aria-label]="'Priorité de ' + t.key"
-          >
-            @for (p of PRIORITIES; track p) {
-              <option [value]="p" [selected]="p === t.priority">{{ priorityLabel[p] }}</option>
-            }
-          </select>
-
-          <select
-            class="sel who"
-            [class.none]="t.assignee === null"
-            (change)="setAssignee(t, $any($event.target).value)"
-            [attr.aria-label]="'Assigné de ' + t.key"
-          >
-            <option value="" [selected]="t.assignee === null">—</option>
-            @for (a of ASSIGNEES; track a) {
-              <option [value]="a" [selected]="a === t.assignee">{{ assigneeLabel[a] }}</option>
-            }
-          </select>
-
-          <span class="tdate">{{ formatDate(t.createdAt) }}</span>
-
-          <div class="tactions">
-            <button class="iconbtn" (click)="openEdit(t)" title="Modifier">✎</button>
-            @if (confirmDeleteId() === t.id) {
-              <button class="iconbtn danger" (click)="doDelete(t.id)" title="Confirmer">✓</button>
-              <button class="iconbtn" (click)="cancelDelete()" title="Annuler">×</button>
-            } @else {
-              <button class="iconbtn danger" (click)="askDelete(t.id)" title="Supprimer">🗑</button>
-            }
-          </div>
-        </div>
+        </section>
       }
     </div>
   }
@@ -156,9 +163,7 @@
 
           <label class="field">
             <span>Assigné à</span>
-            <select
-              (change)="patch({ assignee: $any($event.target).value || null })"
-            >
+            <select (change)="patch({ assignee: $any($event.target).value || null })">
               <option value="" [selected]="draft().assignee === null">Personne</option>
               @for (a of ASSIGNEES; track a) {
                 <option [value]="a" [selected]="a === draft().assignee">{{ assigneeLabel[a] }}</option>

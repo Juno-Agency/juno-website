@@ -96,3 +96,29 @@ statut, pas de lien avec les leads.
   faire ») et non reproduite depuis : trois vérifications enchaînées, à l'API
   puis dans l'interface, montrent le statut préservé par un changement
   d'assigné. Cause non établie ; à surveiller.
+
+## Back-office — passage du tableau de tickets en kanban (2026-08-24)
+
+- [x] `@angular/cdk@^21` (la version par défaut, 22, exige Angular 22)
+- [x] `models/ticket-sort.spec.ts` + `ticket-sort.ts` — tri de colonne (rouge d'abord)
+- [x] Colonnes À faire / En cours / Fait, cartes glissables, `onDrop` → statut
+- [x] Sélecteurs conservés sur la carte (statut, priorité, assigné)
+- [x] Filtre par personne remonté dans l'en-tête ; filtre par statut supprimé
+- [x] Vérification navigateur + état réel en base
+
+### Review
+
+- Le glissé ne transporte que le statut : l'ordre dans une colonne est calculé
+  (priorité puis numéro), donc rien à enregistrer et les deux comptes voient la
+  même pile. `sortTickets` est pure et testée (5 tests).
+- Le sélecteur de statut reste sur la carte : `cdkDrag` ne se pilote pas au
+  clavier, sans lui l'écran serait inutilisable sans souris. Vérifié : il
+  déplace bien la carte de colonne.
+- `applyInline` est réutilisé tel quel — écriture optimiste, retour arrière et
+  message si l'API refuse.
+- Vérifié en direct : JUNO-03 glissé de « À faire » vers « Fait », `DONE`
+  confirmé en base ; tri Haute avant Basse dans une colonne ; filtre par
+  personne ; défilement horizontal des colonnes sous 900 px.
+- Piège de vérification : `dragTo` de Playwright ne déclenche pas le CDK (pas
+  de mouvements intermédiaires), il faut piloter la souris pas à pas. Un
+  glissé « qui ne marche pas » en test automatisé n'est pas une preuve de bug.

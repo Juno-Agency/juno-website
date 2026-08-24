@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { CdkDrag, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 
 import { TicketService } from '../../services/ticket.service';
+import { sortTickets } from '../../models/ticket-sort';
 import {
   TICKET_ASSIGNEES,
   TICKET_ASSIGNEE_LABEL,
@@ -24,6 +26,7 @@ import {
 @Component({
   selector: 'app-admin-tickets',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CdkDropListGroup, CdkDropList, CdkDrag],
   templateUrl: './admin-tickets.html',
   styleUrl: './admin-tickets.scss',
 })
@@ -40,8 +43,6 @@ export class AdminTicketsComponent implements OnInit {
   protected readonly tickets = signal<Ticket[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal('');
-  /** null = tous les statuts. */
-  protected readonly filter = signal<TicketStatus | null>(null);
   /** null = tout le monde ; 'NONE' = les tickets que personne n'a pris. */
   protected readonly whoFilter = signal<TicketAssignee | 'NONE' | null>(null);
 
@@ -55,28 +56,27 @@ export class AdminTicketsComponent implements OnInit {
 
   /**
    * Le filtre s'applique côté client : la liste tient en mémoire (200 tickets au
-   * plus) et on évite un aller-retour réseau à chaque clic d'onglet.
+   * plus) et on évite un aller-retour réseau à chaque changement.
    */
   protected readonly visible = computed(() => {
-    const status = this.filter();
     const who = this.whoFilter();
-    return this.tickets().filter((t) => {
-      if (status && t.status !== status) return false;
-      if (who === 'NONE') return t.assignee === null;
-      if (who && t.assignee !== who) return false;
-      return true;
-    });
+    if (who === null) return this.tickets();
+    return this.tickets().filter((t) =>
+      who === 'NONE' ? t.assignee === null : t.assignee === who,
+    );
   });
 
-  /** Compteur par statut, pour les pastilles des filtres. */
-  protected readonly counts = computed(() => {
-    const all = this.tickets();
-    return {
-      TODO: all.filter((t) => t.status === 'TODO').length,
-      DOING: all.filter((t) => t.status === 'DOING').length,
-      DONE: all.filter((t) => t.status === 'DONE').length,
-    } satisfies Record<TicketStatus, number>;
+  /** Le contenu de chaque colonne, trié. C'est ce que le tableau affiche. */
+  protected readonly columns = computed(() => {
+    const visible = this.visible();
+    return this.STATUSES.map((status) => ({
+      status,
+      tickets: sortTickets(visible.filter((t) => t.status === status)),
+    }));
   });
+
+  /** Les identifiants de zones de dépôt, pour connecter les colonnes entre elles. */
+  protected readonly dropListIds = this.STATUSES.map((s) => `col-${s}`);
 
   ngOnInit(): void {
     this.load();
@@ -94,10 +94,6 @@ export class AdminTicketsComponent implements OnInit {
         this.loading.set(false);
       },
     });
-  }
-
-  protected setFilter(status: TicketStatus | null): void {
-    this.filter.set(status);
   }
 
   /** Le select renvoie '' pour « tout le monde » : les valeurs HTML sont des chaînes. */
@@ -160,7 +156,18 @@ export class AdminTicketsComponent implements OnInit {
     });
   }
 
-  /** Changement de statut ou de priorité directement depuis la ligne. */
+  /**
+   * Dépôt d'une carte. Seule la colonne d'arrivée compte : l'ordre à
+   * l'intérieur d'une colonne est calculé (priorité puis numéro), donc un
+   * déplacement dans la même colonne n'a rien à enregistrer.
+   */
+  protected onDrop(event: CdkDragDrop<TicketStatus>, target: TicketStatus): void {
+    const ticket = event.item.data as Ticket;
+    if (ticket.status === target) return;
+    this.applyInline(ticket, { status: target });
+  }
+
+  /** Changement de statut ou de priorité directement depuis la carte. */
   protected setStatus(t: Ticket, status: TicketStatus): void {
     if (status === t.status) return;
     this.applyInline(t, { status });

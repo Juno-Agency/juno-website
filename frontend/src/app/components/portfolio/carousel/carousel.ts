@@ -314,8 +314,10 @@ export class PortfolioCarouselComponent {
    *  viewport scroll and must be locked too. */
   private lockScroll(on: boolean): void {
     const v = on ? 'hidden' : '';
-    this.doc.documentElement.style.overflow = v;
+    const html = this.doc.documentElement;
+    html.style.overflow = v;
     this.doc.body.style.overflow = v;
+    html.classList.toggle('sheet-open', on); // the nav fades out behind the sheet
   }
 
   // ------------------------------------------------------------------ ring

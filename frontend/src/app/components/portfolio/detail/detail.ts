@@ -1,7 +1,10 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  afterNextRender,
   computed,
   inject,
   input,
@@ -55,6 +58,20 @@ export class PortfolioDetailComponent {
   private readonly slot = viewChild.required<ElementRef<HTMLElement>>('slot');
   private readonly seat = viewChild<ElementRef<HTMLElement>>('seat');
   private readonly close = viewChild.required<ElementRef<HTMLButtonElement>>('close');
+
+  constructor() {
+    // The page sections sit in their own stacking contexts (z-index 2, above
+    // the grain), which would trap this overlay below the fixed nav. Moving
+    // the root node to <body> keeps bindings, listeners and scoped styles
+    // intact while putting z-index 60 back in the root context.
+    const doc = inject(DOCUMENT);
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const root = this.root().nativeElement;
+      doc.body.appendChild(root);
+      destroyRef.onDestroy(() => root.remove());
+    });
+  }
 
   /** Render the overlay (still transparent) so the slot can be measured. */
   show(): void {

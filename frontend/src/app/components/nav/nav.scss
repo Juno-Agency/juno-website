@@ -8,8 +8,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px var(--gutter);
-  transition: padding 0.35s, background 0.35s, border-color 0.35s;
+  transition: padding 0.35s, background 0.35s, border-color 0.35s, opacity 0.3s;
   border-bottom: 1px solid transparent;
+}
+/* A project sheet is open (class set on <html> by the portfolio): the bar is
+   behind a modal, so it steps aside and leaves the corner to the close button. */
+:host-context(.sheet-open) .nav {
+  opacity: 0;
+  pointer-events: none;
 }
 .nav.scrolled {
   background: rgba(20, 20, 20, 0.72);

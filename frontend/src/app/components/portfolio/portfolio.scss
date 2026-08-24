@@ -4,9 +4,12 @@
   min-height: 100vh;
 }
 
-/* No z-index here: it would open a stacking context and trap the project
-   sheet (z 60) underneath the fixed nav (z 40). */
+/* Above the grain / vignette overlays (z 1), like every other section of the
+   site. This opens a stacking context, which is why the project sheet moves
+   itself to <body> at runtime instead of living here. */
 .pf {
+  position: relative;
+  z-index: 2;
   padding: 132px 0 0;
 }
 

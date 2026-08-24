@@ -63,7 +63,7 @@ utilisateur admin est créé si `RUN_SEED=true`.
 
 ## Développement local (sans Docker)
 
-**Base de données** — démarrez juste Postgres via compose :
+**Base de données** — MongoDB via compose :
 
 ```bash
 docker compose up -d db
@@ -73,12 +73,15 @@ docker compose up -d db
 
 ```bash
 cd backend
-cp .env.example .env
+cp .env.example .env   # renseigner DATABASE_URL, JWT_SECRET, ADMIN_*
 npm install
-npm run db:push      # crée les tables
-npm run seed         # crée l'admin
-npm run dev          # http://localhost:3000
+npm run dev            # http://localhost:3000 (PORT dans .env)
+npm test               # Vitest
 ```
+
+Ni migration ni seed à lancer : Mongoose crée les collections à la volée, et
+l'admin du back-office est authentifié depuis les variables d'environnement
+(`ADMIN_EMAIL` / `ADMIN_PASSWORD`), pas depuis la base.
 
 **Frontend**
 
@@ -87,6 +90,31 @@ cd frontend
 npm install
 npm start            # http://localhost:4200 (proxy /api → :3000)
 ```
+
+Si le port 3000 est déjà pris sur votre machine, changez `PORT` dans
+`backend/.env` **et** la cible dans `frontend/proxy.conf.json` — les deux
+doivent concorder.
+
+### Travailler sur les données de production
+
+```bash
+cd frontend
+npm run start:prod-api   # http://localhost:4200, /api → API Render
+```
+
+Le serveur de dev relaie alors `/api` vers la production (`proxy.conf.prod.mjs`)
+au lieu du backend local : utile pour gérer le backlog de tickets partagé sans
+lancer Mongo ni l'API. Trois choses à garder en tête :
+
+- **les écritures sont réelles** — supprimer un ticket, un lead ou un projet du
+  portfolio ici, c'est le supprimer pour de bon ;
+- la connexion se fait avec les **identifiants admin de production** (dashboard
+  Render), pas avec ceux du `.env` local ;
+- l'API dort après 15 minutes sans trafic (plan gratuit) : le premier appel peut
+  mettre une minute à répondre.
+
+Le démarrage affiche un bandeau jaune « API DE PRODUCTION ». S'il n'est pas là,
+c'est que vous tournez sur le backend local.
 
 ## API
 

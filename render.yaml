@@ -22,6 +22,12 @@ services:
         # ponytail: les fronts passent par un rewrite same-origin, CORS ne sert
         # qu'au `ng serve` local. Vider si l'API ne doit répondre qu'aux rewrites.
         value: http://localhost:4200
+      # Clé du backlog partagé : seconde voie d'authentification sur
+      # /api/tickets (en-tête x-api-key), à côté du JWT admin. Permet de gérer
+      # les tickets depuis un poste de dev ou un script. Valeur dans le
+      # dashboard, identique à celle des .env locaux. Vide = voie fermée.
+      - key: TICKETS_API_KEY
+        sync: false
       # Back-office admin credentials — set both in the Render dashboard.
       - key: ADMIN_EMAIL
         sync: false

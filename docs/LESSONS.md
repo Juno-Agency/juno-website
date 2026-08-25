@@ -54,6 +54,23 @@ rendu où les options sont générées par un `@for`.
 réelles en base à l'appui. Ici, deux tickets sur trois affichaient une priorité
 fausse et rien dans la chaîne de build ne l'a signalé.
 
+## Audit — une mesure Lighthouse ne vaut rien en un seul run
+
+**2026-08-25 — audit du site.** Le premier passage desktop sur la landing donnait
+`total-blocking-time` 7 120 ms, `bootup-time` 7,0 s et un score performance de 46,
+avec un chunk JS accusé nommément et des « long tasks » de 2,7 s. Diagnostic tout
+trouvé, cause racine plausible (la boucle `requestAnimationFrame` des mascottes),
+ticket prêt à écrire. Les deux runs suivants, même URL, même preset : TBT 0 ms,
+score 91. L'anomalie venait du poste de mesure, pas du site.
+
+**Règle** — aucun chiffre Lighthouse ne devient un constat sans au moins deux
+runs concordants. Ce qui se reproduit se rapporte (CLS 0,18 sur trois runs, LCP
+14-17 s sur trois runs) ; ce qui bouge d'un facteur dix se jette. Le coût d'un
+run supplémentaire est d'une minute, celui d'un faux diagnostic se compte en
+heures de refonte inutile.
+
+**Corollaire** — un rapport d'audit gagne à publier la dispersion (« 56 / 59 / 62 »)
+plutôt qu'un chiffre unique : le lecteur voit lui-même ce qui est solide.
 
 ## CSS — un overlay `fixed` en `z-index` positif passe devant tout contenu non positionné
 
@@ -77,7 +94,6 @@ diagnostic.
 **Corollaire** — vérifié en changeant une seule variable dans le navigateur
 (`host.style.zIndex = '2'`) avant de toucher au SCSS. Une capture avant/après
 coûte deux minutes et remplace toute conjecture.
-
 
 ## Angular SSR — une route oubliée dans `app.routes.server.ts` est prérendue avec son guard
 

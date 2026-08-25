@@ -92,8 +92,32 @@ npm start            # http://localhost:4200 (proxy /api → :3000)
 ```
 
 Si le port 3000 est déjà pris sur votre machine, changez `PORT` dans
-`backend/.env` **et** la cible dans `frontend/proxy.conf.json` — les deux
-doivent concorder.
+`backend/.env` : le proxy du serveur de dev (`frontend/proxy.conf.mjs`) l'y lit,
+il n'y a rien d'autre à modifier.
+
+### Tickets de production sans commande particulière
+
+`npm start` suffit. Si `TICKETS_API_KEY` est renseignée dans `backend/.env`, le
+proxy envoie les appels `/api/tickets` à l'API de production avec cette clé en
+en-tête `x-api-key` ; l'API la compare à la sienne et répond le backlog partagé.
+Le reste de `/api` continue d'aller à votre backend local.
+
+```
+npm start
+├── /api/tickets → API de production      backlog partagé
+└── /api         → backend local          leads, portfolio, auth
+```
+
+La clé est ajoutée par le serveur de dev, dans son processus Node : elle
+n'atteint jamais le navigateur et n'entre dans aucun bundle. C'est nécessaire —
+elle donne un accès complet en lecture, écriture et suppression sur le backlog.
+
+Deux conséquences :
+
+- **les écritures sont réelles** — supprimer un ticket ici, c'est le supprimer
+  pour tout le monde ;
+- **sans clé dans le `.env`**, la règle disparaît et les tickets repartent vers
+  le backend local, sur votre propre base.
 
 ### Backlog de tickets partagé, reste en local
 

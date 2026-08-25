@@ -20,32 +20,11 @@
  *
  * Usage :  npm run start:prod-api
  */
-import { readFileSync } from 'node:fs';
+import { readEnv } from './proxy-env.mjs';
 
 const API = 'https://juno-api-hhb0.onrender.com';
 
-/**
- * Lit la clé dans l'environnement, sinon dans un `.env` — celui du front s'il
- * existe, sinon celui du backend, qui la contient déjà. Aucun de ces fichiers
- * n'est versionné, et rien de tout ça n'atteint le navigateur.
- */
-function readTicketsApiKey() {
-  if (process.env.TICKETS_API_KEY) return process.env.TICKETS_API_KEY;
-  for (const file of ['.env', '../backend/.env']) {
-    try {
-      const line = readFileSync(new URL(file, import.meta.url), 'utf8')
-        .split('\n')
-        .find((l) => /^\s*TICKETS_API_KEY\s*=/.test(l));
-      const value = line?.split('=').slice(1).join('=').trim().replace(/^["']|["']$/g, '');
-      if (value) return value;
-    } catch {
-      // Fichier absent : on essaie le suivant.
-    }
-  }
-  return '';
-}
-
-const ticketsApiKey = readTicketsApiKey();
+const ticketsApiKey = readEnv('TICKETS_API_KEY');
 
 // Repère au démarrage : sans lui, rien à l'écran ne distingue cette session
 // d'une session locale, et c'est comme ça qu'on supprime en prod par erreur.

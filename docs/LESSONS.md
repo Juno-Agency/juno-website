@@ -77,3 +77,21 @@ diagnostic.
 **Corollaire** — vérifié en changeant une seule variable dans le navigateur
 (`host.style.zIndex = '2'`) avant de toucher au SCSS. Une capture avant/après
 coûte deux minutes et remplace toute conjecture.
+
+
+## Angular SSR — une route oubliée dans `app.routes.server.ts` est prérendue avec son guard
+
+**2026-08-25 — `/admin/portfolio`.** En vérifiant le correctif précédent, l'accès
+direct à cette URL renvoyait au formulaire de connexion malgré une session
+valide. `app.routes.server.ts` déclarait `admin`, `admin/login`, `admin/stats` et
+`admin/tickets` en `RenderMode.Client`, mais pas `admin/portfolio` : le catch-all
+`**` la passait donc en `Prerender`. Au build, `adminGuard` s'exécute sans
+`localStorage`, conclut « non authentifié » et fige une redirection —
+`dist/frontend/browser/admin/portfolio/index.html` contenait littéralement
+`<title>Redirecting</title>`. La navigation par les onglets fonctionnait, seul
+un accès direct ou un F5 échouait, ce qui rendait le bug facile à ne pas voir.
+
+**Règle** — toute route protégée par un guard doit être déclarée explicitement en
+`RenderMode.Client`. Après un build, `find dist/frontend/browser -name index.html`
+doit ne lister que des pages publiques : une route privée qui y apparaît est un
+guard prérendu.

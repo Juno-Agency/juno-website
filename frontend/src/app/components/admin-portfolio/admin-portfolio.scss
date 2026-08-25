@@ -1,5 +1,11 @@
+/* Le grain et la vignette du layout sont des overlays fixes en z-index 1
+   (styles.scss) : sans contexte d'empilement au-dessus, la page se lit à
+   travers eux — voile grisé et halo en haut d'écran. Même règle que les
+   autres écrans du back-office (stats, dashboard, login). */
 :host {
   display: block;
+  position: relative;
+  z-index: 2;
 }
 
 .apf {

@@ -53,3 +53,27 @@ rendu où les options sont générées par un `@for`.
 **Corollaire** — un écran de formulaire se relit dans le navigateur, valeurs
 réelles en base à l'appui. Ici, deux tickets sur trois affichaient une priorité
 fausse et rien dans la chaîne de build ne l'a signalé.
+
+
+## CSS — un overlay `fixed` en `z-index` positif passe devant tout contenu non positionné
+
+**2026-08-25 — back-office, onglets Tickets et Portfolio.** Le haut de ces deux
+pages apparaissait voilé et grisé. Cause : `.grain` et `.vignette`
+(`styles.scss`) sont `position: fixed; z-index: 1`, dont l'un en
+`mix-blend-mode: overlay`. Un élément positionné à `z-index` positif est peint
+au-dessus de tout élément non positionné, quel que soit l'ordre du DOM : les
+deux composants se contentaient de `:host { display: block }` et se lisaient
+donc *à travers* les overlays. Les quatre autres écrans qui montent la vignette
+(dashboard, stats, login, portfolio public, legal, intake) posaient bien leur
+`position: relative; z-index: 2` — deux l'avaient oublié.
+
+**Règle** — tout composant monté sous un layout qui affiche `<app-grain-vignette />`
+doit ouvrir son propre contexte d'empilement (`:host { position: relative;
+z-index: 2 }`). Quand une règle doit être répétée dans chaque page, la liste des
+pages qui l'appliquent est la première chose à comparer devant un bug d'affichage
+localisé : l'écart entre celles qui marchent et celles qui ratent *est* le
+diagnostic.
+
+**Corollaire** — vérifié en changeant une seule variable dans le navigateur
+(`host.style.zIndex = '2'`) avant de toucher au SCSS. Une capture avant/après
+coûte deux minutes et remplace toute conjecture.

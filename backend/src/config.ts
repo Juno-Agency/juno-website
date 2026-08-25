@@ -39,6 +39,13 @@ export const config = {
    * local — voir tickets/tickets-connection.ts.
    */
   ticketsDatabaseUrl: process.env.TICKETS_DATABASE_URL ?? '',
+  /**
+   * Clé d'API du backlog. Renseignée, elle ouvre une seconde voie
+   * d'authentification sur `/api/tickets` (en-tête `x-api-key`) à côté du JWT
+   * admin, pour piloter les tickets depuis un poste de dev, un script ou curl.
+   * Vide = seul le JWT protège la route. Voir tickets/ticket-auth.ts.
+   */
+  ticketsApiKey: process.env.TICKETS_API_KEY ?? '',
   jwtSecret: requiredInProd('JWT_SECRET', 'dev-insecure-secret-change-me'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '12h',
   // Back-office admin — authenticated straight from the environment (no DB user).

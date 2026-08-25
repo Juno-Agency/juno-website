@@ -141,6 +141,37 @@ lancer Mongo ni l'API. Trois choses à garder en tête :
 Le démarrage affiche un bandeau jaune « API DE PRODUCTION ». S'il n'est pas là,
 c'est que vous tournez sur le backend local.
 
+### Clé d'API du backlog
+
+`/api/tickets` accepte **deux** authentifications : le JWT du back-office, ou la
+clé partagée `TICKETS_API_KEY` en en-tête `x-api-key`. Les tickets deviennent
+ainsi pilotables de partout — poste de dev, script, curl — sans session de
+navigateur ni identifiants de production.
+
+```
+navigateur (back-office prod)  ──Bearer <jwt admin>──┐
+serveur de dev (localhost:4200) ──x-api-key──────────┼──> API prod ──> DB prod
+curl / script                   ──x-api-key──────────┘
+```
+
+Définissez la même valeur des deux côtés : variable `TICKETS_API_KEY` sur Render
+(elle y est vérifiée) et dans votre `backend/.env` (le proxy de dev l'y lit).
+Générez-la avec `openssl rand -hex 32`.
+
+```bash
+curl -H "x-api-key: $TICKETS_API_KEY" https://<api>/api/tickets
+```
+
+Avec `npm run start:prod-api`, c'est le **serveur de dev** qui ajoute l'en-tête
+sur `/api/tickets` : la clé ne traverse jamais le navigateur et n'entre dans
+aucun bundle. Le bandeau de démarrage indique si elle a été détectée. Sans clé,
+rien ne casse — l'API retombe sur le JWT et il faut se connecter au back-office.
+
+La clé donne un accès complet en lecture, écriture et suppression sur le
+backlog : elle vit dans les variables d'environnement et dans les `.env`
+(non versionnés), jamais dans le code front. Si `TICKETS_API_KEY` est vide côté
+serveur, cette voie est simplement fermée et seul le JWT protège la route.
+
 ## API
 
 | Méthode | Route                | Accès       | Rôle                              |

@@ -6,7 +6,8 @@ import { Counter, Ticket } from '../models';
 import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody, validateQuery } from '../middleware/validate';
 import { notFound } from '../middleware/http-error';
-import { requireAuth } from '../auth/auth.middleware';
+import { ticketsLimiter } from '../middleware/rate-limit';
+import { requireTicketAccess } from './ticket-auth';
 import { formatTicketKey, nextTicketSeq } from './ticket-key';
 import {
   CreateTicketInput,
@@ -32,7 +33,7 @@ registry.registerPath({
   path: '/api/tickets',
   tags: ['Tickets'],
   summary: 'Crée un ticket du backlog interne',
-  security: [{ bearerAuth: [] }],
+  security: [{ bearerAuth: [] }, { ticketsApiKey: [] }],
   request: { body: { content: { 'application/json': { schema: CreateTicketSchema } } } },
   responses: {
     201: { description: 'Ticket créé', content: { 'application/json': { schema: TicketSchema } } },
@@ -45,7 +46,7 @@ registry.registerPath({
   path: '/api/tickets',
   tags: ['Tickets'],
   summary: 'Liste les tickets, du plus récent au plus ancien',
-  security: [{ bearerAuth: [] }],
+  security: [{ bearerAuth: [] }, { ticketsApiKey: [] }],
   request: { query: ListTicketsQuerySchema },
   responses: {
     200: {
@@ -61,7 +62,7 @@ registry.registerPath({
   path: '/api/tickets/{id}',
   tags: ['Tickets'],
   summary: 'Met à jour un ticket',
-  security: [{ bearerAuth: [] }],
+  security: [{ bearerAuth: [] }, { ticketsApiKey: [] }],
   request: {
     params: z.object({ id: z.string() }),
     body: { content: { 'application/json': { schema: UpdateTicketSchema } } },
@@ -77,7 +78,7 @@ registry.registerPath({
   path: '/api/tickets/{id}',
   tags: ['Tickets'],
   summary: 'Supprime un ticket',
-  security: [{ bearerAuth: [] }],
+  security: [{ bearerAuth: [] }, { ticketsApiKey: [] }],
   request: { params: z.object({ id: z.string() }) },
   responses: {
     204: { description: 'Supprimé' },
@@ -86,11 +87,13 @@ registry.registerPath({
 });
 
 /* ---------------- Handlers ---------------- */
-// Backlog interne : tout est derrière l'authentification du back-office.
+// Backlog interne, accessible par deux voies : le JWT du back-office ou la clé
+// d'API partagée (voir ticket-auth.ts). Le limiteur couvre les deux.
+ticketsRouter.use(ticketsLimiter);
 
 ticketsRouter.post(
   '/',
-  requireAuth,
+  requireTicketAccess,
   validateBody(CreateTicketSchema),
   asyncHandler(async (req, res) => {
     const data = req.body as CreateTicketInput;
@@ -102,7 +105,7 @@ ticketsRouter.post(
 
 ticketsRouter.get(
   '/',
-  requireAuth,
+  requireTicketAccess,
   validateQuery(ListTicketsQuerySchema),
   asyncHandler(async (_req, res) => {
     const { status, assignee, take, skip } = res.locals['query'] as ListQuery;
@@ -119,7 +122,7 @@ ticketsRouter.get(
 
 ticketsRouter.get(
   '/:id',
-  requireAuth,
+  requireTicketAccess,
   asyncHandler(async (req, res) => {
     requireObjectId(req.params.id);
     const ticket = await Ticket.findById(req.params.id);
@@ -130,7 +133,7 @@ ticketsRouter.get(
 
 ticketsRouter.patch(
   '/:id',
-  requireAuth,
+  requireTicketAccess,
   validateBody(UpdateTicketSchema),
   asyncHandler(async (req, res) => {
     requireObjectId(req.params.id);
@@ -146,7 +149,7 @@ ticketsRouter.patch(
 
 ticketsRouter.delete(
   '/:id',
-  requireAuth,
+  requireTicketAccess,
   asyncHandler(async (req, res) => {
     requireObjectId(req.params.id);
     // Le compteur n'est pas décrémenté : le numéro reste retiré de la circulation.

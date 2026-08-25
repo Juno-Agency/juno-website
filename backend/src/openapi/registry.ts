@@ -16,3 +16,15 @@ export const bearerAuth = registry.registerComponent(
     bearerFormat: 'JWT',
   },
 );
+
+// Clé d'API du backlog partagé : seconde voie d'authentification sur
+// `/api/tickets`, pour les appels hors navigateur (scripts, curl, front local).
+export const ticketsApiKey = registry.registerComponent(
+  'securitySchemes',
+  'ticketsApiKey',
+  {
+    type: 'apiKey',
+    in: 'header',
+    name: 'x-api-key',
+  },
+);

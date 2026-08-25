@@ -26,3 +26,15 @@ export const checkLeadLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Trop de requêtes. Réessayez dans un instant.' },
 });
+
+/**
+ * Limiter on the shared ticket backlog. The API-key door is reachable from
+ * anywhere, so this is what blunts a brute-force on the key itself.
+ */
+export const ticketsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 300, // roomy for a kanban board, useless for guessing a key
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Trop de requêtes sur le backlog. Réessayez dans un instant.' },
+});

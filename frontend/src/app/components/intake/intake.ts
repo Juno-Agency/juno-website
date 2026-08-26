@@ -195,6 +195,15 @@ export class IntakeComponent {
   /** Duplicate pre-check: true while checking, and whether to show the choice modal. */
   protected readonly checkingDup = signal(false);
   protected readonly dupOpen = signal(false);
+  /**
+   * Envoi en cours / envoi échoué. Tant que l'API n'a pas confirmé, le
+   * brouillon reste et la confirmation n'apparaît pas : un lead qui n'est pas
+   * parti ne doit jamais ressembler à un lead reçu.
+   */
+  protected readonly sending = signal(false);
+  protected readonly sendFailed = signal(false);
+  /** Choix du modal de doublon, rejoué tel quel par « Réessayer ». */
+  private combineWithExisting = false;
 
   /** Drives the "Aperçu" attention cue: the mockup changed but the drawer
       (mobile) hasn't been opened to see it yet. */
@@ -765,11 +774,8 @@ export class IntakeComponent {
 
   /* ---------- submit + confirmation ---------- */
   protected submit(): void {
-    if (this.animating() || this.done() || this.checkingDup()) return;
-    if (!this.consent()) {
-      this.err.set(this.tr('Merci d’accepter l’utilisation de vos informations pour continuer.'));
-      return;
-    }
+    if (this.animating() || this.done() || this.checkingDup() || this.sending()) return;
+    if (!this.requireConsent()) return;
     // Duplicate pre-check: if a request already exists for this email, let the
     // visitor decide (new project vs. link to the existing one) before sending.
     const email = this.data().email.trim();
@@ -800,15 +806,51 @@ export class IntakeComponent {
 
   /** Actually send the lead (after the duplicate check is resolved). */
   private finalize(combine: boolean): void {
-    if (this.animating() || this.done()) return;
-    this.animating.set(true);
-    const payload: LeadPayload = this.buildPayload(combine);
-    this.lead.submit(payload).subscribe();
-    this.clearSaved();
-    this.persistOn = false;
-    this.done.set(true);
-    setTimeout(() => this.burst(), this.rm ? 0 : 60);
-    setTimeout(() => this.animating.set(false), this.rm ? 0 : 300);
+    if (this.animating() || this.done() || this.sending()) return;
+    this.combineWithExisting = combine;
+    this.send();
+  }
+
+  /** Nouvelle tentative après un échec réseau : mêmes réponses, état le plus à jour. */
+  protected retry(): void {
+    if (this.sending() || this.done() || !this.requireConsent()) return;
+    this.send();
+  }
+
+  private requireConsent(): boolean {
+    if (this.consent()) return true;
+    this.err.set(this.tr('Merci d’accepter l’utilisation de vos informations pour continuer.'));
+    return false;
+  }
+
+  /**
+   * Envoie la demande et n'affiche la confirmation qu'après un accusé de
+   * réception de l'API. En cas d'échec — API Render au réveil, réseau coupé,
+   * 500 — le brouillon est conservé et l'écran propose de réessayer, plutôt
+   * que de remercier un prospect dont la demande n'est jamais arrivée.
+   */
+  private send(): void {
+    this.sending.set(true);
+    this.sendFailed.set(false);
+    this.err.set('');
+    this.lead.submit(this.buildPayload(this.combineWithExisting)).subscribe((res) => {
+      this.sending.set(false);
+      if (!res.ok) {
+        this.sendFailed.set(true);
+        this.err.set(
+          this.tr(
+            'L’envoi a échoué. Vos réponses sont conservées sur cet appareil — réessayez dans un instant.',
+          ),
+        );
+        return;
+      }
+      this.animating.set(true);
+      this.clearSaved();
+      this.persistOn = false;
+      this.done.set(true);
+      setTimeout(() => this.burst(), this.rm ? 0 : 60);
+      setTimeout(() => this.animating.set(false), this.rm ? 0 : 300);
+    });
   }
 
   private buildPayload(combine = false): LeadPayload {

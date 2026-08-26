@@ -678,6 +678,12 @@
 .go:hover {
   transform: translateY(-2px);
 }
+/* Envoi en cours : le bouton reste lisible mais n'invite plus au clic. */
+.go[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+  transform: none;
+}
 .go .arr {
   transition: transform 0.25s;
 }

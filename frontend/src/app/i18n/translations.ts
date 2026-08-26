@@ -276,6 +276,10 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Choisissez une option': 'Choose an option',
     'Merci d’accepter l’utilisation de vos informations pour continuer.':
       'Please accept the use of your information to continue.',
+    'L’envoi a échoué. Vos réponses sont conservées sur cet appareil — réessayez dans un instant.':
+      'Sending failed. Your answers are saved on this device — please try again in a moment.',
+    'Envoi en cours…': 'Sending…',
+    Réessayer: 'Try again',
 
     /* ---- intake · confirm ---- */
     'Demande envoyée': 'Request sent',
@@ -675,6 +679,10 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Choisissez une option': 'Wählen Sie eine Option',
     'Merci d’accepter l’utilisation de vos informations pour continuer.':
       'Bitte stimmen Sie der Nutzung Ihrer Angaben zu, um fortzufahren.',
+    'L’envoi a échoué. Vos réponses sont conservées sur cet appareil — réessayez dans un instant.':
+      'Das Senden ist fehlgeschlagen. Ihre Angaben bleiben auf diesem Gerät gespeichert — bitte versuchen Sie es gleich noch einmal.',
+    'Envoi en cours…': 'Wird gesendet…',
+    Réessayer: 'Erneut versuchen',
 
     /* ---- intake · confirm ---- */
     'Demande envoyée': 'Anfrage gesendet',

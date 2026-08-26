@@ -59,8 +59,9 @@ export class JunoLeadService {
       map((res) => ({ ok: true, id: res.id })),
       catchError((err) => {
         console.error('[JUNO] lead submit failed', err);
-        // The mockup always shows the confirmation screen; we degrade
-        // gracefully so a backend hiccup never blocks the user.
+        // Un échec n'interrompt pas le flux : il est signalé par `ok: false`,
+        // que l'appelant DOIT lire — c'est ce booléen qui décide si la
+        // confirmation s'affiche et si le brouillon peut être effacé.
         return of({ ok: false });
       }),
     );

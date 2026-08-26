@@ -163,14 +163,22 @@
             </label>
 
             @if (err()) {
-              <div class="err consent-err">{{ err() }}</div>
+              <div class="err consent-err" role="alert">{{ err() }}</div>
             }
 
             <div class="foot stagger">
-              <button class="go" (click)="submit()">
-                <span>{{ tr('Envoyer ma demande') }}</span> <span class="arr">→</span>
-              </button>
-              <span class="hint">{{ tr('ou') }} <kbd>{{ tr('Entrée') }} ↵</kbd></span>
+              @if (sendFailed()) {
+                <button class="go" (click)="retry()" [disabled]="sending()">
+                  <span>{{ sending() ? tr('Envoi en cours…') : tr('Réessayer') }}</span>
+                  <span class="arr">→</span>
+                </button>
+              } @else {
+                <button class="go" (click)="submit()" [disabled]="sending() || checkingDup()">
+                  <span>{{ sending() ? tr('Envoi en cours…') : tr('Envoyer ma demande') }}</span>
+                  <span class="arr">→</span>
+                </button>
+                <span class="hint">{{ tr('ou') }} <kbd>{{ tr('Entrée') }} ↵</kbd></span>
+              }
             </div>
           </div>
         </div>

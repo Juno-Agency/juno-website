@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>JUNO — Page introuvable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+  <meta name="theme-color" content="#141414" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <!--
+    Page autonome, servie par le serveur web avec un statut 404 — elle ne passe
+    donc pas par Angular et ne peut pas partager ses styles compilés. Les
+    quelques règles nécessaires sont reprises ici, alignées sur les tokens de
+    src/styles.scss.
+  -->
+  <style>
+    :root {
+      --bg: #141414;
+      --cream: #fcfcfb;
+      --muted: #b9b5ad;
+      --faint: #6f6a63;
+      --on-accent: #141414;
+      --serif: "Bricolage Grotesque", "Arial Black", "Helvetica Neue", sans-serif;
+      --sans: "Space Grotesk", system-ui, "Helvetica Neue", Arial, sans-serif;
+      --mono: "Space Mono", ui-monospace, Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(24px, 6vw, 76px);
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--sans);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: 560px; }
+    .num {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(44px, 9vw, 92px);
+      line-height: 0.9;
+      letter-spacing: -0.035em;
+      margin: 14px 0 20px;
+    }
+    p { color: var(--muted); margin: 0 0 32px; }
+    a.go {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      padding: 14px 26px;
+      border-radius: 3px;
+      background: var(--cream);
+      color: var(--on-accent);
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    a.go:hover { transform: translateY(-2px); }
+    @media (prefers-reduced-motion: reduce) {
+      a.go { transition: none; }
+      a.go:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="num">Erreur 404</p>
+    <h1>Cette page n’existe pas.</h1>
+    <p>Le lien est peut-être ancien, ou l’adresse comporte une faute. Le reste du site vous attend.</p>
+    <a class="go" href="/">Retour à l’accueil <span aria-hidden="true">→</span></a>
+  </main>
+</body>
+</html>

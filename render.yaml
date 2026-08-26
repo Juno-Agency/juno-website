@@ -70,7 +70,24 @@ services:
       # Le back-office vit sur son propre host (cf. nginx.conf).
       - { type: redirect, source: /admin/*, destination: / }
       - { type: rewrite, source: /api/*, destination: https://juno-api-hhb0.onrender.com/api/* }
-      - { type: rewrite, source: /*, destination: /index.html }
+      # Chaque page publique est prérendue dans son propre dossier
+      # (frontend/src/app/app.routes.server.ts). Render « n'applique pas de
+      # règle si une ressource existe à ce chemin » — mais /realisations n'est
+      # pas une ressource, le fichier est /realisations/index.html. Sans ces
+      # règles, un catch-all servait la landing sur les cinq URLs : même
+      # <title>, même description, contenu dupliqué pour Google.
+      # Toute nouvelle route prérendue doit être ajoutée ici.
+      - { type: rewrite, source: /projet, destination: /projet/index.html }
+      - { type: rewrite, source: /projet/, destination: /projet/index.html }
+      - { type: rewrite, source: /realisations, destination: /realisations/index.html }
+      - { type: rewrite, source: /realisations/, destination: /realisations/index.html }
+      - { type: rewrite, source: /mentions-legales, destination: /mentions-legales/index.html }
+      - { type: rewrite, source: /mentions-legales/, destination: /mentions-legales/index.html }
+      - { type: rewrite, source: /confidentialite, destination: /confidentialite/index.html }
+      - { type: rewrite, source: /confidentialite/, destination: /confidentialite/index.html }
+      # Pas de catch-all : il renverrait la landing en 200 sur n'importe quelle
+      # URL inventée (soft 404). Ce qui ne correspond à aucun fichier doit
+      # répondre 404 — un rewrite ne sait pas changer le statut.
 
   - type: web
     name: juno-admin

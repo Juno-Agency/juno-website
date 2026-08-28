@@ -147,3 +147,30 @@ que seul le nouveau build produit (ici `/404.html`). Il répondait 200 : le buil
 publiques de `app.routes.ts` aux règles du `render.yaml` et échoue si une route
 n'y a pas la sienne, ou si un catch-all vers la landing réapparaît. Un oubli de
 règle ne se voit sur aucun écran : seul un test peut le rattraper.
+
+## nginx — un `add_header` dans un `location` annule tous ceux du serveur
+
+**2026-08-28 — JUNO-06, en-têtes de sécurité.** En déclarant CSP, X-Frame-Options,
+Referrer-Policy et Permissions-Policy au niveau `server`, les assets `.js`,
+`.css` et images en sortaient dépourvus. La cause est une règle d'héritage
+d'nginx facile à oublier : **dès qu'un bloc `location` déclare un seul
+`add_header`, il cesse d'hériter de tous ceux des niveaux supérieurs.** Le bloc
+de cache long des assets posait un `add_header Cache-Control` — il suffisait à
+vider la moitié du site de ses en-têtes de sécurité.
+
+**Règle** — ne jamais laisser un `add_header` isolé dans un `location`. Calculer
+la valeur variable par une `map` en tête de fichier et poser tous les en-têtes
+une seule fois au niveau `server`. Le `Cache-Control` par type de fichier se
+déduit très bien de `$uri`.
+
+**Corollaire — `always` n'est pas optionnel.** Sans lui, nginx omet les
+`add_header` sur les réponses d'erreur : la page 404 sortait sans CSP. Toute
+vérification d'en-têtes doit donc porter sur trois réponses au minimum — une
+page, un asset, une erreur — et pas seulement sur `curl -I /`.
+
+**Angular — pourquoi `script-src` garde `'unsafe-inline'`.** Les pages prérendues
+embarquent deux scripts inline générés par `withEventReplay()`, dont le contenu
+suit la version d'Angular : les figer par hash casserait en silence. L'option
+`security.autoCsp` du builder, faite exactement pour ça, refuse de tourner avec
+le SSG (« Cannot set both SSR and auto-CSP at the same time »). À réévaluer à
+chaque montée de version d'Angular.

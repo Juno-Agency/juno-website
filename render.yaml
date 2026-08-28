@@ -88,6 +88,48 @@ services:
       # Pas de catch-all : il renverrait la landing en 200 sur n'importe quelle
       # URL inventée (soft 404). Ce qui ne correspond à aucun fichier doit
       # répondre 404 — un rewrite ne sait pas changer le statut.
+    # Render ne pose de lui-même que HSTS et X-Content-Type-Options. Le reste
+    # est déclaré ici (l'API, elle, est casquée par helmet côté Express).
+    # Contrairement aux `routes`, ces règles ne font qu'ajouter : la fusion du
+    # blueprint suffit, aucune action dans le dashboard.
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        # 'unsafe-inline' sur script-src : les pages prérendues embarquent deux
+        # scripts inline générés par `withEventReplay()`, dont le contenu change
+        # à chaque version d'Angular — les figer par hash casserait en silence.
+        # L'option `security.autoCsp` du builder, qui les hacherait au build,
+        # refuse de tourner avec le SSR/SSG (« Cannot set both SSR and auto-CSP »).
+        # Le reste est verrouillé : aucun script externe, ni eval, ni objet.
+        value: >-
+          default-src 'self';
+          base-uri 'self';
+          object-src 'none';
+          frame-ancestors 'none';
+          form-action 'self';
+          script-src 'self' 'unsafe-inline';
+          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+          font-src 'self' https://fonts.gstatic.com;
+          img-src 'self' data: https://cdn.agency-juno.com;
+          connect-src 'self';
+          manifest-src 'self';
+          upgrade-insecure-requests
+      # Doublon volontaire de frame-ancestors, pour les navigateurs qui ignorent
+      # encore la directive CSP.
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Permissions-Policy
+        value: >-
+          accelerometer=(), camera=(), geolocation=(), gyroscope=(),
+          magnetometer=(), microphone=(), payment=(), usb=()
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
 
   - type: web
     name: juno-admin
@@ -98,3 +140,42 @@ services:
     routes:
       - { type: rewrite, source: /api/*, destination: https://juno-api-hhb0.onrender.com/api/* }
       - { type: rewrite, source: /*, destination: /index.html }
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        # 'unsafe-inline' sur script-src : les pages prérendues embarquent deux
+        # scripts inline générés par `withEventReplay()`, dont le contenu change
+        # à chaque version d'Angular — les figer par hash casserait en silence.
+        # L'option `security.autoCsp` du builder, qui les hacherait au build,
+        # refuse de tourner avec le SSR/SSG (« Cannot set both SSR and auto-CSP »).
+        # Le reste est verrouillé : aucun script externe, ni eval, ni objet.
+        value: >-
+          default-src 'self';
+          base-uri 'self';
+          object-src 'none';
+          frame-ancestors 'none';
+          form-action 'self';
+          script-src 'self' 'unsafe-inline';
+          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+          font-src 'self' https://fonts.gstatic.com;
+          img-src 'self' data: https://cdn.agency-juno.com;
+          connect-src 'self';
+          manifest-src 'self';
+          upgrade-insecure-requests
+      # Doublon volontaire de frame-ancestors, pour les navigateurs qui ignorent
+      # encore la directive CSP.
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Permissions-Policy
+        value: >-
+          accelerometer=(), camera=(), geolocation=(), gyroscope=(),
+          magnetometer=(), microphone=(), payment=(), usb=()
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin
+      # Back-office : aucune URL ne doit fuiter vers un tiers, même l'origine.
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer

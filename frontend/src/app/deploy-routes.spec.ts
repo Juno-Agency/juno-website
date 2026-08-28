@@ -33,3 +33,40 @@ describe('render.yaml — routes prérendues', () => {
     expect(site).not.toContain('source: /*, destination: /index.html');
   });
 });
+
+/**
+ * JUNO-06 — Render ne pose de lui-même que HSTS et X-Content-Type-Options. Les
+ * autres en-têtes ne vivent que dans le blueprint : les perdre ne casse rien de
+ * visible, c'est exactement pour ça qu'il faut un test.
+ */
+describe('render.yaml — en-têtes de sécurité', () => {
+  const yaml = readFileSync(resolve(process.cwd(), '../render.yaml'), 'utf-8');
+  const services = {
+    'juno-site': yaml.slice(yaml.indexOf('name: juno-site'), yaml.indexOf('name: juno-admin')),
+    'juno-admin': yaml.slice(yaml.indexOf('name: juno-admin')),
+  };
+
+  const REQUIRED = [
+    'Content-Security-Policy',
+    'X-Frame-Options',
+    'Referrer-Policy',
+    'Permissions-Policy',
+    'Cross-Origin-Opener-Policy',
+  ];
+
+  for (const [name, block] of Object.entries(services)) {
+    it(`${name} déclare les cinq en-têtes`, () => {
+      for (const header of REQUIRED) {
+        expect(block, `${header} manquant sur ${name}`).toContain(`name: ${header}`);
+      }
+    });
+
+    it(`${name} interdit l’encadrement et les scripts tiers`, () => {
+      expect(block).toContain("frame-ancestors 'none'");
+      expect(block).toContain("object-src 'none'");
+      expect(block).toContain("default-src 'self'");
+      // 'unsafe-eval' n'a aucune raison d'apparaître : Angular n'en a pas besoin.
+      expect(block).not.toContain('unsafe-eval');
+    });
+  }
+});

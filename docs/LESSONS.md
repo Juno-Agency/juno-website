@@ -111,3 +111,39 @@ un accès direct ou un F5 échouait, ce qui rendait le bug facile à ne pas voir
 `RenderMode.Client`. Après un build, `find dist/frontend/browser -name index.html`
 doit ne lister que des pages publiques : une route privée qui y apparaît est un
 guard prérendu.
+
+## Render — supprimer une règle du `render.yaml` ne la supprime pas du service
+
+**2026-08-26 — JUNO-04, pages prérendues.** Chaque route publique est prérendue
+dans son propre dossier, mais Render servait la landing sur les cinq URLs : la
+règle `/* → /index.html` interceptait tout. Deux pièges se sont enchaînés.
+
+Le premier est documenté mais contre-intuitif : *« Render does not apply
+redirect or rewrite rules to a path if a resource exists at that path. »*
+`/realisations` **n'est pas** une ressource — le fichier est
+`/realisations/index.html`. Le catch-all s'appliquait donc, alors qu'un
+`try_files $uri/` nginx aurait servi la bonne page. Il faut une règle explicite
+par route prérendue.
+
+Le second a coûté un aller-retour de déploiement. Retirer le catch-all du
+`render.yaml` et pousser n'a rien changé en production, alors que le build, lui,
+était bien déployé (`/404.html`, fichier nouveau, répondait 200). La spec des
+blueprints le dit : *« Render **preserves** any existing routing rules that are
+not included in the Blueprint file. »* Le `render.yaml` **fusionne** avec les
+règles du service, il ne les remplace pas. La règle restait donc en place,
+prioritaire, et Render *« applies the first encountered rule that matches »*.
+
+**Règle** — le `render.yaml` ne peut qu'**ajouter ou modifier** des règles de
+routage. En supprimer une exige une action manuelle dans le dashboard
+(juno-site → Settings → Redirects/Rewrites). Après un push qui touche aux
+`routes`, vérifier l'effet réel par `curl` et non par la couleur du déploiement.
+
+**Corollaire — le bon signal de diagnostic.** Pour savoir si un correctif est
+« pas encore déployé » ou « déployé mais sans effet », interroger un artefact
+que seul le nouveau build produit (ici `/404.html`). Il répondait 200 : le build
+était en ligne, donc le problème était ailleurs que dans le déploiement.
+
+**Garde-fou** — `frontend/src/app/deploy-routes.spec.ts` compare les routes
+publiques de `app.routes.ts` aux règles du `render.yaml` et échoue si une route
+n'y a pas la sienne, ou si un catch-all vers la landing réapparaît. Un oubli de
+règle ne se voit sur aucun écran : seul un test peut le rattraper.

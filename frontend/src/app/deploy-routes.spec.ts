@@ -52,10 +52,13 @@ describe('render.yaml — en-têtes de sécurité', () => {
     'Referrer-Policy',
     'Permissions-Policy',
     'Cross-Origin-Opener-Policy',
+    // Render ne pose HSTS que sur *.onrender.com — sur agency-juno.com, il ne
+    // vient que d'ici. Un scan Observatory du vrai domaine l'a mis au jour.
+    'Strict-Transport-Security',
   ];
 
   for (const [name, block] of Object.entries(services)) {
-    it(`${name} déclare les cinq en-têtes`, () => {
+    it(`${name} déclare tous les en-têtes attendus`, () => {
       for (const header of REQUIRED) {
         expect(block, `${header} manquant sur ${name}`).toContain(`name: ${header}`);
       }

@@ -127,6 +127,13 @@ services:
       - path: /*
         name: Cross-Origin-Opener-Policy
         value: same-origin
+      # Render ne pose HSTS que sur ses propres domaines *.onrender.com : le
+      # domaine réel (agency-juno.com) en sortait dépourvu. `includeSubDomains`
+      # est sûr, cdn. et admin. répondent tous deux en HTTPS. Pas de `preload` :
+      # l'inscription sur hstspreload.org est un engagement difficile à défaire.
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
       - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
@@ -176,6 +183,13 @@ services:
         name: Cross-Origin-Opener-Policy
         value: same-origin
       # Back-office : aucune URL ne doit fuiter vers un tiers, même l'origine.
+      # Render ne pose HSTS que sur ses propres domaines *.onrender.com : le
+      # domaine réel (agency-juno.com) en sortait dépourvu. `includeSubDomains`
+      # est sûr, cdn. et admin. répondent tous deux en HTTPS. Pas de `preload` :
+      # l'inscription sur hstspreload.org est un engagement difficile à défaire.
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
       - path: /*
         name: Referrer-Policy
         value: no-referrer

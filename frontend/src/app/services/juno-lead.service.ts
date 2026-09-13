@@ -52,13 +52,9 @@ export class JunoLeadService {
   private readonly http = inject(HttpClient);
 
   submit(payload: LeadPayload): Observable<LeadResult> {
-    // Always keep a console trace — useful in dev and if the API is offline.
-    console.log('[JUNO] lead submitted', payload);
-
     return this.http.post<{ id: string }>(`${API_BASE}/leads`, payload).pipe(
       map((res) => ({ ok: true, id: res.id })),
-      catchError((err) => {
-        console.error('[JUNO] lead submit failed', err);
+      catchError(() => {
         // Un échec n'interrompt pas le flux : il est signalé par `ok: false`,
         // que l'appelant DOIT lire — c'est ce booléen qui décide si la
         // confirmation s'affiche et si le brouillon peut être effacé.

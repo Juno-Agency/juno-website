@@ -52,7 +52,9 @@ export const config = {
   adminEmail: requiredInProd('ADMIN_EMAIL', 'admin@juno.studio'),
   adminPassword: requiredInProd('ADMIN_PASSWORD', 'change-me'),
   // Comma-separated list of allowed origins for CORS (front-end dev server, etc.)
-  corsOrigins: (process.env.CORS_ORIGINS ?? 'http://localhost:4200')
+  // No fallback in production: both fronts reach the API through a same-origin
+  // rewrite, so an unset variable must not reopen the API to localhost.
+  corsOrigins: (process.env.CORS_ORIGINS ?? (isProdEnv ? '' : 'http://localhost:4200'))
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),

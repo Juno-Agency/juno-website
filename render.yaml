@@ -29,6 +29,11 @@ services:
       # dashboard, identique à celle des .env locaux. Vide = voie fermée.
       - key: TICKETS_API_KEY
         sync: false
+      # Clé de lecture des leads pour le workflow du studio (juno-tools) :
+      # GET /api/leads et /api/leads/:id en en-tête x-api-key, rien d'autre.
+      # Valeur dans le dashboard. Vide = voie fermée, seul le JWT admin passe.
+      - key: LEADS_API_KEY
+        sync: false
       # Back-office admin credentials — set both in the Render dashboard.
       - key: ADMIN_EMAIL
         sync: false

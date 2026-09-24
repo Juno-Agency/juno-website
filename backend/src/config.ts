@@ -46,6 +46,13 @@ export const config = {
    * Vide = seul le JWT protège la route. Voir tickets/ticket-auth.ts.
    */
   ticketsApiKey: process.env.TICKETS_API_KEY ?? '',
+  /**
+   * Clé de lecture des leads, pour le studio (workflow juno-tools) : ouvre
+   * `GET /api/leads` et `GET /api/leads/:id` en en-tête `x-api-key`, rien
+   * d'autre (ni stats, ni modification, ni suppression). Distincte de la clé du
+   * backlog. Vide = seul le JWT admin protège les leads. Voir leads.routes.ts.
+   */
+  leadsApiKey: process.env.LEADS_API_KEY ?? '',
   jwtSecret: requiredInProd('JWT_SECRET', 'dev-insecure-secret-change-me'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '12h',
   // Back-office admin — authenticated straight from the environment (no DB user).

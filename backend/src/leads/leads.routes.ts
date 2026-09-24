@@ -21,11 +21,19 @@ import { buildStats, StatsInput } from './leads.stats';
 import { sendLeadEmails, resendLeadEmails, LeadForMail } from '../mail/lead-mails';
 import { config } from '../config';
 import { isBotSubmission } from './antispam';
+import { ticketAccess } from '../tickets/ticket-auth';
 
 export const leadsRouter = Router();
 
 type ListQuery = z.infer<typeof ListLeadsQuerySchema>;
 type UpdateLead = z.infer<typeof UpdateLeadSchema>;
+
+/**
+ * Lecture des leads : JWT admin, ou clé `LEADS_API_KEY` pour le workflow du
+ * studio (juno-tools), qui récupère les demandes sans session de navigateur.
+ * Montée uniquement sur la liste et le détail : toute écriture reste au JWT.
+ */
+const requireLeadsRead = ticketAccess(config.leadsApiKey, requireAuth);
 
 /** 404 for ids that aren't valid Mongo ObjectIds (avoids a cast error). */
 function requireObjectId(id: string): void {
@@ -188,10 +196,10 @@ leadsRouter.get(
   }),
 );
 
-// Back-office endpoints (JWT-protected).
+// Back-office endpoints (JWT-protected; list and detail also accept LEADS_API_KEY).
 leadsRouter.get(
   '/',
-  requireAuth,
+  requireLeadsRead,
   validateQuery(ListLeadsQuerySchema),
   asyncHandler(async (_req, res) => {
     const { status, take, skip } = res.locals['query'] as ListQuery;
@@ -218,7 +226,7 @@ leadsRouter.get(
 
 leadsRouter.get(
   '/:id',
-  requireAuth,
+  requireLeadsRead,
   asyncHandler(async (req, res) => {
     requireObjectId(req.params.id);
     const lead = await Lead.findById(req.params.id);

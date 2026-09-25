@@ -73,3 +73,27 @@ describe('render.yaml — en-têtes de sécurité', () => {
     });
   }
 });
+
+/**
+ * JUNO-08 — le sitemap est un fichier statique : une route ajoutée ou retirée
+ * ne s'y reporte pas d'elle-même, et Google continuerait d'explorer l'ancienne
+ * liste sans que rien ne le signale.
+ */
+describe('sitemap.xml — pages publiques', () => {
+  const xml = readFileSync(resolve(process.cwd(), 'public/sitemap.xml'), 'utf-8');
+  const listed = [...xml.matchAll(/<loc>https:\/\/agency-juno\.com\/([^<]*)<\/loc>/g)].map(
+    (m) => m[1],
+  );
+
+  it('liste exactement la racine et les routes publiques de l’application', () => {
+    const expected = routes
+      .map((r) => r.path)
+      .filter((p): p is string => p !== undefined && p !== '**' && !p.startsWith('admin'));
+    expect([...listed].sort()).toEqual([...expected].sort());
+  });
+
+  it('est annoncé par robots.txt', () => {
+    const robots = readFileSync(resolve(process.cwd(), 'public/robots.txt'), 'utf-8');
+    expect(robots).toContain('Sitemap: https://agency-juno.com/sitemap.xml');
+  });
+});

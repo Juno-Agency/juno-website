@@ -6,6 +6,10 @@ export const routes: Routes = [
   {
     path: '',
     title: 'JUNO — Votre site, dessiné en quelques minutes',
+    data: {
+      description:
+        'JUNO — agence web. Décrivez votre projet, on vous dessine une maquette, vous validez, on développe et on met en ligne. Clé en main.',
+    },
     canActivate: [backofficeHostGuard],
     loadComponent: () =>
       import('./components/landing/landing').then((m) => m.LandingComponent),
@@ -13,12 +17,20 @@ export const routes: Routes = [
   {
     path: 'projet',
     title: 'JUNO — Décrivez votre projet',
+    data: {
+      description:
+        'Décrivez votre projet en quelques questions : JUNO vous propose une maquette de votre site, puis un devis.',
+    },
     loadComponent: () =>
       import('./components/intake/intake').then((m) => m.IntakeComponent),
   },
   {
     path: 'realisations',
     title: 'JUNO — Nos réalisations',
+    data: {
+      description:
+        'Découvrez les réalisations de JUNO, agence web : les sites conçus et mis en ligne pour nos clients.',
+    },
     canActivate: [backofficeHostGuard],
     loadComponent: () =>
       import('./components/portfolio/portfolio').then((m) => m.PortfolioComponent),
@@ -26,14 +38,22 @@ export const routes: Routes = [
   {
     path: 'mentions-legales',
     title: 'JUNO — Mentions légales',
-    data: { doc: 'mentions' },
+    data: {
+      doc: 'mentions',
+      description:
+        'Mentions légales du site JUNO : éditeur, hébergement, propriété intellectuelle, données personnelles et cookies.',
+    },
     loadComponent: () =>
       import('./components/legal/legal').then((m) => m.LegalComponent),
   },
   {
     path: 'confidentialite',
     title: 'JUNO — Politique de confidentialité',
-    data: { doc: 'confidentialite' },
+    data: {
+      doc: 'confidentialite',
+      description:
+        'Politique de confidentialité de JUNO : données collectées, finalités, durée de conservation et exercice de vos droits.',
+    },
     loadComponent: () =>
       import('./components/legal/legal').then((m) => m.LegalComponent),
   },

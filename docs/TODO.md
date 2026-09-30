@@ -146,3 +146,22 @@ statut, pas de lien avec les leads.
   collision entre backlog local et backlog de production.
 - Reste à faire côté Atlas : créer l'utilisateur `juno-tickets` avec un rôle
   limité aux collections `tickets` et `counters`, et fournir l'URI.
+
+## JUNO-03 — Open Graph, Twitter et canonical (2026-09-30)
+
+- [x] Constat reproduit en prod : aucune balise `og:*`, `twitter:*` ni `canonical`
+- [x] `seo/seo.spec.ts` — `canonicalUrl` et description de chaque route publique (rouge d'abord)
+- [x] `seo/seo.ts` + `seo/seo.service.ts` — balises par page depuis `route.title` et `route.data.description`
+- [x] `app.routes.ts` — une description par page publique
+- [x] `index.html` — balises communes (`og:type`, `og:image`, `twitter:card`…) + `public/og-image.png` 1200×630
+- [x] Vérifier le HTML prérendu des 5 pages et la navigation côté client
+
+### Review
+
+- Les robots de partage n'exécutent pas le JavaScript : tout passe par le prérendu,
+  vérifié dans `dist/frontend/browser/*/index.html` et non dans le navigateur seul.
+- Bug attrapé à cette vérification : `og:title` reprenait le titre de la landing sur
+  les autres pages, `Title.getTitle()` n'étant pas encore à jour à `NavigationEnd`.
+  Le titre est maintenant calculé par `TitleStrategy.buildTitle` — voir `docs/LESSONS.md`.
+- Hors périmètre : l'hôte du back-office sert la même landing prérendue, donc ces balises
+  y figurent aussi (JUNO-07). Les versions EN/DE restent sans URL propre (JUNO-15).

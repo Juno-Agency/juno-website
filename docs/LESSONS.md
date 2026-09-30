@@ -174,3 +174,21 @@ suit la version d'Angular : les figer par hash casserait en silence. L'option
 `security.autoCsp` du builder, faite exactement pour ça, refuse de tourner avec
 le SSG (« Cannot set both SSR and auto-CSP at the same time »). À réévaluer à
 chaque montée de version d'Angular.
+
+**2026-09-30 — JUNO-03, `og:title` du mauvais titre.** Le `SeoService` lisait le
+titre par `Title.getTitle()` à `NavigationEnd`. À cet instant, la stratégie de
+titre n'a pas encore écrit celui de la page : `/projet`, `/realisations` et les
+pages légales partageaient donc `og:title` avec la landing. Rien ne plantait, le
+test de description passait — seul le HTML prérendu, lu page par page, montrait
+l'écart.
+
+**Règle** — ne jamais lire l'état du document (`<title>`, balises) pour en
+dériver une autre donnée au moment d'un événement du routeur : le recalculer
+depuis la route (`TitleStrategy.buildTitle(router.routerState.snapshot)`).
+Pour tout ce que lisent des robots sans JavaScript, vérifier le contenu de
+`dist/.../<page>/index.html` **pour chaque page**, pas seulement la première.
+
+**Corollaire — tests sur `document.head`.** Le document est partagé entre les
+tests d'un même fichier : les balises d'un test survivent au suivant et peuvent
+faire passer ou échouer une assertion pour de mauvaises raisons. Vider
+`document.head` dans `beforeEach`.

@@ -330,7 +330,7 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     '• SIREN : 991 553 630': '• SIREN (French business ID): 991 553 630',
     '• TVA non applicable, article 293 B du CGI':
       '• VAT not applicable, Article 293 B of the French General Tax Code',
-    '• Contact : agencyjuno@gmail.com': '• Contact: agencyjuno@gmail.com',
+    '• Contact : contact@agency-juno.com': '• Contact: contact@agency-juno.com',
     '• Directeur de la publication : Julien Dietschy': '• Publication director: Julien Dietschy',
     'JUNO est le nom commercial sous lequel DIETSCHYDIGIT propose ses services de création de sites web.':
       'JUNO is the trade name under which DIETSCHYDIGIT offers its website design services.',
@@ -359,8 +359,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Responsable du traitement': 'Data controller',
     'Le responsable du traitement des données est Julien Dietschy (DIETSCHYDIGIT, micro-entreprise), 26 quai Armand Lalande, 33000 Bordeaux, France.':
       'The data controller is Julien Dietschy (DIETSCHYDIGIT, sole trader), 26 quai Armand Lalande, 33000 Bordeaux, France.',
-    'Pour toute question relative à vos données : agencyjuno@gmail.com.':
-      'For any question about your data: agencyjuno@gmail.com.',
+    'Pour toute question relative à vos données : contact@agency-juno.com.':
+      'For any question about your data: contact@agency-juno.com.',
     'Données collectées': 'Data collected',
     'Via notre formulaire « Décrivez votre projet », nous collectons uniquement les informations que vous nous transmettez :':
       'Through our “Describe your project” form, we collect only the information you provide:',
@@ -403,8 +403,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Vos droits': 'Your rights',
     'Conformément au RGPD, vous disposez des droits suivants sur vos données : accès, rectification, effacement, limitation, opposition et portabilité.':
       'Under the GDPR, you have the following rights over your data: access, rectification, erasure, restriction, objection and portability.',
-    'Pour les exercer, écrivez-nous à agencyjuno@gmail.com. Nous répondrons dans un délai maximum d’un mois.':
-      'To exercise them, write to us at agencyjuno@gmail.com. We will respond within one month at most.',
+    'Pour les exercer, écrivez-nous à contact@agency-juno.com. Nous répondrons dans un délai maximum d’un mois.':
+      'To exercise them, write to us at contact@agency-juno.com. We will respond within one month at most.',
     'Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr) si vous estimez que vos droits ne sont pas respectés.':
       'You may also lodge a complaint with the French CNIL (www.cnil.fr) if you believe your rights are not respected.',
     Sécurité: 'Security',
@@ -733,7 +733,7 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     '• SIREN : 991 553 630': '• SIREN (französische Unternehmensnummer): 991 553 630',
     '• TVA non applicable, article 293 B du CGI':
       '• Umsatzsteuer nicht anwendbar, Art. 293 B des französischen Steuergesetzbuchs (CGI)',
-    '• Contact : agencyjuno@gmail.com': '• Kontakt: agencyjuno@gmail.com',
+    '• Contact : contact@agency-juno.com': '• Kontakt: contact@agency-juno.com',
     '• Directeur de la publication : Julien Dietschy': '• Verantwortlich für den Inhalt: Julien Dietschy',
     'JUNO est le nom commercial sous lequel DIETSCHYDIGIT propose ses services de création de sites web.':
       'JUNO ist der Handelsname, unter dem DIETSCHYDIGIT seine Dienstleistungen zur Erstellung von Websites anbietet.',
@@ -762,8 +762,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Responsable du traitement': 'Verantwortlicher',
     'Le responsable du traitement des données est Julien Dietschy (DIETSCHYDIGIT, micro-entreprise), 26 quai Armand Lalande, 33000 Bordeaux, France.':
       'Verantwortlicher für die Datenverarbeitung ist Julien Dietschy (DIETSCHYDIGIT, Einzelunternehmen), 26 quai Armand Lalande, 33000 Bordeaux, Frankreich.',
-    'Pour toute question relative à vos données : agencyjuno@gmail.com.':
-      'Bei Fragen zu Ihren Daten: agencyjuno@gmail.com.',
+    'Pour toute question relative à vos données : contact@agency-juno.com.':
+      'Bei Fragen zu Ihren Daten: contact@agency-juno.com.',
     'Données collectées': 'Erhobene Daten',
     'Via notre formulaire « Décrivez votre projet », nous collectons uniquement les informations que vous nous transmettez :':
       'Über unser Formular „Projekt beschreiben“ erheben wir ausschließlich die von Ihnen übermittelten Informationen:',
@@ -806,8 +806,8 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     'Vos droits': 'Ihre Rechte',
     'Conformément au RGPD, vous disposez des droits suivants sur vos données : accès, rectification, effacement, limitation, opposition et portabilité.':
       'Gemäß der DSGVO haben Sie folgende Rechte an Ihren Daten: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Übertragbarkeit.',
-    'Pour les exercer, écrivez-nous à agencyjuno@gmail.com. Nous répondrons dans un délai maximum d’un mois.':
-      'Zur Ausübung schreiben Sie uns an agencyjuno@gmail.com. Wir antworten innerhalb von höchstens einem Monat.',
+    'Pour les exercer, écrivez-nous à contact@agency-juno.com. Nous répondrons dans un délai maximum d’un mois.':
+      'Zur Ausübung schreiben Sie uns an contact@agency-juno.com. Wir antworten innerhalb von höchstens einem Monat.',
     'Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr) si vous estimez que vos droits ne sont pas respectés.':
       'Sie können sich außerdem bei der zuständigen Datenschutzbehörde beschweren (in Frankreich die CNIL, www.cnil.fr), wenn Sie der Ansicht sind, dass Ihre Rechte nicht gewahrt werden.',
     Sécurité: 'Sicherheit',

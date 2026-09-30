@@ -22,7 +22,7 @@ export interface LegalDoc {
   sections: LegalSection[];
 }
 
-export const CONTACT_EMAIL = 'agencyjuno@gmail.com';
+export const CONTACT_EMAIL = 'contact@agency-juno.com';
 export const SITE_DOMAIN = 'agency-juno.com';
 
 const UPDATED = '24 août 2026';

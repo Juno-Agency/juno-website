@@ -11,34 +11,36 @@
   </div>
 </header>
 
-<article class="doc">
-  <p class="eyebrow">{{ tr('Informations légales') }}</p>
-  <h1>{{ tr(doc.title) }}</h1>
-  <p class="updated">{{ tr('Dernière mise à jour :') }} {{ tr(doc.updated) }}</p>
+<main>
+  <article class="doc">
+    <p class="eyebrow">{{ tr('Informations légales') }}</p>
+    <h1>{{ tr(doc.title) }}</h1>
+    <p class="updated">{{ tr('Dernière mise à jour :') }} {{ tr(doc.updated) }}</p>
 
-  @if (doc.intro) {
-    <p class="intro">{{ tr(doc.intro) }}</p>
-  }
+    @if (doc.intro) {
+      <p class="intro">{{ tr(doc.intro) }}</p>
+    }
 
-  @for (s of doc.sections; track s.h) {
-    <section class="sec">
-      <h2>{{ tr(s.h) }}</h2>
-      @for (line of s.p; track $index) {
-        @if (line.startsWith('• ')) {
-          <p class="li">{{ tr(line).slice(2) }}</p>
-        } @else {
-          <p>{{ tr(line) }}</p>
+    @for (s of doc.sections; track s.h) {
+      <section class="sec">
+        <h2>{{ tr(s.h) }}</h2>
+        @for (line of s.p; track $index) {
+          @if (line.startsWith('• ')) {
+            <p class="li">{{ tr(line).slice(2) }}</p>
+          } @else {
+            <p>{{ tr(line) }}</p>
+          }
         }
-      }
-    </section>
-  }
+      </section>
+    }
 
-  <a routerLink="/projet" class="btn btn-primary cta">
-    <span class="lab">{{ tr('Décrivez votre projet') }}</span> <span class="arr">→</span>
-  </a>
+    <a routerLink="/projet" class="btn btn-primary cta">
+      <span class="lab">{{ tr('Décrivez votre projet') }}</span> <span class="arr">→</span>
+    </a>
 
-  <nav class="lnav">
-    <a routerLink="/mentions-legales">{{ tr('Mentions légales') }}</a>
-    <a routerLink="/confidentialite">{{ tr('Politique de confidentialité') }}</a>
-  </nav>
-</article>
+    <nav class="lnav">
+      <a routerLink="/mentions-legales">{{ tr('Mentions légales') }}</a>
+      <a routerLink="/confidentialite">{{ tr('Politique de confidentialité') }}</a>
+    </nav>
+  </article>
+</main>

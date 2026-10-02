@@ -192,3 +192,24 @@ Pour tout ce que lisent des robots sans JavaScript, vérifier le contenu de
 tests d'un même fichier : les balises d'un test survivent au suivant et peuvent
 faire passer ou échouer une assertion pour de mauvaises raisons. Vider
 `document.head` dans `beforeEach`.
+
+**2026-10-02 — JUNO-10, `label-content-name-mismatch` : l'`aria-label` ne peut pas gagner.**
+Le ticket préconisait un `aria-label` commençant par le texte visible. J'ai construit le
+libellé exact (« 2026 Restauration Gravaine café Voir le projet ») : l'audit échouait
+toujours. Lire la source de la règle a tranché : axe compare le nom au texte visible calculé
+par `visibleVirtual`, qui **joint les nœuds texte sans aucun séparateur**
+(« 2026RestaurationGravaine caféVoir le projet »). Entre des `<span>` voisins, aucun libellé
+lisible par un humain ne peut le contenir. Une première tentative (retirer la flèche « → »
+visible) était un faux coupable : elle sortait bien du texte, l'échec restait.
+
+**Règle** — quand un correctif attendu d'un audit ne le fait pas passer, ne pas empiler les
+variantes : charger `axe-core` dans la page (`page.addScriptTag`) et appeler le `check`
+directement (`axe._audit.checks[id].evaluate.toString()` donne le code). Pour un contrôle
+dont le texte visible est fait de plusieurs éléments, **supprimer l'`aria-label`** : le nom
+vient du contenu, la règle ne s'applique plus, et c'est ce que demande WCAG 2.5.3. Une image
+qui répète le titre affiché à côté prend `alt=""`, sinon le titre est lu deux fois.
+
+**Corollaire — vérifier un audit sur des données réelles.** La prod n'avait aucun projet :
+`/realisations` sortait à 100 parce que le carousel n'était pas rendu, pas parce qu'il était
+bon. Un petit serveur (`/api/portfolio` simulé devant le site) a permis de voir le défaut
+puis la correction.

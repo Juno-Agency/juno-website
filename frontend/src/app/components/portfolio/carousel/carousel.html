@@ -7,11 +7,10 @@
           class="cell"
           role="button"
           tabindex="0"
-          [attr.aria-label]="s.item.title + ' — ' + tr('Voir le projet')"
         >
           <div class="card">
             @if (s.item.imageUrl) {
-              <img [src]="s.item.imageUrl" [alt]="s.item.title" draggable="false" />
+              <img [src]="s.item.imageUrl" alt="" draggable="false" />
             } @else {
               <div class="noimg"></div>
             }
@@ -36,8 +35,8 @@
               @if (s.item.category) {
                 <span class="cat">{{ s.item.category }}</span>
               }
-              <h3 class="ttl">{{ s.item.title }}</h3>
-              <span class="see">{{ tr('Voir le projet') }} <i>→</i></span>
+              <h2 class="ttl">{{ s.item.title }}</h2>
+              <span class="see">{{ tr('Voir le projet') }} <i aria-hidden="true"></i></span>
             </div>
           </div>
         </div>

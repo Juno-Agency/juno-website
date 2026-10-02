@@ -196,6 +196,11 @@
   display: inline-block;
   transition: transform 0.3s ease;
 }
+/* Flèche décorative en CSS : posée dans le DOM, elle compte comme texte visible
+   et sort du nom accessible (label-content-name-mismatch). */
+.see i::before {
+  content: "→";
+}
 .cell:hover .card,
 .cell:focus-visible .card {
   transform: translateY(-6px);

@@ -1,0 +1,69 @@
+name: Discord PR notifications
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, closed]
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    # Les brouillons ne notifient qu'au passage « prêt pour review ».
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Send to Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ACTION: ${{ github.event.action }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          # Valeurs externes passées par l'environnement, jamais interpolées dans le script.
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "::warning::Secret DISCORD_WEBHOOK_URL absent, notification ignorée."
+            exit 0
+          fi
+
+          case "$ACTION" in
+            opened)           label="Nouvelle PR";            color=3447003 ;;
+            reopened)         label="PR rouverte";            color=16753920 ;;
+            ready_for_review) label="PR prête pour review";   color=3447003 ;;
+            closed)
+              if [ "$MERGED" = "true" ]; then label="PR mergée"; color=5763719
+              else label="PR fermée sans merge"; color=9807270; fi ;;
+            *) exit 0 ;;
+          esac
+
+          payload=$(jq -n \
+            --arg title "$label : #$PR_NUMBER $PR_TITLE" \
+            --arg url "$PR_URL" \
+            --arg author "$PR_AUTHOR" \
+            --arg branches "$PR_HEAD → $PR_BASE" \
+            --arg repo "$REPO" \
+            --argjson color "$color" \
+            '{
+              username: "GitHub",
+              allowed_mentions: { parse: [] },
+              embeds: [{
+                title: $title,
+                url: $url,
+                color: $color,
+                fields: [
+                  { name: "Auteur", value: $author, inline: true },
+                  { name: "Branches", value: $branches, inline: true }
+                ],
+                footer: { text: $repo }
+              }]
+            }')
+
+          curl --fail-with-body -sS -X POST \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$WEBHOOK_URL"

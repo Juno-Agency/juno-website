@@ -165,3 +165,23 @@ statut, pas de lien avec les leads.
   Le titre est maintenant calculé par `TitleStrategy.buildTitle` — voir `docs/LESSONS.md`.
 - Hors périmètre : l'hôte du back-office sert la même landing prérendue, donc ces balises
   y figurent aussi (JUNO-07). Les versions EN/DE restent sans URL propre (JUNO-15).
+
+## JUNO-10 — Défauts d'accessibilité Lighthouse (2026-10-02)
+
+- [x] Constat reproduit : landing 98 (`landmark-one-main`), `/realisations` 98 (`heading-order` + `label-content-name-mismatch`, avec 2 projets simulés — la prod n'en a plus), connexion 97, mentions légales 98
+- [x] `a11y.spec.ts` — un `<main>` par page, carousel sans `aria-label`, titres en h2 (rouge d'abord)
+- [x] `<main>` sur la landing (hors `app-cta-final`, comme le portfolio), la connexion et les pages légales
+- [x] Carousel : `h3` → `h2`, `aria-label` supprimé, image décorative, flèche en CSS
+- [x] Lighthouse après : 100 sur landing, `/realisations`, `/projet`, mentions légales, confidentialité et connexion ; mise en page inchangée (positions et hauteurs identiques)
+
+### Review
+
+- Le ticket proposait de « faire commencer l'aria-label par le texte visible ». Impossible
+  avec cette règle d'axe : elle compare le nom au texte du DOM concaténé **sans séparateur**
+  entre les `<span>` (« 2026RestaurationGravaine caféVoir le projet »), qu'aucun libellé
+  espacé ne contient. Supprimer l'`aria-label` règle le défaut et donne un nom issu du
+  contenu — voir `docs/LESSONS.md`.
+- Écart au ticket : le `<main>` manquait aussi sur les pages légales ; ajouté.
+- Le « back-office » du ticket, c'est la page de connexion : les pages connectées avaient déjà leur `<main>`.
+- Hors périmètre : la règle axe `region` (hors score Lighthouse) signale la section CTA de fin
+  de page, qui reste hors `<main>` sur la landing et `/realisations`.

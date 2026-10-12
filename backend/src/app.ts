@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import { config, isProd } from './config';
 import { authRouter } from './auth/auth.routes';
 import { leadsRouter } from './leads/leads.routes';
+import { plansRouter } from './plans/plans.routes';
 import { portfolioRouter } from './portfolio/portfolio.routes';
 import { ticketsRouter } from './tickets/tickets.routes';
 import { webhooksRouter } from './webhooks/resend.routes';
@@ -39,6 +40,7 @@ export function createApp(): Express {
   // Feature routers.
   app.use('/api/leads', leadsRouter);
   app.use('/api/portfolio', portfolioRouter);
+  app.use('/api/plans', plansRouter);
   app.use('/api/tickets', ticketsRouter);
   app.use('/api/auth', authRouter);
 

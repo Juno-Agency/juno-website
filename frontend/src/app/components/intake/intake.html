@@ -246,6 +246,35 @@
                     </button>
                   }
                 </div>
+              } @else if (q.kind === 'plan') {
+                <app-period-switch
+                  class="plan-period"
+                  [value]="data().periode ?? 'annuel'"
+                  [saving]="bestSaving()"
+                  (changed)="setPeriod($event)"
+                />
+                <div class="opts">
+                  @for (o of planOpts(); track o.value; let n = $index) {
+                    <button
+                      type="button"
+                      class="opt"
+                      [class.on]="isPicked('formule', o.value)"
+                      (click)="selectSingle(o.value)"
+                    >
+                      <span class="k">{{ letters[n] }}</span>
+                      <span class="ol">{{ tr(o.label) }}</span>
+                      @if (o.desc) {
+                        <span class="od">{{ o.desc }}</span>
+                      }
+                      <span class="opick">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.6"><path d="M5 12l4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </span>
+                    </button>
+                  }
+                </div>
+                <a class="plan-more" routerLink="/tarifs" target="_blank" rel="noopener">
+                  {{ tr('Voir le détail des formules') }} ↗
+                </a>
               } @else if (q.kind === 'multi') {
                 <div class="chips">
                   @for (o of q.opts ?? []; track o.value) {
@@ -293,7 +322,7 @@
 
             <div class="errwrap"><div class="err">{{ err() }}</div></div>
 
-            @if (q.kind === 'single' || q.kind === 'cards') {
+            @if (q.kind === 'single' || q.kind === 'cards' || q.kind === 'plan') {
               <div class="foot stagger">
                 <span class="hint">{{ tr('cliquez une réponse, ou tapez') }} {{ hintLetters() }}…</span>
                 @if (canSkip()) {

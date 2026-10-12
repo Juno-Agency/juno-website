@@ -1470,3 +1470,20 @@
   overflow: hidden;
   pointer-events: none;
 }
+
+/* ---------- subscription step ---------- */
+.plan-period {
+  margin-bottom: 18px;
+}
+.plan-more {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.plan-more:hover {
+  color: var(--cream);
+}

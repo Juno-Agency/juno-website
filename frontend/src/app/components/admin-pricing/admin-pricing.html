@@ -1,0 +1,175 @@
+<main class="apf">
+  <header class="apf-head">
+    <div>
+      <h1>Tarifs</h1>
+      <p class="sub">
+        {{ plans().length }} formule{{ plans().length > 1 ? 's' : '' }} · affichées sur
+        <a href="/tarifs" target="_blank" rel="noopener">/tarifs</a> et dans le formulaire
+      </p>
+    </div>
+    <button class="btn" (click)="openNew()"><span>+ Nouvelle formule</span></button>
+  </header>
+
+  @if (error() && !editorOpen()) { <p class="banner">{{ error() }}</p> }
+
+  @if (loading()) {
+    <div class="state">Chargement…</div>
+  } @else if (!plans().length) {
+    <div class="state empty">
+      <p>Aucune formule pour l’instant.</p>
+      <button class="btn ghost" (click)="seedStarterPlans()" [disabled]="seeding()">
+        <span>{{ seeding() ? 'Import…' : 'Importer la grille de base (Essentiel, Croissance, Performance)' }}</span>
+      </button>
+    </div>
+  } @else {
+    <div class="plist">
+      @for (p of plans(); track p.id) {
+        <div class="prow">
+          <div class="pprice">
+            <span class="pp-m">{{ eur(p.monthlyPrice) }}<small>/mois</small></span>
+            <span class="pp-y">{{ eur(p.annualPrice) }}/an</span>
+          </div>
+          <div class="pinfo">
+            <span class="pt">{{ p.name }}</span>
+            <span class="pm">{{ p.slug }}{{ p.badge ? ' · ' + p.badge : '' }}</span>
+          </div>
+          <div class="pflags">
+            @switch (promoState(p)) {
+              @case ('on') { <span class="badge promo">−{{ p.promo.percent }} % {{ p.promo.label }}</span> }
+              @case ('expired') { <span class="badge" title="Activée, mais terminée ou sans effet sur ces périodes">Remise inactive</span> }
+            }
+            @if (p.featured) { <span class="badge feat">Mise en avant</span> }
+            <span class="badge" [class.on]="p.published">{{ p.published ? 'Publiée' : 'Masquée' }}</span>
+            <span class="ord">#{{ p.order }}</span>
+          </div>
+          <div class="pactions">
+            <button class="iconbtn" (click)="openEdit(p)" title="Modifier">✎</button>
+            @if (confirmDeleteId() === p.id) {
+              <button class="iconbtn danger" (click)="doDelete(p.id)" title="Confirmer">✓</button>
+              <button class="iconbtn" (click)="cancelDelete()" title="Annuler">×</button>
+            } @else {
+              <button class="iconbtn danger" (click)="askDelete(p.id)" title="Supprimer">🗑</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</main>
+
+@if (editorOpen()) {
+  <div class="overlay" (click)="close()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="x" (click)="close()" aria-label="Fermer">×</button>
+      <h2>{{ isEditing() ? 'Modifier la formule' : 'Nouvelle formule' }}</h2>
+      @if (error()) { <p class="banner">{{ error() }}</p> }
+
+      <div class="form">
+        <div class="frow">
+          <label class="f"><span>Nom *</span>
+            <input [value]="draft().name" (input)="patch({ name: $any($event.target).value })" placeholder="Croissance" />
+          </label>
+          <label class="f"><span>Identifiant (URL)</span>
+            <input [value]="draft().slug" (input)="patch({ slug: $any($event.target).value })" placeholder="Généré depuis le nom" />
+          </label>
+        </div>
+
+        <label class="f"><span>Accroche</span>
+          <input [value]="draft().tagline" (input)="patch({ tagline: $any($event.target).value })" placeholder="Votre site progresse chaque mois…" />
+        </label>
+
+        <div class="frow">
+          <label class="f"><span>Prix mensuel (€)</span>
+            <input type="number" min="0" step="0.01" [value]="draft().monthlyPrice" (input)="patch({ monthlyPrice: +$any($event.target).value })" />
+          </label>
+          <label class="f"><span>Prix annuel (€, l’année entière)</span>
+            <input type="number" min="0" step="0.01" [value]="draft().annualPrice" (input)="patch({ annualPrice: +$any($event.target).value })" />
+          </label>
+        </div>
+        <p class="calc">
+          12 × mensuel = {{ eur(preview().fullYear) }}
+          @if (preview().saving > 0) {
+            · économie {{ preview().saving }} % (≈ {{ preview().monthsFree.toFixed(1) }} mois offerts)
+          } @else {
+            · aucune économie sur l’annuel
+          }
+          <button type="button" class="linkbtn" (click)="annualFromMonthly()">Annuel = 10 × mensuel</button>
+        </p>
+
+        <label class="f"><span>Contenu (une ligne par élément)</span>
+          <textarea rows="6" [value]="featuresText()" (input)="featuresText.set($any($event.target).value)" placeholder="Hébergement et SSL gérés&#10;1 h de modifications par mois"></textarea>
+        </label>
+
+        <div class="frow bottom">
+          <label class="f small"><span>Ordre</span>
+            <input type="number" [value]="draft().order" (input)="patch({ order: +$any($event.target).value })" />
+          </label>
+          <label class="f"><span>Badge</span>
+            <input [value]="draft().badge" (input)="patch({ badge: $any($event.target).value })" placeholder="Le plus choisi" />
+          </label>
+          <div class="chks">
+            <label class="chk"><input type="checkbox" [checked]="draft().featured" (change)="patch({ featured: $any($event.target).checked })" /> <span>Mise en avant</span></label>
+            <label class="chk"><input type="checkbox" [checked]="draft().published" (change)="patch({ published: $any($event.target).checked })" /> <span>Publiée</span></label>
+          </div>
+        </div>
+
+        <fieldset class="promo-box" [class.on]="draft().promo.active">
+          <legend>
+            <label class="chk"><input type="checkbox" [checked]="draft().promo.active" (change)="patchPromo({ active: $any($event.target).checked })" /> <span>Remise</span></label>
+          </legend>
+          @if (draft().promo.active) {
+            <div class="frow">
+              <label class="f"><span>Remise (%)</span>
+                <input type="number" min="1" max="100" [value]="draft().promo.percent" (input)="patchPromo({ percent: +$any($event.target).value })" />
+              </label>
+              <label class="f"><span>Libellé affiché</span>
+                <input [value]="draft().promo.label" (input)="patchPromo({ label: $any($event.target).value })" placeholder="Offre de lancement" />
+              </label>
+            </div>
+            <div class="frow three">
+              <label class="f"><span>S’applique à</span>
+                <select (change)="patchPromo({ appliesTo: $any($event.target).value })">
+                  @for (s of scopes; track s.value) {
+                    <option [value]="s.value" [selected]="s.value === draft().promo.appliesTo">{{ s.label }}</option>
+                  }
+                </select>
+              </label>
+              <label class="f"><span>Durée (mois)</span>
+                <input type="number" min="1" max="36" [value]="draft().promo.months ?? ''" (input)="setPromoMonths($any($event.target).value)" placeholder="Toujours" />
+              </label>
+              <label class="f"><span>Fin de l’offre</span>
+                <input type="date" [value]="promoEndInput()" (change)="setPromoEnd($any($event.target).value)" />
+              </label>
+            </div>
+            <p class="calc">
+              Durée : laissez vide pour une remise permanente. Avec une durée (« les 2 premiers mois »), la remise ne
+              s’applique qu’au mensuel.
+            </p>
+            <p class="calc">
+              Aperçu :
+              mensuel
+              @if (preview().monthly.promo) {
+                <s>{{ eur(preview().monthly.base) }}</s> → <b>{{ eur(preview().monthly.price) }}</b>
+              } @else {
+                {{ eur(preview().monthly.price) }} (sans remise)
+              }
+              · annuel
+              @if (preview().annual.promo) {
+                <s>{{ eur(preview().annual.base) }}</s> → <b>{{ eur(preview().annual.price) }}</b>
+              } @else {
+                {{ eur(preview().annual.price) }} (sans remise)
+              }
+            </p>
+          }
+        </fieldset>
+      </div>
+
+      <div class="mfoot">
+        <button class="btn ghost" (click)="close()">Annuler</button>
+        <button class="btn" (click)="save()" [disabled]="saving()">
+          <span>{{ saving() ? 'Enregistrement…' : 'Enregistrer' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

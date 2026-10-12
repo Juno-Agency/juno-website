@@ -147,6 +147,36 @@ statut, pas de lien avec les leads.
 - Reste à faire côté Atlas : créer l'utilisateur `juno-tickets` avec un rôle
   limité aux collections `tickets` et `counters`, et fournir l'URI.
 
+## Tarifs — page publique, étape du formulaire, gestion back-office (2026-10-12)
+
+### Backend
+- [x] `plans/plan.schema.ts` — Zod, `slugify`, `effectivePrice` (prix après remise)
+- [x] `models.ts` — modèle `Plan` (prix mensuel/annuel, contenu, remise) + `abonnement` figé sur le lead
+- [x] `plans/plans.routes.ts` — `GET /api/plans` public, CRUD back-office sous `requireAuth`
+- [x] `POST /api/leads` accepte `formule` + `periode`, résout la formule côté serveur
+- [x] Ligne « Abonnement » dans la notification interne
+
+### Frontend
+- [x] `/tarifs` — interrupteur Annuel/Mensuel (annuel par défaut), cartes, prix barrés, FAQ
+- [x] Étape « Abonnement » dans `/projet`, préremplie par `?formule=…&periode=…`
+- [x] Onglet back-office « Tarifs » — formules, remises, import de la grille de base
+- [x] Abonnement affiché dans le détail d'une demande
+- [x] Route prérendue + `render.yaml` + `sitemap.xml` + lien dans la nav, traductions EN/DE
+
+### Review
+- Prix lus dans le navigateur uniquement : un changement en back-office est en
+  ligne tout de suite, sans rebuild. Contrepartie : le HTML prérendu de
+  `/tarifs` ne contient pas les prix (Google les voit après exécution du JS).
+- Le prix est recalculé et figé côté serveur à l'envoi : si une formule est
+  renommée ou supprimée ensuite, la demande garde ce que le visiteur a vu.
+  Formule inconnue → la demande est rangée en « À discuter ».
+- Une remise avec une durée (« les 2 premiers mois ») ne s'applique qu'au
+  mensuel. La logique de prix existe en double (`utils/pricing.ts` et
+  `plan.schema.ts`) : les garder alignées.
+- Vérifié en navigateur (Chrome headless) : import de la grille, remise −50 %
+  sur 2 mois, `/tarifs` desktop et 390 px, parcours complet depuis « Choisir
+  Croissance » jusqu'à la demande en base.
+
 ## JUNO-03 — Open Graph, Twitter et canonical (2026-09-30)
 
 - [x] Constat reproduit en prod : aucune balise `og:*`, `twitter:*` ni `canonical`

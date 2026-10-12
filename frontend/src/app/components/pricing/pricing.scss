@@ -1,0 +1,309 @@
+:host {
+  display: block;
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+/* Above the grain / vignette overlays (z 1) — see docs/LESSONS.md. */
+.pr {
+  position: relative;
+  z-index: 2;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 132px var(--gutter) 40px;
+}
+
+/* ---------------- Header ---------------- */
+.pr-head {
+  max-width: 760px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.kicker::before,
+.kicker::after {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--muted);
+}
+.title {
+  margin: 18px 0 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(40px, 6.4vw, 84px);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+.lede {
+  margin: 22px auto 0;
+  max-width: 560px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: balance;
+}
+
+/* ---------------- Annual / monthly switch ---------------- */
+.switch {
+  margin-top: 34px;
+}
+
+/* ---------------- Plans ---------------- */
+.grid {
+  --cols: 3;
+  display: grid;
+  grid-template-columns: repeat(min(var(--cols), 3), minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px 28px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.card.featured {
+  border-color: var(--cream);
+  background: var(--bg3);
+}
+.badge {
+  position: absolute;
+  top: -12px;
+  left: 28px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.name {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+.tagline {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+  min-height: 4.5em;
+}
+.price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 22px;
+}
+.was {
+  font-family: var(--mono);
+  font-size: 17px;
+  color: var(--faint);
+  text-decoration: line-through;
+}
+.amount {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+.unit {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--muted);
+}
+.billing {
+  margin: 10px 0 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--faint);
+}
+.save {
+  color: var(--cream);
+  white-space: nowrap;
+}
+.promo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 14px 0 0;
+}
+.promo-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--cream);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--cream);
+}
+.promo-note {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.features {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--line2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--cream);
+  flex: 1;
+}
+.features li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 10px;
+}
+.features li::before {
+  content: '+';
+  font-family: var(--mono);
+  color: var(--muted);
+}
+.cta {
+  margin-top: 28px;
+  justify-content: center;
+}
+
+/* Loading skeleton */
+.card.skel {
+  min-height: 460px;
+  gap: 16px;
+}
+.card.skel span {
+  display: block;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--bg3);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.card.skel span:nth-child(1) { width: 40%; height: 26px; }
+.card.skel span:nth-child(2) { width: 70%; }
+.card.skel span:nth-child(3) { width: 55%; height: 48px; margin-top: 18px; }
+@keyframes pulse {
+  50% { opacity: 0.45; }
+}
+
+/* ---------------- States ---------------- */
+.pr-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 60px 0;
+  text-align: center;
+  color: var(--muted);
+}
+.pr-state juno-mascot {
+  width: 64px;
+  height: 64px;
+}
+
+.discuss {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px 16px;
+  margin-top: 36px;
+  text-align: center;
+  color: var(--muted);
+}
+.discuss p {
+  margin: 0;
+}
+.link {
+  color: var(--cream);
+  border-bottom: 1px solid var(--muted);
+  padding-bottom: 2px;
+}
+.link:hover {
+  border-color: var(--cream);
+}
+
+/* ---------------- FAQ ---------------- */
+.faq {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 32px;
+  margin-top: 96px;
+}
+.qa {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.qa h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+.qa p {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.legal {
+  margin: 56px 0 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint);
+}
+
+@media (max-width: 960px) {
+  .grid,
+  .faq {
+    grid-template-columns: 1fr;
+  }
+  .faq {
+    gap: 28px;
+  }
+  .tagline {
+    min-height: 0;
+  }
+  .grid {
+    max-width: 520px;
+    margin: 0 auto;
+    gap: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card.skel span {
+    animation: none;
+  }
+}

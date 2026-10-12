@@ -7,6 +7,7 @@ export type QuestionKind =
   | 'cards'
   | 'multi'
   | 'refs'
+  | 'plan'
   | 'final';
 
 /** Which field of the payload a question writes to. */

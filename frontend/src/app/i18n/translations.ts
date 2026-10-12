@@ -313,6 +313,51 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Boutique: 'Shop',
     'Espace client': 'Client area',
 
+    /* ---- tarifs ---- */
+    'Après la mise en ligne, on reste là.': 'After launch, we stay with you.',
+    'Votre site est créé sur devis. Ensuite, une formule simple pour qu’il reste en ligne, à jour et visible sur Google.':
+      'Your website is built on a quote. After that, one simple plan keeps it online, up to date and visible on Google.',
+    Facturation: 'Billing',
+    Annuel: 'Yearly',
+    Mensuel: 'Monthly',
+    'jusqu’à': 'up to',
+    'Impossible de charger nos formules pour le moment.': 'Our plans can’t be loaded right now.',
+    'Nos formules arrivent très bientôt.': 'Our plans are coming very soon.',
+    'Je veux en discuter avec vous': 'I’d like to talk it through with you',
+    '/mois': '/month',
+    '/an': '/year',
+    soit: 'i.e.',
+    'facturés une fois par an': 'billed once a year',
+    'facturé chaque mois': 'billed monthly',
+    Remise: 'Discount',
+    Choisir: 'Choose',
+    'le premier mois': 'the first month',
+    les: 'the first',
+    'premiers mois': 'months',
+    puis: 'then',
+    'offre valable jusqu’au': 'offer valid until',
+    'mois offerts': 'months free',
+    'mois offert': 'month free',
+    'Vous hésitez entre deux formules, ou votre besoin sort du cadre ?':
+      'Torn between two plans, or need something different?',
+    'Questions fréquentes': 'Frequently asked questions',
+    'La création du site est-elle comprise ?': 'Is building the website included?',
+    'Non. Chaque site est dessiné sur mesure et chiffré sur devis. Ces formules couvrent tout ce qui se passe après la mise en ligne.':
+      'No. Every website is designed from scratch and priced on a quote. These plans cover everything that happens after launch.',
+    'Mon site n’a pas été fait par JUNO, c’est possible ?': 'My website wasn’t built by JUNO. Is that possible?',
+    'Oui, on en parle ensemble. On commence par regarder votre site pour vous dire ce qu’on peut prendre en charge.':
+      'Yes, let’s talk. We start by looking at your website to tell you what we can take care of.',
+    'Je peux changer de formule ?': 'Can I switch plans?',
+    'Oui. Dites-le nous, on ajuste à partir du mois suivant.': 'Yes. Just tell us and we adjust from the following month.',
+    'Prix en euros. TVA non applicable, art. 293 B du CGI.': 'Prices in euros. VAT not applicable (art. 293 B of the French tax code).',
+    'Et après la mise en ligne, on <em>s’occupe</em> de votre site&nbsp;?': 'After launch, shall we <em>look after</em> your website?',
+    'Hébergement, mises à jour, référencement. Une formule ou une discussion, comme vous préférez. (optionnel)':
+      'Hosting, updates, SEO. A plan or a conversation, whichever you prefer. (optional)',
+    'Pas pour le moment': 'Not for now',
+    Abonnement: 'Subscription',
+    'À discuter ensemble': 'To discuss together',
+    'Voir le détail des formules': 'See what each plan includes',
+
     /* ---- legal · shared ---- */
     'Informations légales': 'Legal information',
     'Dernière mise à jour :': 'Last updated:',
@@ -715,6 +760,51 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Présentation: 'Übersicht',
     Boutique: 'Shop',
     'Espace client': 'Kundenbereich',
+
+    /* ---- tarifs ---- */
+    'Après la mise en ligne, on reste là.': 'Nach dem Launch bleiben wir an Ihrer Seite.',
+    'Votre site est créé sur devis. Ensuite, une formule simple pour qu’il reste en ligne, à jour et visible sur Google.':
+      'Ihre Website entsteht auf Angebot. Danach hält ein einfaches Paket sie online, aktuell und sichtbar auf Google.',
+    Facturation: 'Abrechnung',
+    Annuel: 'Jährlich',
+    Mensuel: 'Monatlich',
+    'jusqu’à': 'bis zu',
+    'Impossible de charger nos formules pour le moment.': 'Unsere Pakete können gerade nicht geladen werden.',
+    'Nos formules arrivent très bientôt.': 'Unsere Pakete kommen in Kürze.',
+    'Je veux en discuter avec vous': 'Ich möchte das mit Ihnen besprechen',
+    '/mois': '/Monat',
+    '/an': '/Jahr',
+    soit: 'also',
+    'facturés une fois par an': 'einmal jährlich abgerechnet',
+    'facturé chaque mois': 'monatlich abgerechnet',
+    Remise: 'Rabatt',
+    Choisir: 'Wählen:',
+    'le premier mois': 'im ersten Monat',
+    les: 'die ersten',
+    'premiers mois': 'Monate',
+    puis: 'danach',
+    'offre valable jusqu’au': 'Angebot gültig bis',
+    'mois offerts': 'Monate gratis',
+    'mois offert': 'Monat gratis',
+    'Vous hésitez entre deux formules, ou votre besoin sort du cadre ?':
+      'Unsicher zwischen zwei Paketen, oder brauchen Sie etwas anderes?',
+    'Questions fréquentes': 'Häufige Fragen',
+    'La création du site est-elle comprise ?': 'Ist die Erstellung der Website enthalten?',
+    'Non. Chaque site est dessiné sur mesure et chiffré sur devis. Ces formules couvrent tout ce qui se passe après la mise en ligne.':
+      'Nein. Jede Website wird individuell gestaltet und per Angebot kalkuliert. Diese Pakete decken alles nach dem Launch ab.',
+    'Mon site n’a pas été fait par JUNO, c’est possible ?': 'Meine Website stammt nicht von JUNO. Geht das trotzdem?',
+    'Oui, on en parle ensemble. On commence par regarder votre site pour vous dire ce qu’on peut prendre en charge.':
+      'Ja, sprechen wir darüber. Wir sehen uns zuerst Ihre Website an und sagen Ihnen, was wir übernehmen können.',
+    'Je peux changer de formule ?': 'Kann ich das Paket wechseln?',
+    'Oui. Dites-le nous, on ajuste à partir du mois suivant.': 'Ja. Sagen Sie uns Bescheid, wir passen es ab dem Folgemonat an.',
+    'Prix en euros. TVA non applicable, art. 293 B du CGI.': 'Preise in Euro. Keine MwSt. (Art. 293 B des französischen Steuergesetzbuchs).',
+    'Et après la mise en ligne, on <em>s’occupe</em> de votre site&nbsp;?': 'Und nach dem Launch: Sollen wir uns um Ihre Website <em>kümmern</em>?',
+    'Hébergement, mises à jour, référencement. Une formule ou une discussion, comme vous préférez. (optionnel)':
+      'Hosting, Updates, SEO. Ein Paket oder ein Gespräch, wie Sie möchten. (optional)',
+    'Pas pour le moment': 'Im Moment nicht',
+    Abonnement: 'Abonnement',
+    'À discuter ensemble': 'Gemeinsam besprechen',
+    'Voir le détail des formules': 'Alle Paketdetails ansehen',
 
     /* ---- legal · shared ---- */
     'Informations légales': 'Rechtliche Informationen',

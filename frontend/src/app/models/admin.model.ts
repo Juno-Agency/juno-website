@@ -27,8 +27,32 @@ export interface AdminLead {
   emails?: LeadEmail[];
   /** Ids of other leads from the same client, linked at submission. */
   relatedLeadIds?: string[];
+  /** Subscription answer from the intake, snapshotted at submission. */
+  abonnement?: LeadSubscription | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface LeadSubscription {
+  choix: 'formule' | 'discuter' | 'aucune';
+  slug: string | null;
+  formule: string | null;
+  periode: 'mensuel' | 'annuel' | null;
+  prix: number | null;
+  promo: string | null;
+}
+
+/** "Croissance · annuel · 690 €/an · Offre de lancement −20 %" for the back-office. */
+export function subscriptionLabel(sub: LeadSubscription | null | undefined): string {
+  if (!sub) return '—';
+  if (sub.choix === 'aucune') return 'Pas pour le moment';
+  if (sub.choix === 'discuter') return 'À discuter ensemble';
+  const unit = sub.periode === 'annuel' ? '/an' : '/mois';
+  const price =
+    sub.prix != null
+      ? ` · ${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(sub.prix)}${unit}`
+      : '';
+  return `${sub.formule ?? '—'} · ${sub.periode ?? ''}${price}${sub.promo ? ' · ' + sub.promo : ''}`;
 }
 
 export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUOTED' | 'WON' | 'LOST';

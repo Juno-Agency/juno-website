@@ -2,6 +2,11 @@ import { z } from '../openapi/zod';
 import { registry } from '../openapi/registry';
 
 export const LEAD_STATUS = ['NEW', 'CONTACTED', 'QUOTED', 'WON', 'LOST'] as const;
+/** Subscription answer: a plan, "let's talk about it", or "not for now". */
+export const LEAD_SUBSCRIPTION_CHOICES = ['formule', 'discuter', 'aucune'] as const;
+/** Intake values for the subscription step that aren't plan slugs. */
+export const SUBSCRIPTION_DISCUSS = 'discuter';
+export const SUBSCRIPTION_NONE = 'aucune';
 export const EXISTING = ['refaire', 'aucun'] as const;
 export const SITE_TYPES = [
   'Site vitrine',
@@ -27,6 +32,10 @@ export const CreateLeadSchema = registry.register(
       budget: z.string().trim().max(80).optional().openapi({ example: '1 000 – 3 000 €' }),
       echeance: z.string().trim().max(80).optional().openapi({ example: 'Sous 1 mois' }),
       message: z.string().max(4000).optional().openapi({ example: 'On veut lancer notre site avant l’été.' }),
+      // Subscription step: a plan slug, "discuter" or "aucune". Resolved
+      // server-side against the current price list (see leads.routes.ts).
+      formule: z.string().trim().max(40).optional().openapi({ example: 'croissance' }),
+      periode: z.enum(['mensuel', 'annuel']).optional().openapi({ example: 'annuel' }),
       // Anti-spam (not persisted): `website` is a honeypot that must stay empty;
       // `startedAt` is the client ms timestamp of when the form was opened.
       website: z.string().max(200).optional().openapi({ example: '' }),
@@ -61,6 +70,16 @@ export const LeadSchema = registry.register(
       message: z.string().nullable(),
       status: z.enum(LEAD_STATUS),
       relatedLeadIds: z.array(z.string()).default([]),
+      abonnement: z
+        .object({
+          choix: z.enum(LEAD_SUBSCRIPTION_CHOICES),
+          slug: z.string().nullable(),
+          formule: z.string().nullable(),
+          periode: z.enum(['mensuel', 'annuel']).nullable(),
+          prix: z.number().nullable(),
+          promo: z.string().nullable(),
+        })
+        .nullable(),
       createdAt: z.string().datetime(),
       updatedAt: z.string().datetime(),
     })

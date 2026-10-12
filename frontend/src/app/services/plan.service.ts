@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Plan, PlanDraft } from '../models/plan.model';
+import { ComparisonRow, Plan, PlanDraft } from '../models/plan.model';
 
 /** Public read + back-office CRUD for subscription plans. */
 @Injectable({ providedIn: 'root' })
@@ -28,5 +28,15 @@ export class PlanService {
 
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`/api/plans/${id}`);
+  }
+
+  /** Public: rows of the comparison table, in display order. */
+  comparison(): Observable<ComparisonRow[]> {
+    return this.http.get<ComparisonRow[]>('/api/plans/comparison');
+  }
+
+  /** Back-office: replace the whole comparison table. */
+  saveComparison(rows: ComparisonRow[]): Observable<ComparisonRow[]> {
+    return this.http.put<ComparisonRow[]>('/api/plans/comparison', rows);
   }
 }

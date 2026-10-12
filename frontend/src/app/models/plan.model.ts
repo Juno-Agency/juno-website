@@ -36,6 +36,26 @@ export interface Plan {
 /** Editable subset for the back-office form (server fields excluded). */
 export type PlanDraft = Omit<Plan, 'id' | 'createdAt' | 'updatedAt'>;
 
+/**
+ * One line of the /tarifs comparison table. `values` maps a plan id to its
+ * cell: "✓" (included), a short text ("48 h"), or "" (not included).
+ */
+export interface ComparisonRow {
+  group: string;
+  label: string;
+  values: Record<string, string>;
+}
+
+/** How a comparison cell renders. */
+export type CellKind = 'yes' | 'no' | 'text';
+
+export function cellKind(value: string | undefined): CellKind {
+  const v = (value ?? '').trim().toLowerCase();
+  if (!v || v === '—' || v === '-' || v === 'non') return 'no';
+  if (v === '✓' || v === 'x' || v === 'oui' || v === 'ok') return 'yes';
+  return 'text';
+}
+
 /** Intake answers for the subscription step that aren't plan slugs. */
 export const SUBSCRIPTION_DISCUSS = 'discuter';
 export const SUBSCRIPTION_NONE = 'aucune';
@@ -135,4 +155,25 @@ export const STARTER_PLANS: PlanDraft[] = [
     ],
     order: 3,
   },
+];
+
+/**
+ * Comparison table of the subscription proposal, keyed by plan slug. The
+ * back-office maps slugs to plan ids when importing it.
+ */
+export const STARTER_COMPARISON: { group: string; label: string; values: Record<string, string> }[] = [
+  { group: 'Maintenance', label: 'Hébergement, SSL et nom de domaine', values: { essentiel: '✓', croissance: '✓', performance: '✓' } },
+  { group: 'Maintenance', label: 'Mises à jour de sécurité', values: { essentiel: '✓', croissance: '✓', performance: '✓' } },
+  { group: 'Maintenance', label: 'Sauvegardes', values: { essentiel: 'Hebdomadaires', croissance: 'Quotidiennes', performance: 'Quotidiennes' } },
+  { group: 'Maintenance', label: 'Surveillance 24h/24 avec alerte', values: { essentiel: '✓', croissance: '✓', performance: '✓' } },
+  { group: 'Maintenance', label: 'Modifications incluses', values: { essentiel: '', croissance: '1 h / mois', performance: '3 h / mois' } },
+  { group: 'Maintenance', label: 'Délai d’intervention', values: { essentiel: '72 h', croissance: '48 h', performance: '24 h' } },
+  { group: 'Performance', label: 'Suivi de la vitesse (Core Web Vitals)', values: { essentiel: '', croissance: '✓', performance: '✓' } },
+  { group: 'Performance', label: 'Optimisations (images, cache, chargement)', values: { essentiel: '', croissance: '✓', performance: '✓' } },
+  { group: 'Référencement', label: 'SEO technique et Google Search Console', values: { essentiel: '', croissance: '✓', performance: '✓' } },
+  { group: 'Référencement', label: 'Fiche Google Business', values: { essentiel: '', croissance: 'Mise à jour', performance: 'Optimisée + suivi' } },
+  { group: 'Référencement', label: 'Contenu optimisé SEO', values: { essentiel: '', croissance: '', performance: '1 page ou article / mois' } },
+  { group: 'Référencement', label: 'Suivi de positions', values: { essentiel: '', croissance: '', performance: '10 mots-clés' } },
+  { group: 'Suivi', label: 'Rapport de performances par email', values: { essentiel: 'Mensuel', croissance: 'Mensuel, page par page', performance: 'Mensuel + recommandations' } },
+  { group: 'Suivi', label: 'Point visio', values: { essentiel: '', croissance: '', performance: '30 min / mois' } },
 ];

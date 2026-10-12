@@ -55,6 +55,63 @@
       }
     </div>
   }
+
+  @if (!loading() && plans().length) {
+    <section class="cmp">
+      <header class="cmp-head">
+        <div>
+          <h2>Tableau comparatif</h2>
+          <p class="sub">
+            Affiché sous les formules sur /tarifs. « ✓ » (ou « oui ») = inclus, case vide = non inclus, sinon le
+            texte s’affiche tel quel.
+          </p>
+        </div>
+        <div class="cmp-actions">
+          @if (!rows().length) {
+            <button class="btn ghost" (click)="importStarterTable()"><span>Importer le tableau de base</span></button>
+          }
+          <button class="btn ghost" (click)="addRow()"><span>+ Ligne</span></button>
+          <button class="btn" (click)="saveTable()" [disabled]="savingTable() || !tableDirty()">
+            <span>{{ savingTable() ? 'Enregistrement…' : 'Enregistrer le tableau' }}</span>
+          </button>
+        </div>
+      </header>
+      @if (tableMsg()) { <p class="cmp-msg">{{ tableMsg() }}</p> }
+
+      @if (rows().length) {
+        <div class="cmp-scroll">
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>Groupe</th>
+                <th>Ligne</th>
+                @for (p of plans(); track p.id) { <th>{{ p.name }}</th> }
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of rows(); track $index; let i = $index, first = $first, last = $last) {
+                <tr>
+                  <td><input class="cg" [value]="r.group" (input)="setRow(i, 'group', $any($event.target).value)" placeholder="Maintenance" /></td>
+                  <td><input class="cl" [value]="r.label" (input)="setRow(i, 'label', $any($event.target).value)" placeholder="Sauvegardes" /></td>
+                  @for (p of plans(); track p.id) {
+                    <td><input class="cc" [value]="r.values[p.id] || ''" (input)="setCell(i, p.id, $any($event.target).value)" placeholder="—" /></td>
+                  }
+                  <td class="cmp-row-actions">
+                    <button class="iconbtn" (click)="moveRow(i, -1)" [disabled]="first" title="Monter">↑</button>
+                    <button class="iconbtn" (click)="moveRow(i, 1)" [disabled]="last" title="Descendre">↓</button>
+                    <button class="iconbtn danger" (click)="removeRow(i)" title="Supprimer la ligne">×</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="state">Pas encore de tableau. Importez celui de base ou ajoutez une ligne.</div>
+      }
+    </section>
+  }
 </main>
 
 @if (editorOpen()) {

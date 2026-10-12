@@ -108,6 +108,54 @@
     </div>
   }
 
+  @if (!loading() && cards().length && table().length) {
+    <section class="compare" [attr.aria-label]="tr('Comparer les formules')">
+      <h2 class="compare-title">{{ tr('Comparer les formules') }}</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">{{ tr('Service') }}</span></th>
+              @for (c of cards(); track c.plan.id) {
+                <th scope="col" [class.featured]="c.plan.featured">
+                  <span class="th-name">{{ c.plan.name }}</span>
+                  <span class="th-price">{{ eur(c.price.perMonth) }}{{ tr('/mois') }}</span>
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of table(); track $index) {
+              @if (r.groupStart) {
+                <tr class="group">
+                  <th scope="rowgroup" [attr.colspan]="cards().length + 1">{{ r.groupStart }}</th>
+                </tr>
+              }
+              <tr>
+                <th scope="row">{{ r.label }}</th>
+                @for (cell of r.cells; track $index; let i = $index) {
+                  <td [class.featured]="cards()[i].plan.featured">
+                    @switch (cell.kind) {
+                      @case ('yes') {
+                        <span class="yes" [attr.aria-label]="tr('Inclus')">✓</span>
+                      }
+                      @case ('no') {
+                        <span class="no" [attr.aria-label]="tr('Non inclus')">—</span>
+                      }
+                      @default {
+                        {{ cell.text }}
+                      }
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
   <section class="faq" [attr.aria-label]="tr('Questions fréquentes')">
     <div class="qa">
       <h3>{{ tr('La création du site est-elle comprise ?') }}</h3>

@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { isValidObjectId } from 'mongoose';
-import { Plan } from '../models';
+import { Plan, PlanComparison } from '../models';
 import { asyncHandler, validateBody } from '../middleware/validate';
 import { badRequest, notFound } from '../middleware/http-error';
 import { requireAuth } from '../auth/auth.middleware';
 import { SUBSCRIPTION_DISCUSS, SUBSCRIPTION_NONE } from '../leads/lead.schema';
 import {
+  ComparisonTableInput,
+  ComparisonTableSchema,
   CreatePlanInput,
   CreatePlanSchema,
   UpdatePlanInput,
@@ -14,6 +16,8 @@ import {
 } from './plan.schema';
 
 export const plansRouter = Router();
+
+const COMPARISON_KEY = 'main';
 
 /** Slugs the intake form already uses for its non-plan answers. */
 const RESERVED_SLUGS = [SUBSCRIPTION_DISCUSS, SUBSCRIPTION_NONE];
@@ -41,7 +45,33 @@ plansRouter.get(
   }),
 );
 
+// Comparison table under the plan cards. Rows only — the page keeps the
+// columns of the plans it shows.
+plansRouter.get(
+  '/comparison',
+  asyncHandler(async (_req, res) => {
+    const doc = await PlanComparison.findOne({ key: COMPARISON_KEY }).lean();
+    res.json(doc?.rows ?? []);
+  }),
+);
+
 /* ---------------- Back-office (JWT) ---------------- */
+
+// Replace the whole comparison table (the editor always saves it whole).
+plansRouter.put(
+  '/comparison',
+  requireAuth,
+  validateBody(ComparisonTableSchema),
+  asyncHandler(async (req, res) => {
+    const rows = req.body as ComparisonTableInput;
+    const doc = await PlanComparison.findOneAndUpdate(
+      { key: COMPARISON_KEY },
+      { rows },
+      { upsert: true, new: true, runValidators: true },
+    ).lean();
+    res.json(doc?.rows ?? []);
+  }),
+);
 
 plansRouter.get(
   '/admin',

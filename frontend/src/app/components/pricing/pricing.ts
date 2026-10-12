@@ -16,7 +16,14 @@ import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 import { PeriodSwitchComponent } from '../../shared/period-switch/period-switch';
 import { I18nService } from '../../i18n/i18n.service';
 import { PlanService } from '../../services/plan.service';
-import { BillingPeriod, Plan, SUBSCRIPTION_DISCUSS } from '../../models/plan.model';
+import {
+  BillingPeriod,
+  CellKind,
+  ComparisonRow,
+  Plan,
+  SUBSCRIPTION_DISCUSS,
+  cellKind,
+} from '../../models/plan.model';
 import { PlanPrice, annualSaving, formatEuros, planPrice } from '../../utils/pricing';
 
 interface PlanCard {
@@ -24,6 +31,13 @@ interface PlanCard {
   price: PlanPrice;
   /** "2 mois offerts" on the annual view, when the yearly price earns it. */
   saving: string;
+}
+
+interface TableRow {
+  label: string;
+  /** Set on the first row of a group: the group heading to draw above it. */
+  groupStart: string;
+  cells: { kind: CellKind; text: string }[];
 }
 
 const dateFmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -58,6 +72,25 @@ export class PricingComponent implements OnInit {
   protected readonly plans = signal<Plan[]>([]);
   protected readonly loading = signal(true);
   protected readonly failed = signal(false);
+  protected readonly comparison = signal<ComparisonRow[]>([]);
+
+  /** Comparison table, one column per plan shown above, rows grouped. */
+  protected readonly table = computed<TableRow[]>(() => {
+    const plans = this.plans();
+    let group = '';
+    return this.comparison().map((row) => {
+      const groupStart = row.group && row.group !== group ? row.group : '';
+      group = row.group;
+      return {
+        label: row.label,
+        groupStart,
+        cells: plans.map((p) => {
+          const text = row.values[p.id] ?? '';
+          return { kind: cellKind(text), text };
+        }),
+      };
+    });
+  });
 
   protected readonly cards = computed<PlanCard[]>(() =>
     this.plans().map((plan) => ({
@@ -85,6 +118,11 @@ export class PricingComponent implements OnInit {
         this.failed.set(true);
         this.loading.set(false);
       },
+    });
+    // Optional: without it the page simply has no comparison table.
+    this.api.comparison().subscribe({
+      next: (rows) => this.comparison.set(rows),
+      error: () => this.comparison.set([]),
     });
   }
 

@@ -307,3 +307,146 @@
     animation: none;
   }
 }
+
+/* ---------------- Comparison table ---------------- */
+.compare {
+  margin-top: 96px;
+}
+.compare-title {
+  margin: 0 0 28px;
+  text-align: center;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(28px, 3.6vw, 44px);
+  letter-spacing: -0.025em;
+  color: var(--cream);
+}
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg2);
+}
+table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+th,
+td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line2);
+  vertical-align: middle;
+}
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+thead th:first-child,
+tbody th[scope='row'] {
+  text-align: left;
+  width: 34%;
+}
+/* First column stays visible while the plans scroll sideways on phones. */
+tbody th[scope='row'],
+thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg2);
+  font-weight: 400;
+  color: var(--cream);
+}
+thead th:first-child {
+  background: var(--bg3);
+  z-index: 2;
+}
+.th-name {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+}
+.th-price {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+td {
+  text-align: center;
+  color: var(--cream);
+  font-size: 14px;
+}
+td.featured,
+thead th.featured {
+  background: rgba(252, 252, 251, 0.045);
+}
+tr.group th {
+  padding-top: 26px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+}
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+.yes {
+  font-size: 16px;
+  color: var(--cream);
+}
+.no {
+  color: var(--faint);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+@media (max-width: 960px) {
+  .compare {
+    margin-top: 72px;
+  }
+  th,
+  td {
+    padding: 12px 14px;
+  }
+}
+/* Phones: a narrower label column so two plans fit next to it before the
+   table scrolls sideways. */
+@media (max-width: 600px) {
+  table {
+    min-width: 500px;
+    font-size: 13.5px;
+  }
+  tbody th[scope='row'],
+  thead th:first-child {
+    width: 136px;
+    min-width: 136px;
+    padding-left: 12px;
+  }
+  td {
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+  .th-name {
+    font-size: 16px;
+  }
+}

@@ -215,3 +215,10 @@ statut, pas de lien avec les leads.
 - Le « back-office » du ticket, c'est la page de connexion : les pages connectées avaient déjà leur `<main>`.
 - Hors périmètre : la règle axe `region` (hors score Lighthouse) signale la section CTA de fin
   de page, qui reste hors `<main>` sur la landing et `/realisations`.
+
+### Ajout — tableau comparatif (2026-10-12)
+- [x] `PlanComparison` (un document, lignes groupées, cellules indexées par id de formule) + `GET`/`PUT /api/plans/comparison`
+- [x] Tableau « Comparer les formules » sur `/tarifs` : ✓ / — / texte, première colonne figée, défilement horizontal sur téléphone
+- [x] Éditeur dans l'onglet Tarifs : groupes, lignes, cellules, ordre, import du tableau de base
+- [x] Meta description de `/tarifs` (exigée par `seo.spec.ts`, arrivé avec JUNO-03)
+

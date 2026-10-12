@@ -357,6 +357,10 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Abonnement: 'Subscription',
     'À discuter ensemble': 'To discuss together',
     'Voir le détail des formules': 'See what each plan includes',
+    'Comparer les formules': 'Compare the plans',
+    Service: 'Service',
+    Inclus: 'Included',
+    'Non inclus': 'Not included',
 
     /* ---- legal · shared ---- */
     'Informations légales': 'Legal information',
@@ -805,6 +809,10 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Abonnement: 'Abonnement',
     'À discuter ensemble': 'Gemeinsam besprechen',
     'Voir le détail des formules': 'Alle Paketdetails ansehen',
+    'Comparer les formules': 'Pakete vergleichen',
+    Service: 'Leistung',
+    Inclus: 'Enthalten',
+    'Non inclus': 'Nicht enthalten',
 
     /* ---- legal · shared ---- */
     'Informations légales': 'Rechtliche Informationen',

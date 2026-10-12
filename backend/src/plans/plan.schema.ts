@@ -57,6 +57,22 @@ export const UpdatePlanSchema = CreatePlanSchema.partial().refine(
 
 export type UpdatePlanInput = z.infer<typeof UpdatePlanSchema>;
 
+/**
+ * Body for PUT /api/plans/comparison — the whole comparison table, in display
+ * order. `values` maps a plan id to its cell: "✓", a short text, or "" (—).
+ */
+export const ComparisonTableSchema = z
+  .array(
+    z.object({
+      group: z.string().trim().max(60).default(''),
+      label: z.string().trim().min(1).max(120),
+      values: z.record(z.string(), z.string().trim().max(60)).default({}),
+    }),
+  )
+  .max(60);
+
+export type ComparisonTableInput = z.infer<typeof ComparisonTableSchema>;
+
 /** "Croissance Pro" → "croissance-pro". */
 export function slugify(name: string): string {
   return name

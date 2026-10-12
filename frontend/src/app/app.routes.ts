@@ -38,6 +38,10 @@ export const routes: Routes = [
   {
     path: 'tarifs',
     title: 'JUNO — Tarifs et formules d’accompagnement',
+    data: {
+      description:
+        'Les formules JUNO après la mise en ligne : hébergement, maintenance et référencement de votre site, en mensuel ou en annuel.',
+    },
     canActivate: [backofficeHostGuard],
     loadComponent: () =>
       import('./components/pricing/pricing').then((m) => m.PricingComponent),

@@ -3,8 +3,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { concat, toArray } from 'rxjs';
 import { PlanService } from '../../services/plan.service';
 import {
+  ComparisonRow,
   Plan,
   PlanDraft,
+  STARTER_COMPARISON,
   PlanPromo,
   PromoScope,
   STARTER_PLANS,
@@ -57,6 +59,12 @@ export class AdminPricingComponent implements OnInit {
 
   protected readonly isEditing = computed(() => this.editingId() !== null);
 
+  /** Working copy of the comparison table; saved whole with `saveTable()`. */
+  protected readonly rows = signal<ComparisonRow[]>([]);
+  protected readonly tableDirty = signal(false);
+  protected readonly savingTable = signal(false);
+  protected readonly tableMsg = signal('');
+
   /** What the visitor would see with the draft as it stands. */
   protected readonly preview = computed(() => {
     const plan = { ...this.draft(), id: '', createdAt: '', updatedAt: '' } as Plan;
@@ -72,6 +80,85 @@ export class AdminPricingComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    this.api.comparison().subscribe({
+      next: (rows) => this.rows.set(rows),
+      error: () => this.tableMsg.set('Impossible de charger le tableau comparatif.'),
+    });
+  }
+
+  /* ---------- comparison table ---------- */
+
+  private editRows(fn: (rows: ComparisonRow[]) => ComparisonRow[]): void {
+    this.rows.update((rows) => fn(rows.map((r) => ({ ...r, values: { ...r.values } }))));
+    this.tableDirty.set(true);
+    this.tableMsg.set('');
+  }
+
+  protected addRow(): void {
+    const last = this.rows().at(-1);
+    this.editRows((rows) => [...rows, { group: last?.group ?? '', label: '', values: {} }]);
+  }
+
+  protected removeRow(i: number): void {
+    this.editRows((rows) => rows.filter((_, n) => n !== i));
+  }
+
+  protected moveRow(i: number, dir: -1 | 1): void {
+    const j = i + dir;
+    if (j < 0 || j >= this.rows().length) return;
+    this.editRows((rows) => {
+      [rows[i], rows[j]] = [rows[j], rows[i]];
+      return rows;
+    });
+  }
+
+  protected setRow(i: number, field: 'group' | 'label', value: string): void {
+    this.editRows((rows) => {
+      rows[i][field] = value;
+      return rows;
+    });
+  }
+
+  protected setCell(i: number, planId: string, value: string): void {
+    this.editRows((rows) => {
+      rows[i].values[planId] = value;
+      return rows;
+    });
+  }
+
+  /** Fill the table from the proposal's grid, matching columns by plan slug. */
+  protected importStarterTable(): void {
+    const idBySlug = new Map(this.plans().map((p) => [p.slug, p.id]));
+    this.editRows(() =>
+      STARTER_COMPARISON.map((r) => ({
+        group: r.group,
+        label: r.label,
+        values: Object.fromEntries(
+          Object.entries(r.values)
+            .filter(([slug]) => idBySlug.has(slug))
+            .map(([slug, v]) => [idBySlug.get(slug)!, v]),
+        ),
+      })),
+    );
+  }
+
+  protected saveTable(): void {
+    if (this.savingTable()) return;
+    const rows = this.rows().filter((r) => r.label.trim());
+    this.savingTable.set(true);
+    this.tableMsg.set('');
+    this.api.saveComparison(rows).subscribe({
+      next: (saved) => {
+        this.rows.set(saved);
+        this.savingTable.set(false);
+        this.tableDirty.set(false);
+        this.tableMsg.set('Tableau enregistré.');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.savingTable.set(false);
+        this.tableMsg.set(err.error?.error ?? 'Échec de l’enregistrement du tableau.');
+      },
+    });
   }
 
   protected load(): void {

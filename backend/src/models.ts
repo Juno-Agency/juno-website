@@ -147,6 +147,30 @@ planSchema.index({ order: 1, monthlyPrice: 1 });
 
 export const Plan = model('Plan', planSchema);
 
+/**
+ * The /tarifs comparison table, stored as one document (`key: 'main'`): it is
+ * always read and saved whole. Cells are keyed by plan id so renaming a plan
+ * or changing its slug keeps its column.
+ */
+const comparisonRowSchema = new Schema(
+  {
+    group: { type: String, default: '' },
+    label: { type: String, required: true },
+    values: { type: Map, of: String, default: {} },
+  },
+  { _id: false },
+);
+
+const planComparisonSchema = new Schema(
+  {
+    key: { type: String, required: true, unique: true },
+    rows: { type: [comparisonRowSchema], default: [] },
+  },
+  { timestamps: true, versionKey: false },
+);
+
+export const PlanComparison = model('PlanComparison', planComparisonSchema);
+
 /* ---------------- Tickets (back-office) ---------------- */
 
 /**

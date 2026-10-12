@@ -513,3 +513,8 @@
   opacity: 0.3;
   cursor: default;
 }
+
+.btn.ghost.danger {
+  color: #d8b3b8;
+  border-color: color-mix(in srgb, #a3737b 55%, transparent);
+}

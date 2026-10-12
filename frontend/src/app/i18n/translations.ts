@@ -361,6 +361,7 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Service: 'Service',
     Inclus: 'Included',
     'Non inclus': 'Not included',
+    Bientôt: 'Soon',
 
     /* ---- legal · shared ---- */
     'Informations légales': 'Legal information',
@@ -813,6 +814,7 @@ export const TRANSLATIONS: Record<Exclude<Lang, 'fr'>, Record<string, string>> =
     Service: 'Leistung',
     Inclus: 'Enthalten',
     'Non inclus': 'Nicht enthalten',
+    Bientôt: 'Demnächst',
 
     /* ---- legal · shared ---- */
     'Informations légales': 'Rechtliche Informationen',

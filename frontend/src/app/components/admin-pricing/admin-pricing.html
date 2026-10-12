@@ -62,13 +62,18 @@
         <div>
           <h2>Tableau comparatif</h2>
           <p class="sub">
-            Affiché sous les formules sur /tarifs. « ✓ » (ou « oui ») = inclus, case vide = non inclus, sinon le
-            texte s’affiche tel quel.
+            Affiché sous les formules sur /tarifs. « ✓ » (ou « oui ») = inclus, case vide = non inclus,
+            « Bientôt » = annoncé mais pas encore disponible, sinon le texte s’affiche tel quel.
           </p>
         </div>
         <div class="cmp-actions">
           @if (!rows().length) {
             <button class="btn ghost" (click)="importStarterTable()"><span>Importer le tableau de base</span></button>
+          } @else if (confirmReplace()) {
+            <button class="btn ghost danger" (click)="importStarterTable()"><span>Confirmer : remplacer le tableau</span></button>
+            <button class="btn ghost" (click)="confirmReplace.set(false)"><span>Annuler</span></button>
+          } @else {
+            <button class="btn ghost" (click)="confirmReplace.set(true)"><span>Remplacer par le tableau de base</span></button>
           }
           <button class="btn ghost" (click)="addRow()"><span>+ Ligne</span></button>
           <button class="btn" (click)="saveTable()" [disabled]="savingTable() || !tableDirty()">

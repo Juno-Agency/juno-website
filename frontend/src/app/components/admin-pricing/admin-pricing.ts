@@ -64,6 +64,8 @@ export class AdminPricingComponent implements OnInit {
   protected readonly tableDirty = signal(false);
   protected readonly savingTable = signal(false);
   protected readonly tableMsg = signal('');
+  /** Second click needed before the base table overwrites the current one. */
+  protected readonly confirmReplace = signal(false);
 
   /** What the visitor would see with the draft as it stands. */
   protected readonly preview = computed(() => {
@@ -128,6 +130,7 @@ export class AdminPricingComponent implements OnInit {
 
   /** Fill the table from the proposal's grid, matching columns by plan slug. */
   protected importStarterTable(): void {
+    this.confirmReplace.set(false);
     const idBySlug = new Map(this.plans().map((p) => [p.slug, p.id]));
     this.editRows(() =>
       STARTER_COMPARISON.map((r) => ({

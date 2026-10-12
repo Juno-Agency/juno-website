@@ -142,6 +142,9 @@
                       @case ('no') {
                         <span class="no" [attr.aria-label]="tr('Non inclus')">—</span>
                       }
+                      @case ('soon') {
+                        <span class="soon">{{ tr('Bientôt') }}</span>
+                      }
                       @default {
                         {{ cell.text }}
                       }

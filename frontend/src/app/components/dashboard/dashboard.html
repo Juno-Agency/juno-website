@@ -140,6 +140,7 @@
             <div class="field"><span class="blabel">Site existant</span><span class="val">{{ existingLabel[l.existant] || l.existant }}</span></div>
             <div class="field"><span class="blabel">Budget</span><span class="val">{{ l.budget || '—' }}</span></div>
             <div class="field"><span class="blabel">Échéance</span><span class="val">{{ l.echeance || '—' }}</span></div>
+            <div class="field"><span class="blabel">Abonnement</span><span class="val">{{ subscriptionLabel(l.abonnement) }}</span></div>
           </div>
 
           @if (relatedLeads(l).length) {

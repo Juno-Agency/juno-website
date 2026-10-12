@@ -1,0 +1,141 @@
+<app-grain-vignette />
+<app-nav />
+
+<main class="pr">
+  <header class="pr-head">
+    <span class="kicker">{{ tr('Tarifs') }}</span>
+    <h1 class="title">{{ tr('Après la mise en ligne, on reste là.') }}</h1>
+    <p class="lede">
+      {{
+        tr(
+          'Votre site est créé sur devis. Ensuite, une formule simple pour qu’il reste en ligne, à jour et visible sur Google.'
+        )
+      }}
+    </p>
+
+    <app-period-switch
+      class="switch"
+      [value]="period()"
+      [saving]="bestSaving()"
+      (changed)="setPeriod($event)"
+    />
+  </header>
+
+  @if (loading()) {
+    <div class="grid" aria-hidden="true">
+      @for (n of [1, 2, 3]; track n) {
+        <div class="card skel"><span></span><span></span><span></span></div>
+      }
+    </div>
+  } @else if (failed() || !cards().length) {
+    <div class="pr-state">
+      <juno-mascot />
+      <p>
+        {{
+          failed()
+            ? tr('Impossible de charger nos formules pour le moment.')
+            : tr('Nos formules arrivent très bientôt.')
+        }}
+      </p>
+      <a class="btn btn-ghost" routerLink="/projet" [queryParams]="{ formule: discuss }">
+        <span class="lab">{{ tr('Je veux en discuter avec vous') }}</span> <span class="arr">→</span>
+      </a>
+    </div>
+  } @else {
+    <div class="grid" [style.--cols]="cards().length">
+      @for (c of cards(); track c.plan.id) {
+        <article class="card" [class.featured]="c.plan.featured">
+          @if (c.plan.badge) {
+            <span class="badge">{{ c.plan.badge }}</span>
+          }
+          <h2 class="name">{{ c.plan.name }}</h2>
+          @if (c.plan.tagline) {
+            <p class="tagline">{{ c.plan.tagline }}</p>
+          }
+
+          <div class="price">
+            @if (c.price.promo) {
+              <span class="was">
+                {{ eur(period() === 'annuel' ? c.price.base / 12 : c.price.base) }}
+              </span>
+            }
+            <span class="amount">{{ eur(c.price.perMonth) }}</span>
+            <span class="unit">{{ tr('/mois') }}</span>
+          </div>
+          <p class="billing">
+            @if (period() === 'annuel') {
+              {{ tr('soit') }} {{ eur(c.price.price) }} {{ tr('facturés une fois par an') }}
+              @if (c.saving) {
+                <span class="save">· {{ c.saving }}</span>
+              }
+            } @else {
+              {{ tr('facturé chaque mois') }}
+            }
+          </p>
+          @if (c.price.promo) {
+            <p class="promo">
+              <span class="promo-chip">{{ c.price.promo.label || tr('Remise') }} −{{ c.price.promo.percent }} %</span>
+              @if (promoNote(c)) {
+                <span class="promo-note">{{ promoNote(c) }}</span>
+              }
+            </p>
+          }
+
+          <ul class="features">
+            @for (f of c.plan.features; track $index) {
+              <li>{{ f }}</li>
+            }
+          </ul>
+
+          <a
+            class="btn cta"
+            [class.btn-primary]="c.plan.featured"
+            [class.btn-ghost]="!c.plan.featured"
+            routerLink="/projet"
+            [queryParams]="{ formule: c.plan.slug, periode: period() }"
+          >
+            <span class="lab">{{ tr('Choisir') }} {{ c.plan.name }}</span> <span class="arr">→</span>
+          </a>
+        </article>
+      }
+    </div>
+
+    <div class="discuss">
+      <p>{{ tr('Vous hésitez entre deux formules, ou votre besoin sort du cadre ?') }}</p>
+      <a class="link" routerLink="/projet" [queryParams]="{ formule: discuss }">
+        {{ tr('Je veux en discuter avec vous') }}
+      </a>
+    </div>
+  }
+
+  <section class="faq" [attr.aria-label]="tr('Questions fréquentes')">
+    <div class="qa">
+      <h3>{{ tr('La création du site est-elle comprise ?') }}</h3>
+      <p>
+        {{
+          tr(
+            'Non. Chaque site est dessiné sur mesure et chiffré sur devis. Ces formules couvrent tout ce qui se passe après la mise en ligne.'
+          )
+        }}
+      </p>
+    </div>
+    <div class="qa">
+      <h3>{{ tr('Mon site n’a pas été fait par JUNO, c’est possible ?') }}</h3>
+      <p>
+        {{
+          tr(
+            'Oui, on en parle ensemble. On commence par regarder votre site pour vous dire ce qu’on peut prendre en charge.'
+          )
+        }}
+      </p>
+    </div>
+    <div class="qa">
+      <h3>{{ tr('Je peux changer de formule ?') }}</h3>
+      <p>{{ tr('Oui. Dites-le nous, on ajuste à partir du mois suivant.') }}</p>
+    </div>
+  </section>
+
+  <p class="legal">{{ tr('Prix en euros. TVA non applicable, art. 293 B du CGI.') }}</p>
+</main>
+
+<app-cta-final />

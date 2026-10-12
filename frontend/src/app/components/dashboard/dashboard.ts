@@ -18,6 +18,7 @@ import {
   LeadStatus,
   STATUS_META,
   toEditable,
+  subscriptionLabel,
 } from '../../models/admin.model';
 import { PAGES, SECTORS, STYLES, SWATCHES } from '../../models/intake.data';
 
@@ -54,6 +55,7 @@ export class AdminDashboardComponent implements OnInit {
   protected readonly styleOptions = STYLES;
   protected readonly swatches = SWATCHES;
   protected readonly budgets = BUDGETS;
+  protected readonly subscriptionLabel = subscriptionLabel;
   protected readonly echeances = ECHEANCES;
   protected readonly siteTypes = SITE_TYPES;
 

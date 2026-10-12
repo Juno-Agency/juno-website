@@ -11,13 +11,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  PLATFORM_ID,
   computed,
   effect,
   inject,
   signal,
   untracked,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { JunoLeadService, LeadPayload } from '../../services/juno-lead.service';
 import { prefersReducedMotion } from '../../utils/reduced-motion';
@@ -33,7 +35,16 @@ import {
   emptyLead,
   sectorHero,
 } from '../../models/intake.data';
-import { DataKey } from '../../models/intake.model';
+import { DataKey, Option } from '../../models/intake.model';
+import {
+  BillingPeriod,
+  Plan,
+  SUBSCRIPTION_DISCUSS,
+  SUBSCRIPTION_NONE,
+} from '../../models/plan.model';
+import { PlanService } from '../../services/plan.service';
+import { annualSaving, formatEuros, planPrice } from '../../utils/pricing';
+import { PeriodSwitchComponent } from '../../shared/period-switch/period-switch';
 import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 import { I18nService } from '../../i18n/i18n.service';
 import { LangSwitcherComponent } from '../lang-switcher/lang-switcher';
@@ -124,6 +135,7 @@ const JUNO_SVG =
     AutofocusDirective,
     JunoMascot,
     LangSwitcherComponent,
+    PeriodSwitchComponent,
   ],
   templateUrl: './intake.html',
   styleUrl: './intake.scss',
@@ -167,6 +179,8 @@ const JUNO_SVG =
 })
 export class IntakeComponent {
   private readonly lead = inject(JunoLeadService);
+  private readonly plansApi = inject(PlanService);
+  private readonly route = inject(ActivatedRoute);
   private readonly i18n = inject(I18nService);
   protected readonly tr = this.i18n.tr;
   /** Recap heading carries an <em>, so it renders via [innerHTML]. */
@@ -212,12 +226,29 @@ export class IntakeComponent {
   protected readonly pulseTick = signal(0);
   private lastPreviewKey = '';
 
+  /** Published plans for the subscription step (empty until loaded). */
+  protected readonly plans = signal<Plan[]>([]);
+  /**
+   * Plan picked on /tarifs (`/projet?formule=…&periode=…`). Re-applied over a
+   * resumed draft too: the link the visitor just clicked is the fresher intent.
+   */
+  private readonly preset: Partial<LeadPayload>;
+
   private readonly animating = signal(false);
   private persistOn = false;
   private pending: { data: LeadPayload; step: number } | null = null;
   private uid = 0;
 
   constructor() {
+    this.preset = this.readPreset();
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      this.plansApi.list().subscribe({
+        next: (plans) => this.plans.set(plans),
+        // No plans → the step still offers "discuss" and "not now".
+        error: () => this.plans.set([]),
+      });
+    }
+
     // Restore an in-progress submission (autosave). Offer it, don't force it.
     const saved = this.readSaved();
     if (saved && this.hasContent(saved.data)) {
@@ -225,6 +256,7 @@ export class IntakeComponent {
       this.resumeAvailable.set(true);
     } else {
       this.persistOn = true;
+      this.applyPreset();
     }
     // Autosave whenever data/step change (once persistence is armed).
     effect(() => {
@@ -251,6 +283,49 @@ export class IntakeComponent {
       this.lastPreviewKey = key;
       if (!untracked(() => this.previewOpen())) this.previewUnseen.set(true);
     });
+  }
+
+  private readPreset(): Partial<LeadPayload> {
+    const q = this.route.snapshot.queryParamMap;
+    const formule = q.get('formule')?.trim().toLowerCase().slice(0, 40) ?? '';
+    const periode = q.get('periode');
+    if (!formule) return {};
+    return {
+      formule,
+      periode: periode === 'mensuel' || periode === 'annuel' ? periode : 'annuel',
+    };
+  }
+
+  private applyPreset(): void {
+    if (this.preset.formule) this.data.update((d) => ({ ...d, ...this.preset }));
+  }
+
+  /** Subscription step options: each plan with its price, then the two fallbacks. */
+  protected readonly planOpts = computed<Option[]>(() => {
+    const period = this.data().periode ?? 'annuel';
+    const unit = this.tr(period === 'annuel' ? '/an' : '/mois');
+    return [
+      ...this.plans().map((p) => {
+        const price = planPrice(p, period);
+        const promo = price.promo ? ` · −${price.promo.percent} %` : '';
+        return { value: p.slug, label: p.name, desc: `${formatEuros(price.price)}${unit}${promo}` };
+      }),
+      { value: SUBSCRIPTION_DISCUSS, label: 'Je veux en discuter avec vous' },
+      { value: SUBSCRIPTION_NONE, label: 'Pas pour le moment' },
+    ];
+  });
+
+  protected readonly bestSaving = computed(() =>
+    Math.max(0, ...this.plans().map((p) => annualSaving(p))),
+  );
+
+  /** Options of the current choice screen (the plan step builds its own). */
+  protected readonly currentOpts = computed<Option[]>(() =>
+    this.current().kind === 'plan' ? this.planOpts() : (this.current().opts ?? []),
+  );
+
+  protected setPeriod(periode: BillingPeriod): void {
+    this.data.update((d) => ({ ...d, periode }));
   }
 
   /* ---------- derived state ---------- */
@@ -382,6 +457,7 @@ export class IntakeComponent {
       styles: 'Ambiance',
       budget: 'Budget',
       echeance: 'Échéance',
+      formule: 'Abonnement',
       message: 'Message',
     };
     if (q.key && map[q.key]) return this.tr(map[q.key]);
@@ -412,6 +488,16 @@ export class IntakeComponent {
           ? this.tr('Aucun pour l’instant')
           : dash;
     }
+    if (q.key === 'formule') {
+      if (!d.formule) return dash;
+      if (d.formule === SUBSCRIPTION_DISCUSS) return this.tr('À discuter ensemble');
+      if (d.formule === SUBSCRIPTION_NONE) return this.tr('Pas pour le moment');
+      const plan = this.plans().find((p) => p.slug === d.formule);
+      const period = d.periode ?? 'annuel';
+      return plan
+        ? `${plan.name} · ${this.tr(period === 'annuel' ? 'Annuel' : 'Mensuel')}`
+        : this.tr('À discuter ensemble');
+    }
     if (!q.key) return dash;
     const v = d[q.key];
     // Option values are stored in French and translated only for display.
@@ -425,6 +511,7 @@ export class IntakeComponent {
       this.data.set({ ...emptyLead(), ...this.pending.data });
       this.step.set(Math.min(this.pending.step, this.total));
     }
+    this.applyPreset();
     this.pending = null;
     this.persistOn = true;
     this.resumeAvailable.set(false);
@@ -432,6 +519,7 @@ export class IntakeComponent {
   protected startFresh(): void {
     this.pending = null;
     this.clearSaved();
+    this.applyPreset();
     this.persistOn = true;
     this.resumeAvailable.set(false);
   }
@@ -467,7 +555,7 @@ export class IntakeComponent {
 
   /** "A/B/C" hint for the current choice screen. */
   protected hintLetters(): string {
-    const opts = this.current().opts ?? [];
+    const opts = this.currentOpts();
     return opts.slice(0, 3).map((_, n) => this.letters[n]).join('/');
   }
 
@@ -764,10 +852,11 @@ export class IntakeComponent {
     }
     if (this.isRecap()) return;
     const s = this.current();
-    if (s.kind === 'single' || s.kind === 'cards') {
+    if (s.kind === 'single' || s.kind === 'cards' || s.kind === 'plan') {
+      const opts = this.currentOpts();
       const idx = this.letters.indexOf(e.key.toUpperCase());
-      if (idx >= 0 && s.opts && s.opts[idx]) {
-        this.selectSingle(s.opts[idx].value, true);
+      if (idx >= 0 && opts[idx]) {
+        this.selectSingle(opts[idx].value, true);
       }
     }
   }
@@ -864,6 +953,8 @@ export class IntakeComponent {
       message: d.message?.trim() || undefined,
       budget: d.budget || undefined,
       echeance: d.echeance || undefined,
+      formule: d.formule || undefined,
+      periode: d.formule ? d.periode : undefined,
       website: this.honeypot(),
       startedAt: this.startedAt,
       combineWithExisting: combine || undefined,

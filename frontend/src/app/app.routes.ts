@@ -36,6 +36,13 @@ export const routes: Routes = [
       import('./components/portfolio/portfolio').then((m) => m.PortfolioComponent),
   },
   {
+    path: 'tarifs',
+    title: 'JUNO — Tarifs et formules d’accompagnement',
+    canActivate: [backofficeHostGuard],
+    loadComponent: () =>
+      import('./components/pricing/pricing').then((m) => m.PricingComponent),
+  },
+  {
     path: 'mentions-legales',
     title: 'JUNO — Mentions légales',
     data: {
@@ -89,6 +96,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./components/admin-tickets/admin-tickets').then(
             (m) => m.AdminTicketsComponent,
+          ),
+      },
+      {
+        path: 'tarifs',
+        title: 'JUNO — Tarifs',
+        loadComponent: () =>
+          import('./components/admin-pricing/admin-pricing').then(
+            (m) => m.AdminPricingComponent,
           ),
       },
       {

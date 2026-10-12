@@ -196,6 +196,13 @@ export const QUESTIONS: Question[] = [
   },
   {
     section: 3,
+    kind: 'plan',
+    key: 'formule',
+    q: 'Et après la mise en ligne, on <em>s’occupe</em> de votre site&nbsp;?',
+    sub: 'Hébergement, mises à jour, référencement. Une formule ou une discussion, comme vous préférez. (optionnel)',
+  },
+  {
+    section: 3,
     kind: 'refs',
     q: 'Des références, des couleurs&nbsp;?',
     sub: 'Un site que vous aimez, vos couleurs si vous les avez. (optionnel)',
@@ -225,5 +232,7 @@ export function emptyLead(): LeadPayload {
     budget: '',
     echeance: '',
     message: '',
+    formule: '',
+    periode: 'annuel',
   };
 }

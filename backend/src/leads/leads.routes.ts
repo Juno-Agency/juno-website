@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { isValidObjectId } from 'mongoose';
 import { z } from '../openapi/zod';
-import { Lead } from '../models';
+import { Lead, Plan } from '../models';
+import { effectivePrice } from '../plans/plan.schema';
 import { registry } from '../openapi/registry';
 import { asyncHandler, validateBody, validateQuery } from '../middleware/validate';
 import { notFound } from '../middleware/http-error';
@@ -15,6 +16,9 @@ import {
   LeadSchema,
   ListLeadsQuerySchema,
   StatsSchema,
+  LEAD_SUBSCRIPTION_CHOICES,
+  SUBSCRIPTION_DISCUSS,
+  SUBSCRIPTION_NONE,
   UpdateLeadSchema,
 } from './lead.schema';
 import { buildStats, StatsInput } from './leads.stats';
@@ -44,6 +48,37 @@ async function linkLeadsByEmail(newId: unknown, email: string): Promise<void> {
     { _id: { $in: others.map((o) => o._id) } },
     { $addToSet: { relatedLeadIds: String(newId) } },
   );
+}
+
+interface LeadSubscription {
+  choix: (typeof LEAD_SUBSCRIPTION_CHOICES)[number];
+  slug: string | null;
+  formule: string | null;
+  periode: 'mensuel' | 'annuel' | null;
+  prix: number | null;
+  promo: string | null;
+}
+
+/**
+ * Turns the intake's subscription answer into the snapshot stored on the lead.
+ * A slug that no longer matches a published plan (renamed or unpublished while
+ * the visitor filled the form) falls back to "discuter": we still call them.
+ */
+async function resolveSubscription(
+  formule: string | undefined,
+  periode: 'mensuel' | 'annuel' | undefined,
+): Promise<LeadSubscription | null> {
+  if (!formule) return null;
+  if (formule === SUBSCRIPTION_NONE) {
+    return { choix: 'aucune', slug: null, formule: null, periode: null, prix: null, promo: null };
+  }
+  const plan = formule === SUBSCRIPTION_DISCUSS ? null : await Plan.findOne({ slug: formule, published: true });
+  if (!plan) {
+    return { choix: 'discuter', slug: null, formule: null, periode: periode ?? null, prix: null, promo: null };
+  }
+  const period = periode ?? 'annuel';
+  const { price, promoLabel } = effectivePrice(plan, period);
+  return { choix: 'formule', slug: plan.slug, formule: plan.name, periode: period, prix: price, promo: promoLabel };
 }
 
 /* ---------------- OpenAPI paths ---------------- */
@@ -145,7 +180,8 @@ leadsRouter.post(
   createLeadLimiter,
   validateBody(CreateLeadSchema),
   asyncHandler(async (req, res) => {
-    const { website, startedAt, combineWithExisting, ...data } = req.body as CreateLeadInput;
+    const { website, startedAt, combineWithExisting, formule, periode, ...data } =
+      req.body as CreateLeadInput;
 
     // Anti-spam (fail-safe): drop bots but answer 201 anyway so they can't tell,
     // and never block a real user (see isBotSubmission).
@@ -155,7 +191,8 @@ leadsRouter.post(
       return;
     }
 
-    const lead = await Lead.create(data);
+    const abonnement = await resolveSubscription(formule, periode);
+    const lead = await Lead.create({ ...data, abonnement });
 
     // Returning client chose "combine": bidirectionally link this lead to their
     // existing ones (same email, case-insensitive).

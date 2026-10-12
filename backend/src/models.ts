@@ -2,7 +2,8 @@ import mongoose, { Schema, model } from 'mongoose';
 
 import { config } from './config';
 import { resolveTicketsConnection } from './tickets/tickets-connection';
-import { LEAD_STATUS } from './leads/lead.schema';
+import { LEAD_STATUS, LEAD_SUBSCRIPTION_CHOICES } from './leads/lead.schema';
+import { BILLING_PERIODS, PROMO_SCOPES } from './plans/plan.schema';
 import { TICKET_ASSIGNEE, TICKET_PRIORITY, TICKET_STATUS } from './tickets/ticket.schema';
 
 /**
@@ -35,6 +36,18 @@ const leadEmailSchema = new Schema(
   { _id: false, timestamps: false },
 );
 
+const leadSubscriptionSchema = new Schema(
+  {
+    choix: { type: String, enum: LEAD_SUBSCRIPTION_CHOICES, required: true },
+    slug: { type: String, default: null },
+    formule: { type: String, default: null },
+    periode: { type: String, enum: [...BILLING_PERIODS, null], default: null },
+    prix: { type: Number, default: null },
+    promo: { type: String, default: null },
+  },
+  { _id: false },
+);
+
 /* ---------------- Lead ---------------- */
 const leadSchema = new Schema(
   {
@@ -55,6 +68,9 @@ const leadSchema = new Schema(
     emails: { type: [leadEmailSchema], default: [] },
     // Other leads from the same client, linked when they choose "combine".
     relatedLeadIds: { type: [String], default: [] },
+    // Subscription picked in the intake form, snapshotted at submission so a
+    // later price change or a deleted plan never rewrites what the client saw.
+    abonnement: { type: leadSubscriptionSchema, default: null },
   },
   { timestamps: true, versionKey: false, toJSON },
 );
@@ -96,6 +112,40 @@ const portfolioSchema = new Schema(
 portfolioSchema.index({ order: 1, createdAt: -1 });
 
 export const Portfolio = model('Portfolio', portfolioSchema);
+
+/* ---------------- Plans (grille tarifaire) ---------------- */
+const planPromoSchema = new Schema(
+  {
+    active: { type: Boolean, default: false },
+    percent: { type: Number, default: 10 },
+    label: { type: String, default: '' },
+    months: { type: Number, default: null },
+    endsAt: { type: Date, default: null },
+    appliesTo: { type: String, enum: PROMO_SCOPES, default: 'both' },
+  },
+  { _id: false },
+);
+
+const planSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    tagline: { type: String, default: '' },
+    // Euros, TVA non applicable. The annual price is the full year.
+    monthlyPrice: { type: Number, required: true },
+    annualPrice: { type: Number, required: true },
+    features: { type: [String], default: [] },
+    badge: { type: String, default: '' },
+    featured: { type: Boolean, default: false },
+    published: { type: Boolean, default: true, index: true },
+    order: { type: Number, default: 0 },
+    promo: { type: planPromoSchema, default: () => ({}) },
+  },
+  { timestamps: true, versionKey: false, toJSON },
+);
+planSchema.index({ order: 1, monthlyPrice: 1 });
+
+export const Plan = model('Plan', planSchema);
 
 /* ---------------- Tickets (back-office) ---------------- */
 

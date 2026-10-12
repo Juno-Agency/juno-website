@@ -83,9 +83,13 @@ export const leadInternalMjml = `<mjml>
       </mj-section>
 
       <mj-section padding="18px 30px 0">
-        <mj-column>
+        <mj-column width="50%">
           <mj-text mj-class="label">Échéance</mj-text>
           <mj-text mj-class="value" padding-top="6px">{{echeance}}</mj-text>
+        </mj-column>
+        <mj-column width="50%">
+          <mj-text mj-class="label">Abonnement</mj-text>
+          <mj-text mj-class="value" padding-top="6px">{{abonnement}}</mj-text>
         </mj-column>
       </mj-section>
 

@@ -26,6 +26,13 @@ export interface LeadForMail {
   budget?: string | null;
   echeance?: string | null;
   message?: string | null;
+  abonnement?: {
+    choix: string;
+    formule: string | null;
+    periode: string | null;
+    prix: number | null;
+    promo: string | null;
+  } | null;
   createdAt?: Date | string;
 }
 
@@ -39,6 +46,19 @@ const EXISTANT_LABELS: Record<string, string> = {
   refaire: 'Site existant à refaire',
   aucun: 'Aucun site (création)',
 };
+
+const euros = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+/** "Croissance · annuel · 690 €/an (Offre de lancement −20 %)", already escaped. */
+function subscriptionLabel(sub: LeadForMail['abonnement']): string {
+  if (!sub) return orDash(null);
+  if (sub.choix === 'aucune') return 'Pas pour le moment';
+  if (sub.choix === 'discuter') return 'À discuter ensemble';
+  const unit = sub.periode === 'annuel' ? '/an' : '/mois';
+  const price = sub.prix != null ? ` · ${euros.format(sub.prix)}${unit}` : '';
+  const promo = sub.promo ? ` (${sub.promo})` : '';
+  return escapeHtml(`${sub.formule ?? '—'} · ${sub.periode ?? ''}${price}${promo}`);
+}
 
 /** Escaped scalar, or a muted dash when empty. */
 function orDash(value?: string | null): string {
@@ -74,6 +94,7 @@ async function sendInternal(lead: LeadForMail): Promise<SentRecord | null> {
       existantLabel: escapeHtml(EXISTANT_LABELS[lead.existant] ?? lead.existant),
       budget: orDash(lead.budget),
       echeance: orDash(lead.echeance),
+      abonnement: subscriptionLabel(lead.abonnement),
       pagesHtml: chips(lead.pages ?? []),
       stylesHtml: chips(lead.styles ?? []),
       colorsHtml: colorSwatches(lead.colors ?? []),

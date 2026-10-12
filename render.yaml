@@ -82,6 +82,8 @@ services:
       - { type: rewrite, source: /projet/, destination: /projet/index.html }
       - { type: rewrite, source: /realisations, destination: /realisations/index.html }
       - { type: rewrite, source: /realisations/, destination: /realisations/index.html }
+      - { type: rewrite, source: /tarifs, destination: /tarifs/index.html }
+      - { type: rewrite, source: /tarifs/, destination: /tarifs/index.html }
       - { type: rewrite, source: /mentions-legales, destination: /mentions-legales/index.html }
       - { type: rewrite, source: /mentions-legales/, destination: /mentions-legales/index.html }
       - { type: rewrite, source: /confidentialite, destination: /confidentialite/index.html }

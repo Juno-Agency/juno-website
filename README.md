@@ -196,6 +196,21 @@ backlog : elle vit dans les variables d'environnement et dans les `.env`
 (non versionnés), jamais dans le code front. Si `TICKETS_API_KEY` est vide côté
 serveur, cette voie est simplement fermée et seul le JWT protège la route.
 
+### Clé de lecture des leads
+
+Le workflow du studio (`juno-tools`) récupère les demandes du formulaire pour
+lancer un projet. Il s'authentifie avec `LEADS_API_KEY` en en-tête `x-api-key`,
+acceptée **seulement** sur `GET /api/leads` et `GET /api/leads/:id`. Stats,
+modification, renvoi d'e-mails et suppression restent réservés au JWT admin.
+
+```bash
+curl -H "x-api-key: $LEADS_API_KEY" "https://<api>/api/leads?status=NEW"
+```
+
+Clé distincte de celle du backlog, générée avec `openssl rand -hex 32`, définie
+sur Render et dans l'environnement du poste qui lance le workflow. Vide côté
+serveur : voie fermée.
+
 ## API
 
 | Méthode | Route                | Accès       | Rôle                              |

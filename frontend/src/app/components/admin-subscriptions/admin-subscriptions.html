@@ -1,0 +1,57 @@
+<main class="asb">
+  <header class="asb-head">
+    <div>
+      <h1>Abonnements</h1>
+      <p class="sub">
+        {{ billing().length }} en cours · {{ eur(mrr()) }}/mois récurrents · synchronisés depuis Stripe
+      </p>
+    </div>
+    <a class="btn ghost" href="https://dashboard.stripe.com/subscriptions" target="_blank" rel="noopener">
+      <span>Ouvrir Stripe ↗</span>
+    </a>
+  </header>
+
+  @if (error()) { <p class="banner">{{ error() }}</p> }
+  @if (setupWarning()) { <p class="banner warn">{{ setupWarning() }}</p> }
+
+  @if (loading()) {
+    <div class="state">Chargement…</div>
+  } @else if (!subscriptions().length) {
+    @if (!error()) {
+      <div class="state">Aucun abonnement pour l’instant.</div>
+    }
+  } @else {
+    <div class="slist">
+      @for (s of subscriptions(); track s.id) {
+        <div class="srow" [class.off]="s.status === 'canceled' || s.status === 'incomplete_expired'">
+          <div class="sprice">
+            <span class="sp-a">{{ eur(s.prix) }}<small>{{ s.periode === 'annuel' ? '/an' : '/mois' }}</small></span>
+            <span class="sp-f">{{ s.formule || s.slug || '—' }}</span>
+          </div>
+          <div class="sinfo">
+            <span class="st">{{ s.nom || s.email || 'Client sans nom' }}</span>
+            <span class="sm">
+              @if (s.nom && s.email) { <a [href]="'mailto:' + s.email">{{ s.email }}</a> }
+              @if (s.site) {
+                · <a [href]="siteHref(s.site)" target="_blank" rel="noopener noreferrer">{{ s.site }}</a>
+              }
+            </span>
+            <span class="sm">
+              Depuis le {{ date(s.startedAt || s.createdAt) }}
+              @if (nextStep(s)) { · {{ nextStep(s) }} }
+            </span>
+          </div>
+          <div class="sflags">
+            <span class="badge" [style.color]="meta(s).color" [style.border-color]="meta(s).color">
+              {{ meta(s).label }}
+            </span>
+            @if (s.promo) { <span class="badge">{{ s.promo }}</span> }
+            <span class="badge">{{ sourceLabel[s.source] }}</span>
+            @if (!s.livemode) { <span class="badge">Test</span> }
+          </div>
+          <a class="open" [href]="stripeUrl(s)" target="_blank" rel="noopener">Stripe ↗</a>
+        </div>
+      }
+    </div>
+  }
+</main>

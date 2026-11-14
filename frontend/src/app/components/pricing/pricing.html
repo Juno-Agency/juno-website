@@ -21,6 +21,13 @@
     />
   </header>
 
+  @if (subscribed()) {
+    <p class="thanks" role="status">
+      <strong>{{ tr('Merci, votre abonnement est bien enregistré.') }}</strong>
+      {{ tr('On revient vers vous très vite.') }}
+    </p>
+  }
+
   @if (loading()) {
     <div class="grid" aria-hidden="true">
       @for (n of [1, 2, 3]; track n) {
@@ -87,14 +94,30 @@
             }
           </ul>
 
-          <a
+          <button
+            type="button"
             class="btn cta"
             [class.btn-primary]="c.plan.featured"
             [class.btn-ghost]="!c.plan.featured"
+            [disabled]="paying() !== null"
+            (click)="subscribe(c.plan)"
+          >
+            <span class="lab">
+              {{ paying() === c.plan.slug ? tr('Ouverture du paiement…') : tr('S’abonner') }}
+            </span>
+            <span class="arr">→</span>
+          </button>
+          @if (payFailed() === c.plan.slug) {
+            <p class="pay-error" role="alert">
+              {{ tr('Le paiement en ligne est indisponible pour le moment. Réessayez dans un instant.') }}
+            </p>
+          }
+          <a
+            class="no-site"
             routerLink="/projet"
             [queryParams]="{ formule: c.plan.slug, periode: period() }"
           >
-            <span class="lab">{{ tr('Choisir') }} {{ c.plan.name }}</span> <span class="arr">→</span>
+            {{ tr('Pas encore de site ? Parlons de votre projet') }}
           </a>
         </article>
       }

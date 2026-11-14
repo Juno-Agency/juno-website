@@ -11,6 +11,8 @@ import { plansRouter } from './plans/plans.routes';
 import { portfolioRouter } from './portfolio/portfolio.routes';
 import { ticketsRouter } from './tickets/tickets.routes';
 import { webhooksRouter } from './webhooks/resend.routes';
+import { stripeWebhookRouter } from './webhooks/stripe.routes';
+import { billingRouter } from './billing/billing.routes';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { buildOpenApiDocument } from './openapi/document';
 
@@ -29,6 +31,7 @@ export function createApp(): Express {
   // Webhooks need the raw request body for signature verification, so they are
   // mounted before the JSON body parser (which would otherwise consume the body).
   app.use('/api/webhooks', webhooksRouter);
+  app.use('/api/webhooks', stripeWebhookRouter);
 
   app.use(express.json({ limit: '256kb' }));
 
@@ -41,6 +44,7 @@ export function createApp(): Express {
   app.use('/api/leads', leadsRouter);
   app.use('/api/portfolio', portfolioRouter);
   app.use('/api/plans', plansRouter);
+  app.use('/api/billing', billingRouter);
   app.use('/api/tickets', ticketsRouter);
   app.use('/api/auth', authRouter);
 

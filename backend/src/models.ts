@@ -4,6 +4,7 @@ import { config } from './config';
 import { resolveTicketsConnection } from './tickets/tickets-connection';
 import { LEAD_STATUS, LEAD_SUBSCRIPTION_CHOICES } from './leads/lead.schema';
 import { BILLING_PERIODS, PROMO_SCOPES } from './plans/plan.schema';
+import { SUBSCRIPTION_SOURCES } from './billing/billing.schema';
 import { TICKET_ASSIGNEE, TICKET_PRIORITY, TICKET_STATUS } from './tickets/ticket.schema';
 
 /**
@@ -170,6 +171,46 @@ const planComparisonSchema = new Schema(
 );
 
 export const PlanComparison = model('PlanComparison', planComparisonSchema);
+
+/* ---------------- Abonnements (Stripe) ---------------- */
+/**
+ * Mirror of a Stripe subscription, kept in step by the Stripe webhook. Stripe
+ * stays the source of truth: every field here is rewritten from the live
+ * subscription on each event, so the back-office can list subscribers without
+ * calling Stripe.
+ */
+const subscriptionSchema = new Schema(
+  {
+    stripeSubscriptionId: { type: String, required: true, unique: true },
+    stripeCustomerId: { type: String, default: '' },
+    email: { type: String, default: '' },
+    nom: { type: String, default: '' },
+    // "Adresse de votre site", asked on the payment page (optional).
+    site: { type: String, default: '' },
+    slug: { type: String, default: '' },
+    formule: { type: String, default: '' },
+    periode: { type: String, enum: BILLING_PERIODS, required: true },
+    // Recurring list price in euros, before any discount.
+    prix: { type: Number, default: 0 },
+    // Name of the coupon applied, when there is one.
+    promo: { type: String, default: null },
+    // Stripe status: active, trialing, past_due, unpaid, canceled, incomplete…
+    status: { type: String, required: true, index: true },
+    cancelAtPeriodEnd: { type: Boolean, default: false },
+    currentPeriodEnd: { type: Date, default: null },
+    canceledAt: { type: Date, default: null },
+    startedAt: { type: Date, default: null },
+    source: { type: String, enum: SUBSCRIPTION_SOURCES, default: 'stripe' },
+    // False for subscriptions created with a test key.
+    livemode: { type: Boolean, default: false },
+    // Set once the team has been emailed, so a replayed event stays silent.
+    notifiedAt: { type: Date, default: null },
+  },
+  { timestamps: true, versionKey: false, toJSON },
+);
+subscriptionSchema.index({ createdAt: -1 });
+
+export const Subscription = model('Subscription', subscriptionSchema);
 
 /* ---------------- Tickets (back-office) ---------------- */
 

@@ -222,3 +222,33 @@ statut, pas de lien avec les leads.
 - [x] Éditeur dans l'onglet Tarifs : groupes, lignes, cellules, ordre, import du tableau de base
 - [x] Meta description de `/tarifs` (exigée par `seo.spec.ts`, arrivé avec JUNO-03)
 
+
+## Feature — abonnements payés en ligne via Stripe (2026-11-14)
+
+### Stripe (compte Juno Agency, live)
+- [x] 3 produits (`Abonnement Essentiel / Croissance / Performance`), 6 tarifs récurrents en EUR avec `lookup_key` `<slug>_<periode>`
+- [x] Coupon `LANCEMENT_CROISSANCE` (−40 %, 2 mois) + code promo `LANCEMENT`
+- [x] 6 liens de paiement (un par tarif), à envoyer à la main à un client
+
+### Backend
+- [x] `config.ts` — `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL`
+- [x] `billing/stripe.ts` — `ensurePrice` (le back-office reste la source des montants : tarif recréé si le prix de la formule a changé) et `ensureCoupon` (remise de la formule → coupon Stripe)
+- [x] `billing/billing.routes.ts` — `POST /api/billing/checkout` public (rate limité), `GET /api/billing/subscriptions` et `/status` sous `requireAuth`
+- [x] `webhooks/stripe.routes.ts` — `POST /api/webhooks/stripe`, signature obligatoire, resynchronise l'abonnement depuis Stripe à chaque événement
+- [x] `models.ts` — modèle `Subscription` ; `mail/subscription-mails.ts` — notification interne au premier paiement
+- [x] `render.yaml`, `backend/.env.example`
+
+### Frontend
+- [x] `/tarifs` — bouton « S’abonner » (Stripe Checkout), repli sur `/projet` tant que Stripe n'est pas configuré (503), lien « Pas encore de site ? », bandeau de retour `?abonnement=ok`, traductions EN/DE
+- [x] Back-office — onglet « Abonnements » (`/admin/abonnements`, `RenderMode.Client`)
+
+### Vérification
+- [x] `tsc` backend + frontend, tests existants, build (6 routes prérendues, pas d'`admin/abonnements`)
+- [x] Endpoints testés en local sans base ni clé : 503 non configuré, 400 données invalides, 401 back-office, signature du webhook acceptée / refusée
+- [ ] Parcours complet avec une clé de test : paiement Checkout → webhook → ligne dans le back-office → mail interne
+- [ ] Rendu du bouton et de l'onglet dans le navigateur
+
+### Review
+- Une remise sans nombre de mois devient un coupon `forever` : c'est ce que la page affiche (prix remisé sans « puis … »). À revoir si une remise de ce type est publiée un jour.
+- Changer un prix dans le back-office crée un nouveau tarif Stripe au prochain paiement ; l'ancien reste actif pour les abonnés existants et les liens de paiement, qui ne suivent donc pas le changement.
+- À faire côté dashboards : variables sur Render, endpoint de webhook dans Stripe (`https://agency-juno.com/api/webhooks/stripe`, événements `checkout.session.completed` et `customer.subscription.created|updated|deleted`).

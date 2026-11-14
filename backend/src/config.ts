@@ -79,6 +79,18 @@ export const config = {
     // in dev; required in production so forged events are rejected).
     resendWebhookSecret: process.env.RESEND_WEBHOOK_SECRET ?? '',
   },
+  // Public origin of the site, where Stripe Checkout sends the visitor back.
+  siteUrl: (
+    process.env.SITE_URL ?? (isProdEnv ? 'https://agency-juno.com' : 'http://localhost:4200')
+  ).replace(/\/+$/, ''),
+  // Stripe subscriptions. Without a secret key the checkout endpoint answers
+  // 503 and /tarifs falls back to the intake form.
+  billing: {
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? '',
+    // Signing secret of the Stripe webhook endpoint. Unlike the Resend one it
+    // is never optional: an unsigned event could forge a paid subscription.
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
+  },
   // Anti-spam: minimum time (ms) a human takes to fill the multi-step intake.
   // A submission faster than this (with a client timestamp) is dropped as a bot.
   antispamMinFillMs: Number(process.env.ANTISPAM_MIN_FILL_MS ?? 2500),

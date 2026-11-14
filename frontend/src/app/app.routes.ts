@@ -111,6 +111,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'abonnements',
+        title: 'JUNO — Abonnements',
+        loadComponent: () =>
+          import('./components/admin-subscriptions/admin-subscriptions').then(
+            (m) => m.AdminSubscriptionsComponent,
+          ),
+      },
+      {
         path: 'portfolio',
         title: 'JUNO — Portfolio',
         loadComponent: () =>

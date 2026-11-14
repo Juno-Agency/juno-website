@@ -7,8 +7,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GrainVignetteComponent } from '../grain-vignette/grain-vignette';
 import { NavComponent } from '../nav/nav';
 import { CtaFinalComponent } from '../cta-final/cta-final';
@@ -16,6 +17,7 @@ import { JunoMascot } from '../../shared/juno-mascot/juno-mascot';
 import { PeriodSwitchComponent } from '../../shared/period-switch/period-switch';
 import { I18nService } from '../../i18n/i18n.service';
 import { PlanService } from '../../services/plan.service';
+import { BillingService } from '../../services/billing.service';
 import {
   BillingPeriod,
   CellKind,
@@ -61,8 +63,13 @@ const dateFmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long'
   styleUrl: './pricing.scss',
 })
 export class PricingComponent implements OnInit {
-  protected readonly tr = inject(I18nService).tr;
+  private readonly i18n = inject(I18nService);
+  protected readonly tr = this.i18n.tr;
   private readonly api = inject(PlanService);
+  private readonly billing = inject(BillingService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly doc = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   protected readonly discuss = SUBSCRIPTION_DISCUSS;
@@ -73,6 +80,13 @@ export class PricingComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly failed = signal(false);
   protected readonly comparison = signal<ComparisonRow[]>([]);
+
+  /** Slug of the plan whose payment page is being opened. */
+  protected readonly paying = signal<string | null>(null);
+  /** Slug of the plan whose payment page could not be opened. */
+  protected readonly payFailed = signal<string | null>(null);
+  /** Back from a completed Stripe payment (`?abonnement=ok`). */
+  protected readonly subscribed = signal(false);
 
   /** Comparison table, one column per plan shown above, rows grouped. */
   protected readonly table = computed<TableRow[]>(() => {
@@ -109,6 +123,7 @@ export class PricingComponent implements OnInit {
     // Prices change from the back-office without a rebuild, so they are only
     // fetched in the browser; the prerendered page ships the loading state.
     if (!this.isBrowser) return;
+    this.subscribed.set(this.route.snapshot.queryParamMap.get('abonnement') === 'ok');
     this.api.list().subscribe({
       next: (plans) => {
         this.plans.set(plans);
@@ -128,6 +143,34 @@ export class PricingComponent implements OnInit {
 
   protected setPeriod(p: BillingPeriod): void {
     this.period.set(p);
+  }
+
+  /**
+   * Opens the Stripe payment page for a plan. While online payment is not
+   * configured on the API (503), the visitor goes through the intake form as
+   * before, with the plan preselected.
+   */
+  protected subscribe(plan: Plan): void {
+    if (this.paying()) return;
+    const period = this.period();
+    this.paying.set(plan.slug);
+    this.payFailed.set(null);
+    this.billing.checkout(plan.slug, period, this.i18n.lang()).subscribe({
+      next: ({ url }) => {
+        // Full navigation: the payment page is hosted by Stripe.
+        this.doc.location.href = url;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.paying.set(null);
+        if (err.status === 503) {
+          void this.router.navigate(['/projet'], {
+            queryParams: { formule: plan.slug, periode: period },
+          });
+          return;
+        }
+        this.payFailed.set(plan.slug);
+      },
+    });
   }
 
   /** "Les 2 premiers mois" / "Jusqu'au 31 mars 2027" under a promo price. */

@@ -38,3 +38,12 @@ export const ticketsLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Trop de requêtes sur le backlog. Réessayez dans un instant.' },
 });
+
+/** Limiter on the public checkout — each call creates a Stripe Checkout session. */
+export const checkoutLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 20, // plenty for a visitor comparing plans
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Trop de tentatives de paiement. Réessayez dans un instant.' },
+});

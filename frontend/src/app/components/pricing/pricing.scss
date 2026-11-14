@@ -192,6 +192,50 @@
   margin-top: 28px;
   justify-content: center;
 }
+/* The CTA is a <button>: drop the native grey fill the ghost variant would
+   otherwise keep (the primary variant and the hover state set their own). */
+button.cta:not(.btn-primary):not(:hover) {
+  background: transparent;
+}
+.cta:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.pay-error {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  color: #d8b3b8;
+  text-align: center;
+}
+.no-site {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line);
+}
+.no-site:hover {
+  color: var(--cream);
+  text-decoration-color: var(--muted);
+}
+
+/* Back from a completed Stripe payment. */
+.thanks {
+  margin: 0 0 28px;
+  padding: 16px 20px;
+  border: 1px solid var(--cream);
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--muted);
+  text-align: center;
+}
+.thanks strong {
+  display: block;
+  color: var(--cream);
+  font-weight: 500;
+}
 
 /* Loading skeleton */
 .card.skel {

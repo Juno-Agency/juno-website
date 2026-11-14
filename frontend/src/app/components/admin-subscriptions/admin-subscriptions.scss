@@ -1,0 +1,180 @@
+/* Le grain et la vignette du layout sont des overlays fixes en z-index 1
+   (styles.scss) : sans contexte d'empilement au-dessus, la page se lit à
+   travers eux. Même règle que les autres écrans du back-office. */
+:host {
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+.asb {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+}
+.asb-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.asb-head h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+.asb-head .sub {
+  margin: 4px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 11px 20px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--cream);
+  white-space: nowrap;
+}
+.btn:hover {
+  border-color: var(--muted);
+}
+
+.banner {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, #a3737b 16%, transparent);
+  border: 1px solid color-mix(in srgb, #a3737b 40%, transparent);
+  color: #d8b3b8;
+  font-size: 14px;
+}
+.banner.warn {
+  background: color-mix(in srgb, #c0a15e 14%, transparent);
+  border-color: color-mix(in srgb, #c0a15e 40%, transparent);
+  color: #e0cfa3;
+}
+.state {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--sans);
+}
+
+/* ---------- list ---------- */
+.slist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.srow {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.srow.off {
+  opacity: 0.6;
+}
+.sprice {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.sp-a {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--cream);
+}
+.sp-a small {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+}
+.sp-f {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+.sinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.st {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--cream);
+  overflow-wrap: anywhere;
+}
+.sm {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+  overflow-wrap: anywhere;
+}
+.sm a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sflags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 260px;
+}
+.badge {
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.open {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.open:hover {
+  color: var(--cream);
+}
+
+@media (max-width: 760px) {
+  .asb-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .srow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .sflags {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    max-width: none;
+  }
+}

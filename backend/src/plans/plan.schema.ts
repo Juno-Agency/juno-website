@@ -97,6 +97,19 @@ export interface PlanPricing {
   } | null;
 }
 
+/** Is the plan's promo live for this period today? */
+export function promoRuns(plan: PlanPricing, period: BillingPeriod, now = new Date()): boolean {
+  const p = plan.promo;
+  return (
+    !!p?.active &&
+    !!p.percent &&
+    (p.appliesTo === 'both' || p.appliesTo === period || !p.appliesTo) &&
+    // "The first N months" only means something on a monthly bill.
+    !(period === 'annuel' && p.months) &&
+    (!p.endsAt || new Date(p.endsAt).getTime() >= now.getTime())
+  );
+}
+
 /**
  * Price shown for a period, after the promo when it is running. Mirrors
  * `frontend/src/app/utils/pricing.ts` — keep both in step.
@@ -108,14 +121,7 @@ export function effectivePrice(
 ): { price: number; promoLabel: string | null } {
   const base = period === 'annuel' ? plan.annualPrice : plan.monthlyPrice;
   const p = plan.promo;
-  const running =
-    !!p?.active &&
-    !!p.percent &&
-    (p.appliesTo === 'both' || p.appliesTo === period || !p.appliesTo) &&
-    // "The first N months" only means something on a monthly bill.
-    !(period === 'annuel' && p.months) &&
-    (!p.endsAt || new Date(p.endsAt).getTime() >= now.getTime());
-  if (!running) return { price: base, promoLabel: null };
-  const price = Math.round(base * (100 - p.percent!)) / 100;
-  return { price, promoLabel: `${p.label || 'Remise'} −${p.percent} %` };
+  if (!promoRuns(plan, period, now)) return { price: base, promoLabel: null };
+  const price = Math.round(base * (100 - p!.percent!)) / 100;
+  return { price, promoLabel: `${p!.label || 'Remise'} −${p!.percent} %` };
 }
